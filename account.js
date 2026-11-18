@@ -6,7 +6,7 @@ var website_name = "ARiYAN";
 // =======================================================
 // TELEGRAM CHANNEL LINK
 // =======================================================
-var telegram_channel_link = "@ariyan143x";
+var telegram_channel_link = "ttps://t.me/ariyan143x";
 
 // =======================================================
 // TELEGRAM GROUP LINK
