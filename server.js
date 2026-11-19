@@ -645,31 +645,6 @@ function removeUpload(name) {
 }
 
 async function handleApi(req, res, pathname) {
-  if (req.method === 'POST' && pathname === '/api/add-money') {
-        const body = await readJson(req, 4096);
-        const { method, sender, amount, trxId } = body;
-        
-        if (!method || !sender || !amount || !trxId) {
-            return sendJson(res, 400, { success: false, message: 'সবগুলো ফিল্ড সঠিকভাবে পূরণ করুন।' });
-        }
-
-        const newRequest = {
-            id: Date.now(),
-            method,
-            sender,
-            amount: Number(amount),
-            trxId,
-            status: 'Pending',
-            date: new Date()
-        };
-
-        console.log("New Add Money Request Received:", newRequest);
-
-        return sendJson(res, 200, { 
-            success: true, 
-            message: 'আপনার অ্যাড মানি রিকোয়েস্ট সফলভাবে জমা হয়েছে। অ্যাডমিন চেক করে ব্যালেন্স যোগ করে দেবেন।' 
-        });
-    }
   try {
     if (req.method === 'POST' && pathname === '/api/admin/login') {
       if (!ADMIN_PASSWORD) return sendJson(res, 503, { error: 'Render এ FFX-PASS সেট করা নেই। Environment এ FFX-PASS যোগ করে আবার Deploy করুন।' });

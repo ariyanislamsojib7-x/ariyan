@@ -2984,26 +2984,6 @@ setInterval(fetchFreshAccountConfig, 15000);
   });
 })();
 </script>
-document.getElementById('addMoneyForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const method = document.getElementById('paymentMethod').value;
-    const sender = document.getElementById('senderNumber').value;
-    const amount = document.getElementById('amount').value;
-    const trxId = document.getElementById('trxId').value;
-
-    try {
-        const response = await fetch('/api/add-money', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ method, sender, amount, trxId })
-        });
-        const result = await response.json();
-        alert(result.message || 'Request sent successfully!');
-        document.getElementById('addMoneyForm').reset();
-    } catch (err) {
-        alert('সার্ভারে সমস্যা হয়েছে, আবার চেষ্টা করুন।');
-    }
-});
 <script>
 // ==========================================
 // 14. MY TRANSACTION PAGE
