@@ -907,7 +907,35 @@ function serveFile(filePath, res, cache) {
     }
   });
 }
+// --- Manual Add Money Route (Bikash & Nagad) ---
+app.post('/api/add-money', async (req, res) => {
+    try {
+        const { method, sender, amount, trxId } = req.body;
+        
+        if (!method || !sender || !amount || !trxId) {
+            return res.status(400).json({ success: false, message: 'সবগুলো ফিল্ড সঠিকভাবে পূরণ করুন।' });
+        }
 
+        const newRequest = {
+            id: Date.now(),
+            method,
+            sender,
+            amount: Number(amount),
+            trxId,
+            status: 'Pending',
+            date: new Date()
+        };
+
+        console.log("New Add Money Request Received:", newRequest);
+
+        res.status(200).json({ 
+            success: true, 
+            message: 'আপনার অ্যাড মানি রিকোয়েস্ট সফলভাবে জমা হয়েছে। অ্যাডমিন চেক করে ব্যালেন্স যোগ করে দেবেন।' 
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি ঘটেছে।' });
+    }
+});
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   if (!ADMIN_PASSWORD) console.log('⚠️  FFX-PASS সেট করা নেই — /admin লগইন বন্ধ থাকবে');
