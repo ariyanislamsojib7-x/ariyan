@@ -111,7 +111,16 @@ const TEXTS = [
   { id: 'acctEmailLabel', label: 'Email label', def: 'Email address', max: 60 },
   { id: 'acctPasswordLabel', label: 'Password label', def: 'Password', max: 60 },
   { id: 'acctSignInText', label: 'Sign in button text', def: 'Sign In', max: 60 },
-  { id: 'acctProfileSub', label: 'My Account subtitle', def: 'Your account overview and activity', max: 160 }
+  { id: 'acctProfileSub', label: 'My Account subtitle', def: 'Your account overview and activity', max: 160 },
+  { id: 'acctVerifiedText', label: 'Verified account badge', def: 'Verified Account', max: 80 },
+  { id: 'acctRankTitle', label: 'Rank section title', def: 'Member Rank', max: 80 },
+  { id: 'acctRankSub', label: 'Rank section subtitle', def: 'Your membership level', max: 160 },
+  { id: 'acctRankJourney', label: 'Rank Journey title', def: 'Rank Journey', max: 80 },
+  { id: 'acctRankBronze', label: 'Bronze Rank label', def: 'Bronze', max: 40 },
+  { id: 'acctRankSilver', label: 'Silver Rank label', def: 'Silver', max: 40 },
+  { id: 'acctRankGold', label: 'Gold Rank label', def: 'Gold', max: 40 },
+  { id: 'acctRankPlatinum', label: 'Platinum Rank label', def: 'Platinum', max: 40 },
+  { id: 'acctRankDiamond', label: 'Diamond Rank label', def: 'Diamond', max: 40 }
 ];
 
 function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null }; }
@@ -643,7 +652,7 @@ function customerFromRequest(req) {
   if (!safeEq(a[2], expected)) return null;
   return customerDB.users.find(u => u.id === a[0]) || null;
 }
-function publicUser(u) { return { id:u.id, email:u.email, name:u.name, balance:u.balance, createdAt:u.createdAt }; }
+function publicUser(u) { return { id:u.id, email:u.email, name:u.name, balance:u.balance, createdAt:u.createdAt, emailVerified:!!u.googleSub }; }
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
