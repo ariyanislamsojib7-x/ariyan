@@ -73,3 +73,13 @@ Google Login চালু করার ধাপ:
 - Google ID token সার্ভারে Google-এর tokeninfo endpoint দিয়ে যাচাই করা হয়।
 - Google Client ID অবশ্যই আপনার নিজের OAuth Web Client ID হতে হবে।
 - কোড প্রস্তুত; Render-এ GOOGLE_CLIENT_ID না বসানো পর্যন্ত Google Login চালু হবে না।
+
+
+নতুন ARiYAN Delivery Management প্রস্তুতি:
+- নতুন Order-এ deliveryMethod='unassigned' থাকবে।
+- Admin Orders & Payments থেকে চলমান Order-কে Manual Delivery হিসেবে নির্বাচন করতে পারবেন।
+- API delivery ইচ্ছাকৃতভাবে চালু করা হয়নি; Supplier-এর প্রকৃত API Documentation, অনুমোদিত API credentials, product mapping, status codes এবং refund rules না জেনে live order পাঠানো নিরাপদ নয়।
+- Admin-only GET /api/admin/suppliers endpoint SUPPLIER_1_NAME ... SUPPLIER_5_NAME এবং সংশ্লিষ্ট SUPPLIER_n_API_KEY আছে কি না দেখায়; কোনো secret ফেরত দেয় না।
+- ভবিষ্যতে Render Environment Variables-এ SUPPLIER_1_NAME, SUPPLIER_1_API_KEY; দ্বিতীয় Supplier-এর জন্য SUPPLIER_2_NAME, SUPPLIER_2_API_KEY ইত্যাদি রাখা যাবে। API URL/auth format supplier documentation অনুযায়ী নির্ধারণ করতে হবে।
+- API timeout বা uncertain response হলে স্বয়ংক্রিয় refund করবেন না; supplier order status যাচাই করে তারপর admin action নিতে হবে।
+- Deploy-এর আগে customers.json এবং বর্তমান Render Environment Variables-এর backup নিন। পুরোনো FFX-PASS, BKASH_NUMBER, NAGAD_NUMBER ও DATA_DIR অপরিবর্তিত রাখুন।

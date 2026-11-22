@@ -796,13 +796,37 @@ async function handleApi(req, res, pathname) {
         if (!productDef || !validPackage || !Number.isFinite(price) || price <= 0 || !playerId) return sendJson(res,400,{error:'প্যাকেজ বা দাম সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন'});
         if (u.balance < price) return sendJson(res,400,{error:'ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই'});
         u.balance = Math.round((u.balance-price)*100)/100;
-        const o={id:newId('ord'),userId:u.id,email:u.email,product,packageName,price,playerId,server,status:'pending',createdAt:new Date().toISOString()};
+        const o={id:newId('ord'),userId:u.id,email:u.email,product,packageName,price,playerId,server,status:'pending',deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()};
         customerDB.orders.push(o); customerDB.transactions.push({id:newId('txn'),userId:u.id,type:'purchase',amount:-price,description:product+' - '+packageName,orderId:o.id,createdAt:new Date().toISOString()});
         saveCustomerDB(); return sendJson(res,201,{order:o,user:publicUser(u)});
       }
     }
     if (pathname.startsWith('/api/admin/')) {
       // Admin customer/payment/order endpoints are protected by the existing admin session.
+      if (req.method==='GET' && pathname==='/api/admin/suppliers') {
+        if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
+        const suppliers = [];
+        for (let i=1;i<=5;i++) {
+          const name=String(process.env['SUPPLIER_'+i+'_NAME']||'').trim();
+          if (name) suppliers.push({id:'supplier_'+i,name,configured:!!process.env['SUPPLIER_'+i+'_API_KEY'],apiReady:false});
+        }
+        return sendJson(res,200,{suppliers,apiIntegration:'awaiting_supplier_documentation',message:'Supplier API-এর নির্দিষ্ট documentation ও অনুমোদিত credentials না পাওয়া পর্যন্ত live API order বন্ধ থাকবে।'});
+      }
+      if (req.method==='POST' && pathname==='/api/admin/order-delivery') {
+        if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
+        const b=await readJson(req,8192), o=customerDB.orders.find(x=>x.id===b.id);
+        if(!o) return sendJson(res,404,{error:'Order পাওয়া যায়নি'});
+        if(!['pending','processing'].includes(o.status)) return sendJson(res,409,{error:'শুধু চলমান Order-এর Delivery Method পরিবর্তন করা যাবে'});
+        const method=String(b.deliveryMethod||'');
+        if(!['manual','api'].includes(method)) return sendJson(res,400,{error:'Manual অথবা API নির্বাচন করুন'});
+        if(method==='api') return sendJson(res,409,{error:'Supplier API এখনো সংযুক্ত নয়। Supplier-এর API Documentation ও অনুমোদিত credentials পাওয়ার পর Integration চালু হবে। আপাতত Manual নির্বাচন করুন।'});
+        o.deliveryMethod='manual';
+        o.supplierId='';
+        o.deliveryNote=String(b.note||'').trim().slice(0,300);
+        o.deliveryMethodUpdatedAt=new Date().toISOString();
+        saveCustomerDB();
+        return sendJson(res,200,{success:true,order:o,message:'Manual Delivery নির্বাচন করা হয়েছে'});
+      }
       if (['/api/admin/deposits','/api/admin/orders','/api/admin/users'].includes(pathname) && req.method==='GET') {
         if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
         if (pathname.endsWith('/deposits')) return sendJson(res,200,{deposits:customerDB.deposits.slice(-300).reverse()});
