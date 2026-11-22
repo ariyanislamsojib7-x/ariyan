@@ -15,6 +15,7 @@ Render Environment Variables:
 - BKASH_NUMBER = আপনার bKash receive number (ঐচ্ছিক; customer payment info endpoint-এ দেখায়)
 - NAGAD_NUMBER = আপনার Nagad receive number (ঐচ্ছিক)
 - DATA_DIR = Render Persistent Disk mount path, যেমন /var/data
+- GOOGLE_CLIENT_ID = Google Cloud Console থেকে তৈরি OAuth 2.0 Web Client ID (Google Login চালু করতে আবশ্যক)
 
 IMPORTANT - Render storage:
 Render instance-এর local filesystem deploy/restart-এ হারিয়ে যেতে পারে। Render Dashboard-এ Persistent Disk যোগ করে Mount Path `/var/data` দিন এবং `DATA_DIR=/var/data` সেট করুন। এই Persistent Disk না থাকলে customer database হারাতে পারে। Scale to multiple instances করলে JSON-file storage ব্যবহার করবেন না; managed database দরকার।
@@ -36,6 +37,8 @@ GET  /api/admin/orders
 POST /api/admin/deposit-action {id,action:"approve"|"reject"}
 POST /api/admin/order-action {id,action:"processing"|"delivered"|"rejected"}
 
+গ্রাহক পেমেন্ট জমা দেওয়ার সময় শুধু bKash/Nagad মাধ্যম, টাকার পরিমাণ এবং Transaction ID দেবেন। স্ক্রিনশট আপলোডের কোনো ফিল্ড নেই। Admin নিজের bKash/Nagad অ্যাকাউন্টে টাকা ও TrxID মিলিয়ে তারপর Approve করবেন।
+
 Manual payment safety:
 Never approve a deposit based only on a screenshot. Verify the actual incoming payment and amount in your bKash/Nagad account before approving. Transaction IDs are checked for duplicates per payment method.
 
@@ -55,3 +58,18 @@ Before deploying:
 4. Set BKASH_NUMBER and NAGAD_NUMBER to the correct receiving numbers. Do not put private API keys in frontend files.
 5. Deploy one instance only when using the JSON customer database. For multi-instance production use a managed database.
 6. Test a small deposit first. Admin must verify the actual incoming payment in the bKash/Nagad account before approval.
+
+
+Google Login চালু করার ধাপ:
+1. https://console.cloud.google.com/ খুলে একটি Google Cloud Project তৈরি করুন।
+2. Google Auth Platform / OAuth consent screen-এ App name, support email এবং প্রয়োজনীয় তথ্য দিন।
+3. Audience/Publishing status সেট করুন; Testing mode হলে যেসব Google account দিয়ে পরীক্ষা করবেন সেগুলো Test users-এ যোগ করুন।
+4. Clients থেকে OAuth Client তৈরি করুন: Application type = Web application।
+5. Authorized JavaScript origins-এ আপনার Render সাইটের মূল HTTPS origin দিন, যেমন https://আপনার-সাইট.onrender.com (কোনো path দেবেন না)।
+6. তৈরি হওয়া Client ID Render Environment-এ GOOGLE_CLIENT_ID নামে বসান। Client Secret এই কোডে লাগবে না; frontend-এ দেবেন না।
+7. Render-এ Save করে নতুন Deploy দিন। Google দিয়ে একই verified email ব্যবহার করলে আগের account-এর wallet ও order history অক্ষত থাকবে।
+
+নিরাপত্তা:
+- Google ID token সার্ভারে Google-এর tokeninfo endpoint দিয়ে যাচাই করা হয়।
+- Google Client ID অবশ্যই আপনার নিজের OAuth Web Client ID হতে হবে।
+- কোড প্রস্তুত; Render-এ GOOGLE_CLIENT_ID না বসানো পর্যন্ত Google Login চালু হবে না।

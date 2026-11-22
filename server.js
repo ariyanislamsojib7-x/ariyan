@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -636,6 +637,23 @@ function validPass(pass) { return typeof pass === 'string' && pass.length >= 8 &
 function userTransactions(userId) { return customerDB.transactions.filter(t => t.userId === userId).slice(-100).reverse(); }
 function adminRequired(req) { return isAuthed(req); }
 
+function googleTokenInfo(idToken) {
+  return new Promise(function (resolve, reject) {
+    const url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(idToken);
+    https.get(url, function (response) {
+      let data = '';
+      response.setEncoding('utf8');
+      response.on('data', function (chunk) { data += chunk; });
+      response.on('end', function () {
+        let parsed = {};
+        try { parsed = JSON.parse(data || '{}'); } catch (_) {}
+        if (response.statusCode !== 200) return reject(new Error('Google পরিচয় যাচাই করা যায়নি'));
+        resolve(parsed);
+      });
+    }).on('error', function () { reject(new Error('Google সার্ভারে সংযোগ করা যায়নি')); });
+  });
+}
+
 function sendJson(res, code, obj) {
   res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(obj));
@@ -705,6 +723,37 @@ function removeUpload(name) {
 
 async function handleApi(req, res, pathname) {
   try {
+    if (req.method === 'GET' && pathname === '/api/auth/config') {
+      return sendJson(res, 200, { googleClientId: process.env.GOOGLE_CLIENT_ID || '' });
+    }
+    if (req.method === 'POST' && pathname === '/api/auth/google') {
+      const b = await readJson(req, 16384);
+      const credential = String(b.credential || '');
+      const clientId = String(process.env.GOOGLE_CLIENT_ID || '').trim();
+      if (!clientId) return sendJson(res, 503, { error: 'Google Login এখনো কনফিগার করা হয়নি। Render-এ GOOGLE_CLIENT_ID সেট করুন।' });
+      if (!credential || credential.length > 10000) return sendJson(res, 400, { error: 'Google credential পাওয়া যায়নি' });
+      let claims;
+      try { claims = await googleTokenInfo(credential); }
+      catch (e) { return sendJson(res, 401, { error: e.message || 'Google Login যাচাই ব্যর্থ হয়েছে' }); }
+      const email = cleanEmail(claims.email);
+      const verified = claims.email_verified === true || claims.email_verified === 'true';
+      const issuerOk = claims.iss === 'accounts.google.com' || claims.iss === 'https://accounts.google.com';
+      if (claims.aud !== clientId || !verified || !issuerOk || !email) {
+        return sendJson(res, 401, { error: 'Google অ্যাকাউন্ট যাচাই করা যায়নি' });
+      }
+      let u = customerDB.users.find(function (x) { return x.email === email; });
+      if (!u) {
+        u = { id:newId('usr'), email:email, name:String(claims.name || email.split('@')[0]).trim().slice(0,70),
+          googleSub:String(claims.sub || ''), salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
+        customerDB.users.push(u);
+      } else {
+        // Verified Google email links to the existing account; wallet and password stay unchanged.
+        u.googleSub = String(claims.sub || u.googleSub || '');
+        if (!u.name && claims.name) u.name = String(claims.name).trim().slice(0,70);
+      }
+      saveCustomerDB();
+      return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
+    }
     if (req.method === 'GET' && pathname === '/api/payment-info') return sendJson(res, 200, { bkash: process.env.BKASH_NUMBER || '', nagad: process.env.NAGAD_NUMBER || '', instructions: 'নম্বর ও পেমেন্টের ধরন নিশ্চিত করে টাকা পাঠান। Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।' });
     if (req.method === 'POST' && pathname === '/api/auth/register') {
       const b = await readJson(req, 8192);

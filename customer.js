@@ -19,7 +19,36 @@ var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='
 $('.am-x',modal).onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});
 function open(title,html){$('#amTitle').textContent=title;$('#amBody').innerHTML=html;modal.classList.add('show')}
 function close(){modal.classList.remove('show')}
-function authView(mode){var reg=mode==='register';open(reg?'নতুন অ্যাকাউন্ট':'লগইন',`<form id="amAuth"><label>নাম ${reg?'(ঐচ্ছিক)':''}</label>${reg?'<input name="name" maxlength="70" placeholder="আপনার নাম">':''}<label>ইমেইল</label><input name="email" type="email" required autocomplete="email" placeholder="name@example.com"><label>পাসওয়ার্ড</label><input name="password" type="password" required minlength="8" maxlength="128" autocomplete="${reg?'new-password':'current-password'}" placeholder="কমপক্ষে ৮ অক্ষর"><button class="am-btn" type="submit">${reg?'অ্যাকাউন্ট তৈরি করুন':'লগইন করুন'}</button><div class="am-muted" id="amErr" style="margin-top:10px"></div></form><button class="am-link" id="amSwitch">${reg?'আগে অ্যাকাউন্ট আছে? লগইন':'নতুন অ্যাকাউন্ট খুলুন'}</button>`);$('#amSwitch').onclick=function(){authView(reg?'login':'register')};$('#amAuth').onsubmit=async function(e){e.preventDefault();var f=new FormData(this),b={email:f.get('email'),password:f.get('password'),name:f.get('name')||''},btn=$('button[type=submit]',this);btn.disabled=true;try{var r=await api(reg?'/api/auth/register':'/api/auth/login',b);saveSession(r.token,r.user);close();toast(reg?'অ্যাকাউন্ট তৈরি হয়েছে':'লগইন সফল হয়েছে');await refreshMe()}catch(ex){$('#amErr').textContent=ex.message}finally{btn.disabled=false}}}
+
+var googleScriptPromise=null;
+function loadGoogleScript(){
+  if(window.google&&window.google.accounts&&window.google.accounts.id)return Promise.resolve();
+  if(googleScriptPromise)return googleScriptPromise;
+  googleScriptPromise=new Promise(function(resolve,reject){
+    var sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.defer=true;
+    sc.onload=resolve;sc.onerror=function(){reject(new Error('Google Login লোড করা যায়নি'))};document.head.appendChild(sc);
+  });
+  return googleScriptPromise;
+}
+async function setupGoogleButton(){
+  var host=$('#amGoogleButton');if(!host)return;
+  try{
+    var cfg=await api('/api/auth/config');
+    if(!cfg.googleClientId){host.innerHTML='<div class="am-muted">Google Login চালু করতে Render-এ GOOGLE_CLIENT_ID সেট করা বাকি।</div>';return}
+    await loadGoogleScript();
+    if(!window.google||!window.google.accounts||!window.google.accounts.id)throw new Error('Google Login প্রস্তুত নয়');
+    window.google.accounts.id.initialize({client_id:cfg.googleClientId,callback:async function(response){
+      var hostNow=$('#amGoogleButton');if(hostNow)hostNow.style.opacity='.6';
+      try{
+        var result=await api('/api/auth/google',{credential:response.credential});
+        saveSession(result.token,result.user);close();toast('Google দিয়ে লগইন সফল হয়েছে');await refreshMe();
+      }catch(err){var er=$('#amErr');if(er)er.textContent=err.message}
+      finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
+    }});
+    window.google.accounts.id.renderButton(host,{type:'standard',theme:'outline',size:'large',shape:'rectangular',text:'continue_with',width:Math.min(390,host.parentElement.clientWidth||390),logo_alignment:'left'});
+  }catch(e){host.innerHTML='<div class="am-muted">'+esc(e.message)+'</div>'}
+}
+function authView(mode){var reg=mode==='register';open(reg?'নতুন অ্যাকাউন্ট':'লগইন',`<div style="margin:2px 0 16px;text-align:center"><div id="amGoogleButton" style="display:flex;justify-content:center;min-height:42px"></div><div style="display:flex;align-items:center;gap:10px;margin:15px 0;color:#94a3b8;font-size:11px;font-weight:700"><span style="height:1px;background:#e2e8f0;flex:1"></span>অথবা ইমেইল দিয়ে চালিয়ে যান<span style="height:1px;background:#e2e8f0;flex:1"></span></div></div><form id="amAuth">${reg?'<label>নাম (ঐচ্ছিক)</label><input name="name" maxlength="70" placeholder="আপনার নাম">':''}<label>ইমেইল</label><input name="email" type="email" required autocomplete="email" placeholder="name@example.com"><label>পাসওয়ার্ড</label><input name="password" type="password" required minlength="8" maxlength="128" autocomplete="${reg?'new-password':'current-password'}" placeholder="কমপক্ষে ৮ অক্ষর"><button class="am-btn" type="submit">${reg?'অ্যাকাউন্ট তৈরি করুন':'লগইন করুন'}</button><div class="am-muted" id="amErr" style="margin-top:10px"></div></form><button class="am-link" id="amSwitch">${reg?'আগে অ্যাকাউন্ট আছে? লগইন':'নতুন অ্যাকাউন্ট খুলুন'}</button>`);setupGoogleButton();$('#amSwitch').onclick=function(){authView(reg?'login':'register')};$('#amAuth').onsubmit=async function(e){e.preventDefault();var f=new FormData(this),b={email:f.get('email'),password:f.get('password'),name:f.get('name')||''},btn=$('button[type=submit]',this);btn.disabled=true;try{var r=await api(reg?'/api/auth/register':'/api/auth/login',b);saveSession(r.token,r.user);close();toast(reg?'অ্যাকাউন্ট তৈরি হয়েছে':'লগইন সফল হয়েছে');await refreshMe()}catch(ex){$('#amErr').textContent=ex.message}finally{btn.disabled=false}}}
 async function requireLogin(){if(logged())return true;authView('login');return false}
 async function addMoney(){if(!await requireLogin())return;try{paymentInfo=await api('/api/payment-info')}catch(e){toast(e.message);return}var nums='<div class="am-note"><b>পেমেন্ট নম্বর</b><br>bKash: '+esc(paymentInfo.bkash||'নম্বর সেট করা হয়নি')+'<br>Nagad: '+esc(paymentInfo.nagad||'নম্বর সেট করা হয়নি')+'<br><span class="am-muted">নিজের পেমেন্ট অ্যাপ থেকে Send Money করুন। টাকা আসার পরই Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।</span></div>';open('Add Money',nums+`<form id="amDeposit"><label>পরিমাণ (৳)</label><input name="amount" type="number" min="10" max="50000" step="1" required placeholder="যেমন 100"><label>পেমেন্ট মাধ্যম</label><select name="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select><label>Transaction ID</label><input name="trxId" required minlength="6" maxlength="30" placeholder="TrxID"><button class="am-btn" type="submit">পেমেন্ট যাচাইয়ের জন্য জমা দিন</button><div id="amErr" class="am-muted"></div></form>`);$('#amDeposit').onsubmit=async function(e){e.preventDefault();var f=new FormData(this),btn=$('button[type=submit]',this);btn.disabled=true;try{var r=await api('/api/customer/deposits',{amount:Number(f.get('amount')),method:f.get('method'),trxId:f.get('trxId')});$('#amErr').textContent=r.message+'। Admin যাচাই করলে ব্যালেন্স যোগ হবে।';$('#amErr').className='am-success';this.reset()}catch(ex){$('#amErr').textContent=ex.message;$('#amErr').className='am-danger'}finally{btn.disabled=false}}}
 async function showOrders(){if(!await requireLogin())return;open('My Orders','<div class="am-muted">লোড হচ্ছে...</div>');try{var r=await api('/api/customer/orders');window._ariyanOrderCount=r.orders.length;syncProfile();var html=r.orders.length?r.orders.map(function(o){return '<div class="am-row"><div><b>'+esc(o.packageName)+'</b><br><span class="am-muted">Order: '+esc(o.id)+'<br>UID: '+esc(o.playerId)+' • '+new Date(o.createdAt).toLocaleString('bn-BD')+'</span></div><div style="text-align:right"><b>৳'+money(o.price)+'</b><br>'+esc(o.status)+'</div></div>'}).join(''):'<p class="am-muted">এখনো কোনো অর্ডার নেই।</p>';$('#amBody').innerHTML=html}catch(e){$('#amBody').textContent=e.message}}
