@@ -100,7 +100,18 @@ const TEXTS = [
   { id: 'hours', label: 'Support hours', def: 'সকাল ৮টা থেকে রাত ১২টা', max: 60 },
   { id: 'warn', label: 'Footer warning', def: '১৮ বছরের নিচে অভিভাবকের অনুমতি ছাড়া অর্ডার করা সম্পূর্ণ নিষিদ্ধ।', max: 300, multi: true },
   { id: 'dlTitle', label: 'App download title', def: 'DOWNLOAD OUR MOBILE APP', max: 60 },
-  { id: 'playUrl', label: 'Google Play link', def: '', max: 300, url: true }
+  { id: 'playUrl', label: 'Google Play link', def: '', max: 300, url: true },
+  { id: 'acctWelcomeTitle', label: 'Account Welcome title', def: 'Welcome Back', max: 80 },
+  { id: 'acctWelcomeSub', label: 'Account Welcome subtitle', def: 'Welcome to your account dashboard', max: 160 },
+  { id: 'acctLoginTitle', label: 'Login title', def: 'Sign in to continue', max: 80 },
+  { id: 'acctLoginSub', label: 'Login subtitle', def: 'Access your account securely', max: 160 },
+  { id: 'acctGoogleText', label: 'Google login text', def: 'Continue with Google', max: 80 },
+  { id: 'acctForgotText', label: 'Forgot password text', def: 'Forgot Password?', max: 80 },
+  { id: 'acctCreateText', label: 'Create account text', def: 'Create an account', max: 80 },
+  { id: 'acctEmailLabel', label: 'Email label', def: 'Email address', max: 60 },
+  { id: 'acctPasswordLabel', label: 'Password label', def: 'Password', max: 60 },
+  { id: 'acctSignInText', label: 'Sign in button text', def: 'Sign In', max: 60 },
+  { id: 'acctProfileSub', label: 'My Account subtitle', def: 'Your account overview and activity', max: 160 }
 ];
 
 function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null }; }
@@ -726,6 +737,11 @@ function removeUpload(name) {
 
 async function handleApi(req, res, pathname) {
   try {
+    if (req.method === 'GET' && pathname === '/api/account-ui-texts') {
+      const T = config.texts || {}; const out = {};
+      TEXTS.filter(function(x){ return x.id.indexOf('acct') === 0; }).forEach(function(x){ out[x.id] = T[x.id] || x.def; });
+      return sendJson(res, 200, out);
+    }
     if (req.method === 'GET' && pathname === '/api/auth/config') {
       return sendJson(res, 200, { googleClientId: process.env.GOOGLE_CLIENT_ID || '' });
     }
