@@ -149,7 +149,7 @@ header{position:sticky;top:0;z-index:40;background:#ffffff;border-bottom:1px sol
 .dots i.on{width:36px;background:#fff;box-shadow:0 2px 10px rgba(37,99,235,.85),0 1px 4px rgba(0,0,0,.5)}
 
 /* quick links */
-.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.quick{display:flex;flex-wrap:nowrap;gap:12px;margin-top:14px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding:2px 2px 10px;scrollbar-width:none}.quick::-webkit-scrollbar{display:none}.quick>.q{flex:0 0 calc((100% - 24px)/3);min-width:180px;scroll-snap-align:start;box-sizing:border-box}
 .q{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 8px;border-radius:16px;background:#fff;color:var(--tx);border:1px solid var(--bd);box-shadow:0 2px 8px rgba(20,40,90,.05);text-align:center;transition:.2s}
 .q:hover{border-color:#93c5fd;box-shadow:0 6px 16px -8px rgba(37,99,235,.5)}
 .q:active{transform:scale(.97)}
@@ -1530,10 +1530,13 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 
 <div class="fab" id="fab">
   <div class="menu">
-    <a href="#" data-link="telegram-channel">Telegram<span style="background:#1e88e5"><svg class="f"><use href="#tg"/></svg></span></a>
-    <a href="#" data-link="telegram-group">Join Group<span style="background:var(--v2)"><svg class="f"><use href="#grp"/></svg></span></a>
-    <a href="#" data-link="youtube-channel">YouTube<span style="background:#e53935"><svg class="f"><use href="#yt"/></svg></span></a>
     <a href="#" data-link="whatsapp-link">WhatsApp<span style="background:#25D366"><svg class="f"><use href="#wa"/></svg></span></a>
+
+    <a href="#" data-link="telegram-channel">Telegram<span style="background:#1e88e5"><svg class="f"><use href="#tg"/></svg></span></a>
+
+    <a href="#" data-link="telegram-group">Join Group<span style="background:var(--v2)"><svg class="f"><use href="#grp"/></svg></span></a>
+
+    <a href="#" data-link="youtube-channel">YouTube<span style="background:#e53935"><svg class="f"><use href="#yt"/></svg></span></a>
   </div>
   <button class="fb" id="fb" aria-label="Support"><svg class="i h"><use href="#head"/></svg><svg class="i x"><use href="#x"/></svg></button>
 </div>
