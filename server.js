@@ -655,7 +655,7 @@ function customerFromRequest(req) {
   if (!safeEq(a[2], expected)) return null;
   return customerDB.users.find(u => u.id === a[0]) || null;
 }
-function publicUser(u) { return { id:u.id, email:u.email, name:u.name, balance:u.balance, createdAt:u.createdAt, emailVerified:!!u.googleSub, avatar:u.avatar || '' }; }
+function publicUser(u) { return { id:u.id, email:u.email, name:u.name, balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' }; }
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
@@ -772,15 +772,20 @@ async function handleApi(req, res, pathname) {
       if (claims.aud !== clientId || !verified || !issuerOk || !email) {
         return sendJson(res, 401, { error: 'Google অ্যাকাউন্ট যাচাই করা যায়নি' });
       }
+      // Fallback picture is decoded from the same signed ID token by the client; use only
+      // if tokeninfo omitted picture, and only if it is an HTTPS Google image URL.
+      const fallbackPhoto = String(b.photo || '').trim();
+      const photoHostOk = /^https:\/\/(?:lh[0-9]+\.googleusercontent\.com|googleusercontent\.com)\//i.test(fallbackPhoto);
+      const googlePhoto = String(claims.picture || (photoHostOk ? fallbackPhoto : '')).slice(0,1000);
       let u = customerDB.users.find(function (x) { return x.email === email; });
       if (!u) {
         u = { id:newId('usr'), email:email, name:String(claims.name || email.split('@')[0]).trim().slice(0,70),
-          googleSub:String(claims.sub || ''), avatar:String(claims.picture || '').slice(0,1000), salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
+          googleSub:String(claims.sub || ''), avatar:googlePhoto, salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
         customerDB.users.push(u);
       } else {
         // Verified Google email links to the existing account; wallet and password stay unchanged.
         u.googleSub = String(claims.sub || u.googleSub || '');
-        if (claims.picture) u.avatar = String(claims.picture).slice(0,1000);
+        if (googlePhoto) u.avatar = googlePhoto;
         if (!u.name && claims.name) u.name = String(claims.name).trim().slice(0,70);
       }
       saveCustomerDB();
