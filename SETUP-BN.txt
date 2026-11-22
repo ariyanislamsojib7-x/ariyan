@@ -1,0 +1,57 @@
+ARiYAN - Backend setup (Render)
+==============================
+
+এই আপডেটে যোগ হয়েছে:
+- Email registration/login API (password hashed with scrypt)
+- Customer profile and wallet balance API
+- Manual bKash/Nagad deposit request with Transaction ID
+- Admin-only deposit approval/rejection; balance is credited only after approval
+- Wallet-funded order API; server verifies package and price against website configuration
+- Customer order/transaction history API
+- Admin-only user/deposit/order list and order status/refund API
+
+Render Environment Variables:
+- FFX-PASS = আপনার শক্তিশালী Admin password (আগের Admin Panel-এর জন্যও)
+- BKASH_NUMBER = আপনার bKash receive number (ঐচ্ছিক; customer payment info endpoint-এ দেখায়)
+- NAGAD_NUMBER = আপনার Nagad receive number (ঐচ্ছিক)
+- DATA_DIR = Render Persistent Disk mount path, যেমন /var/data
+
+IMPORTANT - Render storage:
+Render instance-এর local filesystem deploy/restart-এ হারিয়ে যেতে পারে। Render Dashboard-এ Persistent Disk যোগ করে Mount Path `/var/data` দিন এবং `DATA_DIR=/var/data` সেট করুন। এই Persistent Disk না থাকলে customer database হারাতে পারে। Scale to multiple instances করলে JSON-file storage ব্যবহার করবেন না; managed database দরকার।
+
+API endpoints:
+POST /api/auth/register {name,email,password}
+POST /api/auth/login {email,password}
+GET  /api/customer/me                 Authorization: Bearer <customer token>
+GET  /api/customer/orders             Authorization: Bearer <customer token>
+GET  /api/customer/transactions       Authorization: Bearer <customer token>
+POST /api/customer/deposits {amount,method:"bKash"|"Nagad",trxId}
+POST /api/customer/orders {product:<key>,packageName,price,playerId,server}
+GET  /api/payment-info
+
+Admin endpoints (use existing Admin Panel token):
+GET  /api/admin/users
+GET  /api/admin/deposits
+GET  /api/admin/orders
+POST /api/admin/deposit-action {id,action:"approve"|"reject"}
+POST /api/admin/order-action {id,action:"processing"|"delivered"|"rejected"}
+
+Manual payment safety:
+Never approve a deposit based only on a screenshot. Verify the actual incoming payment and amount in your bKash/Nagad account before approving. Transaction IDs are checked for duplicates per payment method.
+
+NOTE:
+এই আপডেটে backend API যুক্ত ও smoke-tested হয়েছে। বর্তমান FFX.html-এর পুরনো hard-coded isLoggedIn=false এবং product purchase UI-গুলো এখনো নতুন API-তে সম্পূর্ণভাবে সংযুক্ত করা হয়নি। তাই ZIP deploy করলেই পুরো customer-facing login/deposit/order UI স্বয়ংক্রিয়ভাবে চালু হয়েছে ধরে নেবেন না। পরের ধাপে ওই UI এবং Admin Panel-এর Orders/Deposits screens সংযুক্ত করতে হবে।
+
+Frontend connection added:
+- customer.js connects the existing site account/login, Add Money, Wallet and product purchase buttons to the APIs.
+- Admin Panel now has an Orders & Payments section for deposits, orders and customer list.
+- Purchases use Wallet Pay only. Direct/Instant Pay is hidden because no gateway is configured.
+- My Codes remains a placeholder because no redeem-code feature existed in the original project.
+
+Before deploying:
+1. Back up any existing Render persistent data and current environment settings. Do not delete the existing disk or data folder.
+2. Keep the existing FFX-PASS value unchanged; it protects the existing Admin Panel.
+3. Add a Render Persistent Disk (mount path /var/data) and set DATA_DIR=/var/data. If the existing site already has a data folder, migrate/copy it to the disk before switching DATA_DIR, otherwise the old site customizations may not appear.
+4. Set BKASH_NUMBER and NAGAD_NUMBER to the correct receiving numbers. Do not put private API keys in frontend files.
+5. Deploy one instance only when using the JSON customer database. For multi-instance production use a managed database.
+6. Test a small deposit first. Admin must verify the actual incoming payment in the bKash/Nagad account before approval.

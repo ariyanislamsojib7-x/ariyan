@@ -368,7 +368,8 @@ async function enter(){
 }
 
 var SECTIONS=[
-  {id:'site',title:'Site Editor',icon:'edit',render:renderSite}
+  {id:'site',title:'Site Editor',icon:'edit',render:renderSite},
+  {id:'commerce',title:'Orders & Payments',icon:'wal',render:renderCommerce}
 ];
 
 function openMenu(){
@@ -513,6 +514,30 @@ function svgi(id,fill){return '<svg class="'+(fill?'s-f':'s-i')+'"><use href="#'
 function pen(label,id,inset){return '<button type="button" class="pen'+(inset?' in':'')+'" data-edit="'+id+'" aria-label="'+esc(label)+'">'+icon('pen')+'</button>'}
 function tv(id){var t=state.cfg.texts.filter(function(x){return x.id===id})[0];return t?t.value:''}
 function prodOf(key){return state.cfg.products.filter(function(x){return x.key===key})[0]}
+
+function renderCommerce(root){
+  root.innerHTML=`<div class="topbar"><b>Orders & Payments</b><button class="ib" id="commerceRefresh" type="button">↻</button></div>
+  <div class="panel" style="padding:16px;margin:14px 0"><h2>Customer Payments</h2><p class="muted">bKash/Nagad নম্বরে টাকা পাওয়ার পর নিজের অ্যাকাউন্টে Transaction ID ও পরিমাণ মিলিয়ে তারপর Approve করবেন। শুধু স্ক্রিনশট দেখে Approve করবেন না।</p><div id="depTable">Loading...</div></div>
+  <div class="panel" style="padding:16px;margin:14px 0"><h2>Customer Orders</h2><div id="orderTable">Loading...</div></div>
+  <div class="panel" style="padding:16px;margin:14px 0"><h2>Customers</h2><div id="userTable">Loading...</div></div>
+  <div class="panel" style="padding:16px;margin:14px 0"><h3>Render Environment Variables</h3><p class="muted">BKASH_NUMBER, NAGAD_NUMBER এবং DATA_DIR=/var/data সেট করুন। Persistent Disk-এর Mount Path হবে /var/data। FFX-PASS আগের Admin password হিসেবে রাখতে হবে।</p></div>`;
+  $('#commerceRefresh').onclick=load;
+  function table(headers,rows){return '<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr>'+headers.map(x=>'<th style="text-align:left;padding:9px;border-bottom:1px solid #ddd">'+x+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div>'}
+  function cell(v){return esc(v==null?'':v)}
+  function actionButton(label,id,action,kind){return '<button type="button" data-id="'+cell(id)+'" data-action="'+action+'" style="padding:7px 10px;margin:2px;border:0;border-radius:8px;background:'+(kind==='bad'?'#fee2e2':'#dbeafe')+';color:'+(kind==='bad'?'#991b1b':'#1d4ed8')+';font-weight:700">'+label+'</button>'}
+  async function load(){
+    $('#depTable').textContent='Loading...';$('#orderTable').textContent='Loading...';$('#userTable').textContent='Loading...';
+    try{
+      var results=await Promise.all([api('/api/admin/deposits'),api('/api/admin/orders'),api('/api/admin/users')]);
+      var deposits=results[0].deposits||[],orders=results[1].orders||[],users=results[2].users||[];
+      $('#depTable').innerHTML=deposits.length?table(['তারিখ','ইমেইল','মাধ্যম','পরিমাণ','TrxID','Status','Action'],deposits.map(function(d){return '<tr><td style="padding:9px;border-bottom:1px solid #eee">'+cell(new Date(d.createdAt).toLocaleString())+'</td><td>'+cell(d.email)+'</td><td>'+cell(d.method)+'</td><td>৳'+cell(d.amount)+'</td><td>'+cell(d.trxId)+'</td><td>'+cell(d.status)+'</td><td>'+(d.status==='pending'?actionButton('Approve',d.id,'approve')+actionButton('Reject',d.id,'reject','bad'):'—')+'</td></tr>'}).join('')):'<p class="muted">কোনো Deposit নেই।</p>';
+      $('#orderTable').innerHTML=orders.length?table(['তারিখ','ইমেইল','Product','Package','UID','Amount','Status','Action'],orders.map(function(o){return '<tr><td style="padding:9px;border-bottom:1px solid #eee">'+cell(new Date(o.createdAt).toLocaleString())+'</td><td>'+cell(o.email)+'</td><td>'+cell(o.product)+'</td><td>'+cell(o.packageName)+'</td><td>'+cell(o.playerId)+'</td><td>৳'+cell(o.price)+'</td><td>'+cell(o.status)+'</td><td>'+(o.status==='pending'?actionButton('Processing',o.id,'processing')+actionButton('Reject + Refund',o.id,'rejected','bad'):o.status==='processing'?actionButton('Delivered',o.id,'delivered'):'—')+'</td></tr>'}).join('')):'<p class="muted">কোনো Order নেই।</p>';
+      $('#userTable').innerHTML=users.length?table(['Name','Email','Wallet','Joined'],users.map(function(u){return '<tr><td style="padding:9px;border-bottom:1px solid #eee">'+cell(u.name)+'</td><td>'+cell(u.email)+'</td><td>৳'+cell(u.balance)+'</td><td>'+cell(new Date(u.createdAt).toLocaleDateString())+'</td></tr>'}).join('')):'<p class="muted">কোনো Customer নেই।</p>';
+      root.querySelectorAll('[data-action]').forEach(function(b){b.onclick=async function(){var action=b.dataset.action,id=b.dataset.id;if(action==='approve'&&!confirm('আপনার bKash/Nagad অ্যাকাউন্টে টাকা আসা ও পরিমাণ যাচাই করেছেন?'))return;if(action==='rejected'&&!confirm('Order বাতিল করে Wallet-এ টাকা ফেরত দেবেন?'))return;if(action==='reject'&&!confirm('এই Deposit Reject করবেন?'))return;b.disabled=true;try{var isDep=['approve','reject'].includes(action)&&b.closest('#depTable');await api(isDep?'/api/admin/deposit-action':'/api/admin/order-action',{id:id,action:action});toast('আপডেট হয়েছে','ok');await load()}catch(e){toast(e.message,'bad');b.disabled=false}}});
+    }catch(e){$('#depTable').textContent=e.message;$('#orderTable').textContent='';$('#userTable').textContent=''}
+  }
+  load();
+}
 
 function renderSite(root){
   var box=document.createElement('div');box.className='site';root.appendChild(box);
