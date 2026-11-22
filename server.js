@@ -120,7 +120,10 @@ const TEXTS = [
   { id: 'acctRankSilver', label: 'Silver Rank label', def: 'Silver', max: 40 },
   { id: 'acctRankGold', label: 'Gold Rank label', def: 'Gold', max: 40 },
   { id: 'acctRankPlatinum', label: 'Platinum Rank label', def: 'Platinum', max: 40 },
-  { id: 'acctRankDiamond', label: 'Diamond Rank label', def: 'Diamond', max: 40 }
+  { id: 'acctRankDiamond', label: 'Diamond Rank label', def: 'Diamond', max: 40 },
+  { id: 'acctRankHeroic', label: 'Heroic Rank label', def: 'Heroic', max: 40 },
+  { id: 'acctRankMaster', label: 'Master Rank label', def: 'Master', max: 40 },
+  { id: 'acctRankGrandMaster', label: 'Grand Master Rank label', def: 'Grand Master', max: 40 }
 ];
 
 function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null }; }
@@ -652,7 +655,7 @@ function customerFromRequest(req) {
   if (!safeEq(a[2], expected)) return null;
   return customerDB.users.find(u => u.id === a[0]) || null;
 }
-function publicUser(u) { return { id:u.id, email:u.email, name:u.name, balance:u.balance, createdAt:u.createdAt, emailVerified:!!u.googleSub }; }
+function publicUser(u) { return { id:u.id, email:u.email, name:u.name, balance:u.balance, createdAt:u.createdAt, emailVerified:!!u.googleSub, avatar:u.avatar || '' }; }
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
@@ -772,11 +775,12 @@ async function handleApi(req, res, pathname) {
       let u = customerDB.users.find(function (x) { return x.email === email; });
       if (!u) {
         u = { id:newId('usr'), email:email, name:String(claims.name || email.split('@')[0]).trim().slice(0,70),
-          googleSub:String(claims.sub || ''), salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
+          googleSub:String(claims.sub || ''), avatar:String(claims.picture || '').slice(0,1000), salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
         customerDB.users.push(u);
       } else {
         // Verified Google email links to the existing account; wallet and password stay unchanged.
         u.googleSub = String(claims.sub || u.googleSub || '');
+        if (claims.picture) u.avatar = String(claims.picture).slice(0,1000);
         if (!u.name && claims.name) u.name = String(claims.name).trim().slice(0,70);
       }
       saveCustomerDB();
