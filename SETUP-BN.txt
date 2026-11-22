@@ -83,3 +83,6 @@ Google Login চালু করার ধাপ:
 - ভবিষ্যতে Render Environment Variables-এ SUPPLIER_1_NAME, SUPPLIER_1_API_KEY; দ্বিতীয় Supplier-এর জন্য SUPPLIER_2_NAME, SUPPLIER_2_API_KEY ইত্যাদি রাখা যাবে। API URL/auth format supplier documentation অনুযায়ী নির্ধারণ করতে হবে।
 - API timeout বা uncertain response হলে স্বয়ংক্রিয় refund করবেন না; supplier order status যাচাই করে তারপর admin action নিতে হবে।
 - Deploy-এর আগে customers.json এবং বর্তমান Render Environment Variables-এর backup নিন। পুরোনো FFX-PASS, BKASH_NUMBER, NAGAD_NUMBER ও DATA_DIR অপরিবর্তিত রাখুন।
+
+
+সোশ্যাল লিংক বাটনের নতুন ক্রম: ১) WhatsApp ২) Telegram ৩) Join Group ৪) YouTube। Deploy করার পর Admin Panel থেকে চারটি লিংক আবার যাচাই/সেভ করুন, যাতে আগের সংরক্ষিত লিংক ভুল বাটনে না যায়।

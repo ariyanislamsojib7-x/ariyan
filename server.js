@@ -62,6 +62,7 @@ const DEFAULT_PACKAGES = [
 
 const DEFAULT_BANNERS = ['default:Banner 1.jpg', 'default:Banner 2.jpg', 'default:Banner 3.jpg'];
 const DEFAULT_QUICK = [
+  { label: 'WhatsApp', url: '' },
   { label: 'Telegram', url: '' },
   { label: 'Join Group', url: '' },
   { label: 'YouTube', url: '' }
@@ -165,7 +166,7 @@ function cleanUrl(u) {
 }
 
 function sanitizeQuick(list) {
-  if (!Array.isArray(list) || list.length !== 3) throw new Error('বাটনের তথ্য ঠিক নেই');
+  if (!Array.isArray(list) || list.length !== 4) throw new Error('বাটনের তথ্য ঠিক নেই');
   return list.map(function (q, i) {
     return {
       label: String((q && q.label) || '').trim().slice(0, 30) || DEFAULT_QUICK[i].label,
@@ -488,17 +489,19 @@ function applySiteConfig(html) {
   }
 
   if (config.quick) {
-    const icons = ['tg', 'grp', 'yt'], keys = ['telegram-channel', 'telegram-group', 'youtube-channel'], small = ['Support', 'Group', 'Channel'];
+    const icons = ['wa', 'tg', 'grp', 'yt'], keys = ['whatsapp-link', 'telegram-channel', 'telegram-group', 'youtube-channel'], small = ['Chat', 'Support', 'Group', 'Channel'];
     const items = config.quick.map(function (x, i) {
       return '    <a class="q" href="#" data-link="' + keys[i] + '"><span class="ic"><svg class="f"><use href="#' + icons[i] + '"/></svg></span><span><small>' + small[i] + '</small><b>' + esc(x.label) + '</b></span></a>';
     }).join('\n');
     html = html.replace(/(<div class="quick">)[\s\S]*?(<\/div>)/, function (m, a, b) { return a + '\n' + items + '\n  ' + b; });
-    const L = { tgCh: config.quick[0].url, tgGrp: config.quick[1].url, yt: config.quick[2].url };
-    if (L.tgCh || L.tgGrp || L.yt) {
+    const L = { wa: config.quick[0].url, tgCh: config.quick[1].url, tgGrp: config.quick[2].url, yt: config.quick[3].url };
+    if (L.tgCh || L.tgGrp || L.yt || L.wa) {
       inj.push('window.__LINKS = ' + JSON.stringify(L).replace(/</g, '\\u003c') + ';');
       html = html.split("bindLinks('[data-link=\"telegram-channel\"]', validTgCh);").join("bindLinks('[data-link=\"telegram-channel\"]', (window.__LINKS && window.__LINKS.tgCh) || validTgCh);");
       html = html.split("bindLinks('[data-link=\"telegram-group\"]', validTgGrp);").join("bindLinks('[data-link=\"telegram-group\"]', (window.__LINKS && window.__LINKS.tgGrp) || validTgGrp);");
       html = html.split("bindLinks('[data-link=\"youtube-channel\"]', validYtCh);").join("bindLinks('[data-link=\"youtube-channel\"]', (window.__LINKS && window.__LINKS.yt) || validYtCh);");
+      html = html.split("bindLinks('[data-link=\"whatsapp-link\"]', validWa);").join("bindLinks('[data-link=\"whatsapp-link\"]', (window.__LINKS && window.__LINKS.wa) || validWa);");
+      html = html.split("bindLinks('[data-link=\"whatsapp-helpline\"]', validWa);").join("bindLinks('[data-link=\"whatsapp-helpline\"]', (window.__LINKS && window.__LINKS.wa) || validWa);");
     }
   }
   html = applyProducts(html);

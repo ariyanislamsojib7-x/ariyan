@@ -509,7 +509,7 @@ function imageCard(o){
 }
 
 var siteRoot=null,prevIdx=0;
-var QDEF=['Telegram','Join Group','YouTube'],QICON=['tg','grp','yt'],QNAME=['Telegram button','Join Group button','YouTube button'];
+var QDEF=['WhatsApp','Telegram','Join Group','YouTube'],QICON=['phone','tg','grp','yt'],QNAME=['Personal WhatsApp link','Telegram account link','Telegram group/channel link','YouTube channel link'];
 function svgi(id,fill){return '<svg class="'+(fill?'s-f':'s-i')+'"><use href="#'+id+'"/></svg>'}
 function pen(label,id,inset){return '<button type="button" class="pen'+(inset?' in':'')+'" data-edit="'+id+'" aria-label="'+esc(label)+'">'+icon('pen')+'</button>'}
 function tv(id){var t=state.cfg.texts.filter(function(x){return x.id===id})[0];return t?t.value:''}
@@ -716,7 +716,7 @@ function editQuick(i){
     };
     var rs=$('#qReset',b);
     if(rs)rs.onclick=async function(){
-      if(!confirm('All three buttons will go back to their defaults (text and link). Continue?'))return;
+      if(!confirm('All four buttons will go back to their defaults (text and link). Continue?'))return;
       try{state.cfg=await api('/api/admin/reset',{kind:'quick'});drawSite();closeSheet();toast('Restored to default','ok')}catch(e){toast(e.message,'bad')}
     };
   });
