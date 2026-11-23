@@ -664,26 +664,21 @@ function saveCustomerDB() {
   fs.writeFileSync(tmp, JSON.stringify(customerDB, null, 2), { mode: 0o600 });
   fs.renameSync(tmp, CUSTOMER_DB);
 }
-function ensureCustomerPublicId(user) {
-  if (!user) return '';
-  if (/^\d{5}$/.test(String(user.userId || ''))) return user.userId;
-  let candidate;
-  do { candidate = String(crypto.randomInt(10000, 100000)); }
-  while (customerDB.users.some(function (x) { return x !== user && String(x.userId || '') === candidate; }));
-  user.userId = candidate;
-  return candidate;
-}
 loadCustomerDB();
-let customerIdsMigrated = false;
-const seenCustomerPublicIds = new Set();
-customerDB.users.forEach(function (u) {
-  if (!/^\d{5}$/.test(String(u.userId || '')) || seenCustomerPublicIds.has(String(u.userId))) {
-    let candidate; do { candidate = String(crypto.randomInt(10000, 100000)); } while (seenCustomerPublicIds.has(candidate));
-    u.userId = candidate; customerIdsMigrated = true;
-  }
-  seenCustomerPublicIds.add(String(u.userId));
-});
-if (customerIdsMigrated) saveCustomerDB();
+// Stable, unique five-digit public customer ID (kept separate from the private auth ID).
+function ensurePublicCustomerIds() {
+  const used = new Set(customerDB.users.map(u => String(u.publicId || '')).filter(v => /^\d{5}$/.test(v)));
+  let changed = false;
+  customerDB.users.forEach(u => {
+    if (!/^\d{5}$/.test(String(u.publicId || '')) || customerDB.users.some(v => v !== u && v.publicId === u.publicId)) {
+      let id;
+      do { id = String(10000 + crypto.randomInt(0, 90000)); } while (used.has(id));
+      u.publicId = id; used.add(id); changed = true;
+    }
+  });
+  if (changed) saveCustomerDB();
+}
+ensurePublicCustomerIds();
 function customerToken(userId) {
   const exp = Date.now() + CUSTOMER_SESSION_MS;
   const payload = userId + '.' + exp;
@@ -699,7 +694,14 @@ function customerFromRequest(req) {
   if (!safeEq(a[2], expected)) return null;
   return customerDB.users.find(u => u.id === a[0]) || null;
 }
-function publicUser(u) { ensureCustomerPublicId(u); return { id:u.id, userId:u.userId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' }; }
+function publicUser(u) {
+  if (!/^\d{5}$/.test(String(u.publicId || ''))) {
+    const used = new Set(customerDB.users.filter(x => x !== u).map(x => String(x.publicId || '')));
+    let id; do { id = String(10000 + crypto.randomInt(0, 90000)); } while (used.has(id));
+    u.publicId = id; saveCustomerDB();
+  }
+  return { id:u.id, userId:u.publicId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' };
+}
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
@@ -820,7 +822,7 @@ async function handleApi(req, res, pathname) {
       if (!u) {
         u = { id:newId('usr'), email:email, name:String(claims.name || email.split('@')[0]).trim().slice(0,70),
           googleSub:String(claims.sub || ''), avatar:String(claims.picture || '').slice(0,1000), salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
-        ensureCustomerPublicId(u); customerDB.users.push(u);
+        customerDB.users.push(u);
       } else {
         // Verified Google email links to the existing account; wallet and password stay unchanged.
         u.googleSub = String(claims.sub || u.googleSub || '');
@@ -840,7 +842,7 @@ async function handleApi(req, res, pathname) {
       if (customerDB.users.some(u => u.email === email)) return sendJson(res, 409, { error: 'এই ইমেইলে অ্যাকাউন্ট আছে' });
       const salt = crypto.randomBytes(16).toString('hex');
       const u = { id:newId('usr'), email, name:name || email.split('@')[0], phone, salt, password:passHash(b.password, salt), balance:0, createdAt:new Date().toISOString() };
-      ensureCustomerPublicId(u); customerDB.users.push(u); saveCustomerDB();
+      customerDB.users.push(u); saveCustomerDB();
       return sendJson(res, 201, { token:customerToken(u.id), user:publicUser(u) });
     }
     if (req.method === 'POST' && pathname === '/api/auth/login') {
