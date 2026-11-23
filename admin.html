@@ -242,6 +242,17 @@ main.sm{max-width:520px;padding:0}
 .g2 .lb{margin-top:0!important}
 .rl-row .ta{min-height:72px;background:#fff}
 .bn-row{background:#f6f9ff}
+
+.s-account-editor{margin:24px 0 90px;padding:16px;border:1px solid var(--bd);border-radius:20px;background:#f8fbff}
+.s-account-note{margin:-4px 0 14px;color:var(--mu);font-size:13px;line-height:1.55}
+.s-account-group{margin:12px 0;padding:12px;background:#fff;border:1px solid var(--bd);border-radius:15px}
+.s-account-group h4{margin:0 0 8px;color:var(--v);font-size:14px;font-weight:800}
+.s-account-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid #edf1f8}
+.s-account-row:first-of-type{border-top:0}
+.s-account-row>span{display:flex;flex-direction:column;gap:3px;min-width:0}
+.s-account-row small{font-size:11px;color:var(--mu)}
+.s-account-row b{font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+
 </style>
 </head>
 <body>
@@ -272,6 +283,8 @@ main.sm{max-width:520px;padding:0}
 <symbol id="tg" viewBox="0 0 24 24"><path d="M21.5 3.2 2.7 10.6c-1 .4-1 1.2-.2 1.4l4.8 1.5 1.8 5.6c.2.6.4.8.9.8.4 0 .6-.2.9-.4l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.8c.3-1.2-.5-1.8-1.2-1.5zM8.4 13l9.2-5.8c.4-.3.8-.1.5.2l-7.6 6.9-.3 3.2z"/></symbol>
 <symbol id="grp" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><circle cx="5.5" cy="9.5" r="2.3"/><circle cx="18.5" cy="9.5" r="2.3"/><path d="M12 12.5c-3 0-5.5 1.7-5.5 4V19h11v-2.5c0-2.3-2.5-4-5.5-4zM5.5 12.5C3.5 12.5 2 13.7 2 15.3V17h3.5v-1.5c0-1 .4-1.9 1.1-2.6-.3-.3-.7-.4-1.1-.4zM18.5 12.5c-.4 0-.8.1-1.1.4.7.7 1.1 1.6 1.1 2.6V17H22v-1.7c0-1.6-1.5-2.8-3.5-2.8z"/></symbol>
 <symbol id="yt" viewBox="0 0 24 24"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.200 0-7.800.4a2.500 2.500 0 0 0-1.800 1.800C2 8.800 2 12 2 12s0 3.200.4 4.800a2.500 2.500 0 0 0 1.800 1.800C5.800 19 12 19 12 19s6.200 0 7.800-.4a2.500 2.500 0 0 0 1.800-1.800c.4-1.600.4-4.800.4-4.800s0-3.200-.4-4.800zM10 15V9l5.200 3z"/></symbol>
+<symbol id="phone" viewBox="0 0 24 24"><path d="M5 4h3l2 5-2 2c1.2 2.5 2.8 4.1 5.3 5.3l2-2 5 2v3c0 1.1-.9 2-2 2C10 21 3 14 3 5c0-.6.9-1 2-1Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 
 <div id="login">
@@ -546,6 +559,18 @@ function renderSite(root){
   siteRoot=box;drawSite();
 }
 
+function accountTextEditorHtml(){
+  var groups=[
+    {title:'Login & sign-in',ids:['acctLoginTitle','acctLoginSub','acctGoogleText','acctGoogleSub','acctEmailDivider','acctEmailLabel','acctEmailPlaceholder','acctPasswordLabel','acctLoginPasswordPlaceholder','acctForgotText','acctSignInText','acctNewUserText','acctCreateText']},
+    {title:'Registration',ids:['acctRegisterTitle','acctRegisterSub','acctRegisterDivider','acctNameLabel','acctNamePlaceholder','acctPhoneLabel','acctPhonePlaceholder','acctPasswordPlaceholder','acctConfirmLabel','acctConfirmPlaceholder','acctRegisterButton','acctAlreadyText']},
+    {title:'Login information cards',ids:['acctFastTitle','acctFastSub','acctSecureTitle','acctSecureSub','acctTrustedTitle','acctTrustedSub','acctSafeTitle','acctSafeSub']},
+    {title:'My Account & Rank',ids:['acctVerifiedText','acctRankTitle','acctRankSub','acctRankJourney','acctRankBronze','acctRankSilver','acctRankGold','acctRankPlatinum','acctRankDiamond','acctRankHeroic','acctRankMaster','acctRankGrandMaster']}
+  ];
+  return '<div class="s-account-editor"><div class="s-sec"><i></i><h3>LOGIN / REGISTER / MY ACCOUNT EDITOR</h3></div><p class="s-account-note">নিচের প্রতিটি লেখা আলাদাভাবে Edit করে Save করতে পারবেন। পরিবর্তনগুলো মূল সাইটের সংশ্লিষ্ট অংশে প্রয়োগ হবে।</p>'+groups.map(function(g){
+    return '<div class="s-account-group"><h4>'+esc(g.title)+'</h4>'+g.ids.map(function(id){var t=state.cfg.texts.filter(function(x){return x.id===id})[0];if(!t)return '';return '<div class="ed s-account-row"><span><small>'+esc(t.label)+'</small><b>'+esc(t.value)+'</b></span>'+pen('Edit '+t.label,'t:'+id)+'</div>'}).join('')+'</div>';
+  }).join('')+'</div>';
+}
+
 function drawSite(){
   if(!siteRoot||!document.body.contains(siteRoot))return;
   var c=state.cfg,I=c.images,logo=I.logo.src||I.logo.def,bn=c.banners,q=c.quick,P=c.products;
@@ -562,7 +587,7 @@ function drawSite(){
      '<div class="ed hero-ed"><section class="s-hero"><img id="sHeroImg" src="'+esc(bn[prevIdx].src)+'" alt="">'+
        '<div class="s-dots">'+bn.map(function(b,i){return '<i data-i="'+i+'" class="'+(i===prevIdx?'on':'')+'"></i>'}).join('')+'</div></section>'+
        pen('Edit banner','banners',true)+'</div>'+
-     '<div class="s-quick">'+q.map(function(x,i){
+     '<div class="s-quick">'+q.slice(0,4).map(function(x,i){
         return '<div class="ed"><span class="s-q"><span class="s-ic">'+svgi(QICON[i],1)+'</span><b>'+esc(x.label)+'</b></span>'+pen('Edit '+QNAME[i],'q'+i)+'</div>';
      }).join('')+'</div>'+
      sec('sec1')+'<div class="s-grid">'+top.map(pc).join('')+'</div>'+
@@ -589,6 +614,7 @@ function drawSite(){
        '<div class="ed s-copy">© '+esc(tv('siteName'))+'. All rights reserved.'+pen('Edit website name','t:siteName')+'</div>'+
      '</div>'+
      '</div>';
+  h+=accountTextEditorHtml();
   siteRoot.innerHTML=h;
   siteRoot.querySelectorAll('[data-edit]').forEach(function(b){
     b.onclick=function(){
@@ -727,7 +753,7 @@ function editQuick(i){
     };
     var rs=$('#qReset',b);
     if(rs)rs.onclick=async function(){
-      if(!confirm('All four buttons will go back to their defaults (text and link). Continue?'))return;
+      if(!confirm('All five buttons will go back to their defaults (text and link). Continue?'))return;
       try{state.cfg=await api('/api/admin/reset',{kind:'quick'});drawSite();closeSheet();toast('Restored to default','ok')}catch(e){toast(e.message,'bad')}
     };
   });

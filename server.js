@@ -65,7 +65,8 @@ const DEFAULT_QUICK = [
   { label: 'WhatsApp', url: '' },
   { label: 'Telegram', url: '' },
   { label: 'Join Group', url: '' },
-  { label: 'YouTube', url: '' }
+  { label: 'YouTube', url: '' },
+  { label: 'Email', url: '' }
 ];
 const MAX_BANNERS = 10;
 
@@ -144,7 +145,7 @@ const TEXTS = [
   { id: 'acctSignInText', label: 'Sign in button text', def: 'Sign In', max: 60 },
   { id: 'acctProfileSub', label: 'My Account subtitle', def: 'Your account overview and activity', max: 160 },
   { id: 'acctVerifiedText', label: 'Verified account badge', def: 'Verified Account', max: 80 },
-  { id: 'acctRankTitle', label: 'Rank section title', def: 'Member Rank', max: 80 },
+  { id: 'acctRankTitle', label: 'Rank section title', def: 'CURRENT RANK', max: 80 },
   { id: 'acctRankSub', label: 'Rank section subtitle', def: 'Your membership level', max: 160 },
   { id: 'acctRankJourney', label: 'Rank Journey title', def: 'Rank Journey', max: 80 },
   { id: 'acctRankBronze', label: 'Bronze Rank label', def: 'Bronze', max: 40 },
@@ -1174,6 +1175,23 @@ function handle(req, res) {
         'Referrer-Policy': 'no-referrer'
       });
       res.end(data);
+    });
+  }
+
+  if (pathname === '/customer.js') {
+    const f = path.join(ROOT_DIR, 'customer.js');
+    return fs.readFile(f, 'utf8', function (err, source) {
+      if (err) {
+        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        return res.end('customer.js পাওয়া যায়নি');
+      }
+      const accountText = {};
+      TEXTS.forEach(function (t) {
+        if (t.id.indexOf('acct') === 0 && config.texts && config.texts[t.id]) accountText[t.id] = config.texts[t.id];
+      });
+      const prefix = 'window.__ACCOUNT_TEXTS = ' + JSON.stringify(accountText).replace(/</g, '\\u003c') + ';\n';
+      res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(prefix + source);
     });
   }
 
