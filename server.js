@@ -159,7 +159,49 @@ const TEXTS = [
   { id: 'acctRankGrandMaster', label: 'Grand Master Rank label', def: 'Grand Master', max: 40 }
 ];
 
-function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null }; }
+function emptyAccountSupport() {
+  return {
+    social: [
+      { label: 'WhatsApp', url: '' }, { label: 'Telegram', url: '' },
+      { label: 'YouTube', url: '' }, { label: 'Group', url: '' },
+      { label: 'Email', url: '' }, { label: 'Phone', url: '' }
+    ],
+    helplines: [
+      { label: 'WhatsApp HelpLine', url: '' },
+      { label: 'Telegram HelpLine', url: '' }
+    ],
+    legal: [
+      { label: 'About Us', url: '' }, { label: 'Terms & Conditions', url: '' },
+      { label: 'Privacy Policy', url: '' }, { label: 'Refund & Return Policy', url: '' },
+      { label: 'Help Center', url: '' }
+    ]
+  };
+}
+function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null, accountSupport: null }; }
+function sanitizeAccountSupport(input) {
+  const d = emptyAccountSupport(), src = input && typeof input === 'object' ? input : {};
+  function rows(key, count, emailIndex, phoneIndex) {
+    const arr = Array.isArray(src[key]) ? src[key] : [];
+    return d[key].map(function (def, i) {
+      const x = arr[i] || {};
+      let url = String(x.url == null ? '' : x.url).trim().slice(0, 300);
+      if (url) {
+        if (i === emailIndex) url = cleanEmailLink(url);
+        else if (i === phoneIndex) {
+          const tel = url.replace(/^tel:/i, '').replace(/[^0-9+]/g, '').slice(0, 20);
+          if (!tel) throw new Error('Phone number ঠিক নেই');
+          url = 'tel:' + tel;
+        } else url = cleanUrl(url);
+      }
+      return { label: String(x.label == null ? def.label : x.label).trim().slice(0, 60), url: url };
+    });
+  }
+  return {
+    social: rows('social', 6, 4, 5),
+    helplines: rows('helplines', 2, -1, -1),
+    legal: rows('legal', 5, -1, -1)
+  };
+}
 let config = emptyCfg();
 function imgGet(c, k) { return (k === 'logo' || k === 'ffBanner') ? c[k] : ((c.images && c.images[k]) || null); }
 function imgSet(next, k, v) {
@@ -278,6 +320,7 @@ function loadLocal() {
       config.banners = b.length ? b : null;
     }
     if (j.quick) config.quick = sanitizeQuick(j.quick);
+    if (j.accountSupport) { try { config.accountSupport = sanitizeAccountSupport(j.accountSupport); } catch (e) {} }
   } catch (e) {}
   cfgVersion++;
   renderCache = null;
@@ -578,6 +621,30 @@ function applySiteConfig(html) {
       html = html.split("bindLinks('[data-link=\"whatsapp-helpline\"]', validWa);").join("bindLinks('[data-link=\"whatsapp-helpline\"]', (window.__LINKS && window.__LINKS.wa) || validWa);");
     }
   }
+  // My Account Stay Connected / Support Center uses its own independent links.
+  // These data attributes deliberately do not use the homepage's shared data-link bindings.
+  const AS = sanitizeAccountSupport(config.accountSupport || emptyAccountSupport());
+  function setAccountAnchor(attr, rows) {
+    rows.forEach(function (item, i) {
+      const re = new RegExp('(<a\\b[^>]*' + attr + '="' + i + '"[^>]*)(>)');
+      html = html.replace(re, function (_m, before, close) {
+        const href = item.url || '#';
+        const disabled = item.url ? '' : ' aria-disabled="true" style="pointer-events:none;opacity:.65"';
+        return before.replace(/\s+href="[^"]*"/, '') + ' href="' + esc(href) + '"' +
+          (item.url && !/^tel:/i.test(item.url) ? ' target="_blank" rel="noopener noreferrer"' : '') + disabled + close;
+      });
+      const labelRe = new RegExp('(<a\\b[^>]*' + attr + '="' + i + '"[^>]*>)([\\s\\S]*?)(</a>)');
+      html = html.replace(labelRe, function (_m, a, body, c) {
+        if (attr === 'data-acct-social') return a + body + c;
+        if (attr === 'data-acct-helpline') return a + body.replace(/(<span>)[\s\S]*?(<\/span>)/, '$1' + esc(item.label) + '$2') + c;
+        return a + esc(item.label) + c;
+      });
+    });
+  }
+  setAccountAnchor('data-acct-social', AS.social);
+  setAccountAnchor('data-acct-helpline', AS.helplines);
+  setAccountAnchor('data-acct-legal', AS.legal);
+
   const personalPhone = (config.texts && config.texts.contactPhone) || '';
   if (personalPhone) {
     const tel = personalPhone.replace(/[^0-9+]/g, '').slice(0, 20);
@@ -824,6 +891,7 @@ function currentView() {
     bannersCustom: !!config.banners,
     quick: visibleQuick,
     quickCustom: !!config.quick,
+    accountSupport: sanitizeAccountSupport(config.accountSupport || emptyAccountSupport()),
     maxBanners: MAX_BANNERS,
     storage: { mode: storage.mode, ok: storage.ok, error: storage.error, repo: storage.repo, branch: storage.branch },
     persistent: USE_GH || !!process.env.DATA_DIR
@@ -1057,6 +1125,13 @@ async function handleApi(req, res, pathname) {
       const next = Object.assign({}, config);
       imgSet(next, body.kind, fname);
       await commit(next, 'Update ' + kind.prefix, [{ name: fname, buf: buf }], old ? [old] : []);
+      return sendJson(res, 200, currentView());
+    }
+
+    if (req.method === 'POST' && pathname === '/api/admin/account-support') {
+      const body = await readJson(req, 16 * 1024);
+      const next = Object.assign({}, config, { accountSupport: sanitizeAccountSupport(body.accountSupport) });
+      await commit(next, 'Update account support links', [], []);
       return sendJson(res, 200, currentView());
     }
 

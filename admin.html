@@ -598,7 +598,7 @@ function drawSite(){
        '<div class="ed s-nt"><b>বিশেষ সতর্কতা:</b><p>'+esc(tv('warn'))+'</p>'+pen('Edit warning','t:warn')+'</div>'+
        '<div class="s-sec"><i></i><h3>STAY CONNECTED / SUPPORT</h3></div>'+
        '<div class="ed" style="display:block;padding:14px;border:1px solid #dbe2ef;border-radius:14px;margin:12px 0;background:#f8fafc">'+
-       '<p style="margin:0 0 10px;font-size:12px;color:#64748b">My Account পেজের নিচের STAY CONNECTED ও SUPPORT CENTER সেকশন। উপরের ৪টি Social বাটনের লিংক দিয়েই আইকনগুলো কাজ করে।</p>'+
+       '<p style="margin:0 0 10px;font-size:12px;color:#64748b">My Account পেজের নিচের STAY CONNECTED ও SUPPORT CENTER সেকশন। এই My Account অংশের সব আইকন, HelpLine ও Legal লিংক এখান থেকে আলাদাভাবে নিয়ন্ত্রণ করুন। Homepage-এর লিংকের সঙ্গে এগুলোর কোনো সম্পর্ক নেই।</p>'+
        '<div class="ed" style="display:block;margin:8px 0"><b style="font-size:13px">'+esc(tv('connectTitle')||'STAY CONNECTED')+'</b>'+pen('Edit title','t:connectTitle')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><p style="margin:0;font-size:12px;color:#475569">'+esc(tv('connectSub')||'')+'</p>'+pen('Edit message','t:connectSub')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><b style="font-size:13px">'+esc(tv('supportTitle')||'SUPPORT CENTER')+'</b>'+pen('Edit title','t:supportTitle')+'</div>'+
@@ -607,6 +607,7 @@ function drawSite(){
        '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">Email: '+esc((q[4]&&q[4].url)||'Not set')+'</span>'+pen('Edit Email address','q4')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">Personal phone: '+esc(tv('contactPhone')||'Not set')+'</span>'+pen('Edit personal contact number','t:contactPhone')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><small style="color:#64748b">Support hours: '+esc(tv('hours'))+'</small>'+pen('Edit support hours','t:hours')+'</div>'+
+       '<div style="margin-top:12px"><button type="button" class="btn" data-edit="accountSupport">Edit all My Account links &amp; labels</button></div>'+
        '</div>'+
        '<h2>Contact Us</h2>'+
        '<div class="ed s-help"><span class="s-ic">'+svgi('tg',1)+'</span><span><b>Telegram HelpLine</b><small>'+esc(tv('hours'))+'</small></span>'+pen('Edit support hours','t:hours')+'</div>'+
@@ -619,7 +620,7 @@ function drawSite(){
   siteRoot.querySelectorAll('[data-edit]').forEach(function(b){
     b.onclick=function(){
       var k=b.dataset.edit;
-      if(k==='logo')editLogo();else if(k==='banners')editBanners();else if(k==='pop')editPop();
+      if(k==='logo')editLogo();else if(k==='banners')editBanners();else if(k==='pop')editPop();else if(k==='accountSupport')editAccountSupport();
       else if(k.indexOf('p:')===0)editProduct(k.slice(2));else if(k.indexOf('t:')===0)editText(k.slice(2));
       else editQuick(parseInt(k.slice(1),10));
     };
@@ -755,6 +756,54 @@ function editQuick(i){
     if(rs)rs.onclick=async function(){
       if(!confirm('All five buttons will go back to their defaults (text and link). Continue?'))return;
       try{state.cfg=await api('/api/admin/reset',{kind:'quick'});drawSite();closeSheet();toast('Restored to default','ok')}catch(e){toast(e.message,'bad')}
+    };
+  });
+}
+
+function editAccountSupport(){
+  var data=state.cfg.accountSupport||{
+    social:[{label:'WhatsApp',url:''},{label:'Telegram',url:''},{label:'YouTube',url:''},{label:'Group',url:''},{label:'Email',url:''},{label:'Phone',url:''}],
+    helplines:[{label:'WhatsApp HelpLine',url:''},{label:'Telegram HelpLine',url:''}],
+    legal:[{label:'About Us',url:''},{label:'Terms & Conditions',url:''},{label:'Privacy Policy',url:''},{label:'Refund & Return Policy',url:''},{label:'Help Center',url:''}]
+  };
+  var groups=[
+    {key:'social',title:'Stay Connected icons',hint:'প্রতিটি আইকনের নাম ও লিংক আলাদা। Phone-এ শুধু নম্বর দিন, Email-এ ইমেইল দিন।'},
+    {key:'helplines',title:'Support Center HelpLine',hint:'HelpLine-এর প্রদর্শিত নাম এবং আলাদা লিংক দিন।'},
+    {key:'legal',title:'Legal & information links',hint:'প্রতিটি ফুটার টেক্সট ও লিংক আলাদাভাবে পরিবর্তন করুন।'}
+  ];
+  openSheet('My Account: links & labels',function(b){
+    b.innerHTML='<p class="d">এখানে দেওয়া লিংক শুধু My Account-এর Stay Connected / Support Center অংশে কাজ করবে। Homepage-এর আগের লিংকগুলো এখানে প্রভাব ফেলবে না।</p>';
+    groups.forEach(function(g){
+      var sec=sc(0,'edit',g.title,g.hint);
+      g.key==='social'?null:null;
+      data[g.key].forEach(function(row,i){
+        var d=document.createElement('div');d.style.margin='12px 0';
+        d.innerHTML='<label class="lb">'+esc(g.title)+' '+(i+1)+' — Text / Label</label>'+
+          '<input class="inp" data-as="'+g.key+'" data-i="'+i+'" data-field="label" maxlength="60" value="'+esc(row.label)+'" placeholder="Display text">'+
+          '<label class="lb">Link / URL / Number / Email</label>'+
+          '<input class="inp" data-as="'+g.key+'" data-i="'+i+'" data-field="url" maxlength="300" inputmode="url" autocapitalize="off" value="'+esc(row.url)+'" placeholder="'+(g.key==='social'&&i===4?'name@example.com':g.key==='social'&&i===5?'+8801XXXXXXXXX':'https://...')+'">';
+        $('.sc-b',sec).appendChild(d);
+      });
+      b.appendChild(sec);
+    });
+    var actions=document.createElement('div');actions.className='btns';
+    actions.innerHTML='<button type="button" class="btn" id="asSave">'+icon('save','width:16px;height:16px')+'Save all My Account links</button>';
+    b.appendChild(actions);
+    $('#asSave',b).onclick=async function(){
+      var btn=this, payload={social:[],helplines:[],legal:[]};
+      ['social','helplines','legal'].forEach(function(key){
+        data[key].forEach(function(_,i){
+          payload[key].push({
+            label:b.querySelector('[data-as="'+key+'"][data-i="'+i+'"][data-field="label"]').value.trim(),
+            url:b.querySelector('[data-as="'+key+'"][data-i="'+i+'"][data-field="url"]').value.trim()
+          });
+        });
+      });
+      btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
+      try{
+        state.cfg=await api('/api/admin/account-support',{accountSupport:payload});
+        drawSite();closeSheet();toast('My Account links saved separately','ok');
+      }catch(e){toast(e.message,'bad');btn.disabled=false;btn.innerHTML=icon('save','width:16px;height:16px')+'Save all My Account links'}
     };
   });
 }
