@@ -796,6 +796,9 @@ function currentView() {
     images[k] = { src: f ? '/uploads/' + f : null, def: '/' + IMAGES[k].file, custom: !!f };
   });
   const P = config.prod || {}, T = config.texts || {};
+  const savedQuick = Array.isArray(config.quick) ? config.quick : DEFAULT_QUICK;
+  const visibleQuick = savedQuick.slice(0, 5);
+  while (visibleQuick.length < 5) visibleQuick.push(DEFAULT_QUICK[visibleQuick.length]);
   return {
     images: images,
     products: PRODUCTS.map(function (p) {
@@ -813,7 +816,7 @@ function currentView() {
     }),
     banners: bannerList().map(function (e) { return { id: e, src: bannerSrc(e), isDefault: !isUploaded(e) }; }),
     bannersCustom: !!config.banners,
-    quick: config.quick || DEFAULT_QUICK,
+    quick: visibleQuick,
     quickCustom: !!config.quick,
     maxBanners: MAX_BANNERS,
     storage: { mode: storage.mode, ok: storage.ok, error: storage.error, repo: storage.repo, branch: storage.branch },

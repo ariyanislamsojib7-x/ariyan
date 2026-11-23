@@ -604,7 +604,7 @@ function drawSite(){
        '<div class="ed" style="display:block;margin:8px 0"><b style="font-size:13px">'+esc(tv('supportTitle')||'SUPPORT CENTER')+'</b>'+pen('Edit title','t:supportTitle')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">'+esc(tv('waHelpLabel')||'WhatsApp HelpLine')+'</span>'+pen('Edit WhatsApp label','t:waHelpLabel')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">'+esc(tv('tgHelpLabel')||'Telegram HelpLine')+'</span>'+pen('Edit Telegram label','t:tgHelpLabel')+'</div>'+
-       '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">Email: '+esc(q[4].url||'Not set')+'</span>'+pen('Edit Email link','q4')+'</div>'+
+       '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">Email: '+esc((q[4]&&q[4].url)||'Not set')+'</span>'+pen('Edit Email link','q4')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><small style="color:#64748b">Support hours: '+esc(tv('hours'))+'</small>'+pen('Edit support hours','t:hours')+'</div>'+
        '</div>'+
        '<h2>Contact Us</h2>'+
