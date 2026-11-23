@@ -116,5 +116,65 @@
   },
   "texts": {
     "siteName": "AURA ARiYAN X TOPUP"
+  },
+  "accountSupport": {
+    "social": [
+      {
+        "label": "WhatsApp",
+        "url": ""
+      },
+      {
+        "label": "Telegram",
+        "url": ""
+      },
+      {
+        "label": "YouTube",
+        "url": ""
+      },
+      {
+        "label": "Group",
+        "url": ""
+      },
+      {
+        "label": "Email",
+        "url": ""
+      },
+      {
+        "label": "Phone",
+        "url": "tel:+8801327414272"
+      }
+    ],
+    "helplines": [
+      {
+        "label": "WhatsApp HelpLine",
+        "url": ""
+      },
+      {
+        "label": "Telegram HelpLine",
+        "url": ""
+      }
+    ],
+    "legal": [
+      {
+        "label": "About Us",
+        "url": ""
+      },
+      {
+        "label": "Terms & Conditions",
+        "url": ""
+      },
+      {
+        "label": "Privacy Policy",
+        "url": ""
+      },
+      {
+        "label": "Refund & Return Policy",
+        "url": ""
+      },
+      {
+        "label": "Help Center",
+        "url": ""
+      }
+    ]
   }
 }
