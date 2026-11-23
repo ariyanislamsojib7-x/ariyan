@@ -2186,7 +2186,7 @@ setInterval(fetchFreshAccountConfig, 15000);
     var tv=document.getElementById('trView'); if(tv) tv.hidden=!onTr;
     var ctv=document.getElementById('ctView'); if(ctv) ctv.hidden=!onCt;
     var ucv=document.getElementById('ucView'); if(ucv) ucv.hidden=!onUc;
-    var av=document.getElementById('acView'); if(av){ var isLogged=!!localStorage.getItem('ariyan_customer_token'); if(onAc&&!isLogged){ av.hidden=true; if(location.hash==='#account'||location.hash==='#ac'){ history.replaceState(null,'',location.pathname+location.search); } /* don't auto-reopen login here - user will tap My Account */ } else { av.hidden=!onAc; if(onAc){ document.querySelectorAll('main.wrap').forEach(function(el){ if(el.id!=='acView') el.hidden=true; }); var home=document.getElementById('homeView'); if(home) home.hidden=true; } } }
+    var av=document.getElementById('acView'); if(av){ var isLogged=!!localStorage.getItem('ariyan_customer_token'); if(onAc&&!isLogged){ av.hidden=true; } else { av.hidden=!onAc; } }
     var cv=document.getElementById('cdView'); if(cv) cv.hidden=!onCd; ff.hidden=!onFF;
     var ov=document.getElementById('orView'); if(ov) ov.hidden=!onOr;
     var uv=document.getElementById('uidView'); if(uv) uv.hidden=!onUid;
@@ -3159,6 +3159,6 @@ setInterval(fetchFreshAccountConfig, 15000);
   sync();
 })();
 </script>
-<script src="customer.js?v=9"></script>
+<script src="customer.js?v=10"></script>
 </body>
 </html>

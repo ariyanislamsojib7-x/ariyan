@@ -13,49 +13,31 @@ function clearSession(){token='';user=null;localStorage.removeItem(TOKEN_KEY);lo
 function logged(){return !!(token&&user)}
 
 function openMyAccountPage(){
-  // 1) Close login modal hard
   try{
     if(typeof close==='function') close();
     var m=document.getElementById('ariyanModal');
     if(m){ m.classList.remove('show'); m.style.display='none'; m.setAttribute('aria-hidden','true'); }
     document.body.style.overflow='';
   }catch(e){}
-  // 2) Cancel Google One Tap if any
   try{ if(window.google&&google.accounts&&google.accounts.id&&google.accounts.id.cancel) google.accounts.id.cancel(); }catch(e){}
-  // 3) Close account sidebar panel
   try{
     var ap=document.getElementById('accPanel');
     if(ap){ ap.classList.remove('show'); ap.setAttribute('aria-hidden','true'); }
   }catch(e){}
-  // 4) Navigate + force show My Account page
-  function showAccount(){
-    try{
-      var av=document.getElementById('acView');
-      var tokenOk=!!(token||localStorage.getItem('ariyan_customer_token'));
-      // hide other mains
-      document.querySelectorAll('main.wrap').forEach(function(el){
-        if(el.id==='acView') return;
-        el.hidden=true;
-      });
-      var home=document.getElementById('homeView');
-      if(home) home.hidden=true;
-      var foot=document.getElementById('siteFooter')||document.querySelector('footer');
-      if(foot) foot.hidden=true;
-      if(av && tokenOk){
-        av.hidden=false;
-      }
-      if(location.hash!=='#account'){
-        location.hash='account';
-      } else {
-        try{ window.dispatchEvent(new HashChangeEvent('hashchange')); }catch(e){}
-      }
-      window.scrollTo(0,0);
-      if(typeof syncProfile==='function') syncProfile();
-    }catch(e){}
+  // Navigate via hash so site router shows My Account
+  if(location.hash==='#account'){
+    try{ window.dispatchEvent(new HashChangeEvent('hashchange')); }catch(e){
+      location.hash='';
+      setTimeout(function(){ location.hash='account'; }, 10);
+    }
+  } else {
+    location.hash='account';
   }
-  showAccount();
-  setTimeout(showAccount, 50);
-  setTimeout(showAccount, 200);
+  setTimeout(function(){
+    var av=document.getElementById('acView');
+    if(av && (token||localStorage.getItem(TOKEN_KEY))) av.hidden=false;
+    window.scrollTo(0,0);
+  }, 100);
 }
 
 function money(n){return Number(n||0).toFixed(2)}
@@ -160,7 +142,7 @@ async function placeOrder(btn){var p=currentProduct(btn);if(!p)return;if(!await 
 // Intercept legacy product buttons before their placeholder handlers.
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#buyBtn,#uidBuy,#wmBuy,#wlBuy,#luBuy,#inBuy');if(b){e.preventDefault();e.stopImmediatePropagation();placeOrder(b);return}var nav=e.target.closest&&e.target.closest('nav.nav a');if(nav){var links=[].slice.call(document.querySelectorAll('nav.nav a')),idx=links.indexOf(nav);if(idx===1){e.preventDefault();e.stopImmediatePropagation();showOrders()}else if(idx===2){e.preventDefault();e.stopImmediatePropagation();addMoney()}else if(idx===3){e.preventDefault();e.stopImmediatePropagation();if(!requireLogin())return;open('My Codes','<p class="am-muted">আপনার জন্য এখনো কোনো Redeem Code নেই।</p>')}}},true);
 // Account panel and account page controls.
-document.addEventListener('click',function(e){var go=e.target.closest&&e.target.closest('[data-go]');if(go){var k=go.getAttribute('data-go');if(k==='account'){e.preventDefault();e.stopImmediatePropagation();var ap=$('#accPanel');if(ap){ap.classList.remove('show');ap.setAttribute('aria-hidden','true');document.body.style.overflow='';}if(!logged()){authView('login');return}location.hash='account'}else if(k==='addmoney'){e.preventDefault();e.stopImmediatePropagation();addMoney()}else if(k==='orders'){e.preventDefault();e.stopImmediatePropagation();showOrders()}else if(k==='transaction'){e.preventDefault();e.stopImmediatePropagation();showTransactions()}else if(k==='codes'){e.preventDefault();e.stopImmediatePropagation();if(logged())open('My Codes','<p class="am-muted">আপনার জন্য এখনো কোনো Redeem Code নেই।</p>');else authView('login')}}var add=e.target.closest&&e.target.closest('#acAdd');if(add){e.preventDefault();e.stopImmediatePropagation();addMoney()}var rf=e.target.closest&&e.target.closest('#acRf');if(rf){e.preventDefault();e.stopImmediatePropagation();refreshMe().then(function(){toast('Wallet আপডেট হয়েছে')})}var lo=e.target.closest&&e.target.closest('#acLogout,#accLo');if(lo){e.preventDefault();e.stopImmediatePropagation();if(logged()){clearSession();close();toast('Logged out')}else authView('login')}},true);
+document.addEventListener('click',function(e){var go=e.target.closest&&e.target.closest('[data-go]');if(go){var k=go.getAttribute('data-go');if(k==='account'){e.preventDefault();e.stopImmediatePropagation();var ap=$('#accPanel');if(ap){ap.classList.remove('show');ap.setAttribute('aria-hidden','true');document.body.style.overflow='';}if(!logged()){authView('login');return}location.hash='account'}else if(k==='addmoney'){e.preventDefault();e.stopImmediatePropagation();addMoney()}else if(k==='orders'){e.preventDefault();e.stopImmediatePropagation();showOrders()}else if(k==='transaction'){e.preventDefault();e.stopImmediatePropagation();showTransactions()}else if(k==='codes'){e.preventDefault();e.stopImmediatePropagation();if(logged())open('My Codes','<p class="am-muted">আপনার জন্য এখনো কোনো Redeem Code নেই।</p>');else authView('login')}else if(k==='contact'){e.preventDefault();e.stopImmediatePropagation();var ap=$('#accPanel');if(ap){ap.classList.remove('show');ap.setAttribute('aria-hidden','true');document.body.style.overflow='';}location.hash='contact-us'}}var add=e.target.closest&&e.target.closest('#acAdd');if(add){e.preventDefault();e.stopImmediatePropagation();addMoney()}var rf=e.target.closest&&e.target.closest('#acRf');if(rf){e.preventDefault();e.stopImmediatePropagation();refreshMe().then(function(){toast('Wallet আপডেট হয়েছে')})}var lo=e.target.closest&&e.target.closest('#acLogout,#accLo');if(lo){e.preventDefault();e.stopImmediatePropagation();if(logged()){clearSession();close();toast('Logged out')}else authView('login')}},true);
 // Header profile always opens the account sidebar; Login is available inside that panel.
 // Remove unsupported direct instant-pay choice; purchases are wallet-funded only.
 document.querySelectorAll('.po[data-pay="Instant Pay"]').forEach(function(el){el.style.display='none'});
