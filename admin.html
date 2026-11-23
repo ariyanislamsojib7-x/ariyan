@@ -509,7 +509,7 @@ function imageCard(o){
 }
 
 var siteRoot=null,prevIdx=0;
-var QDEF=['WhatsApp','Telegram','Join Group','YouTube'],QICON=['phone','tg','grp','yt'],QNAME=['WhatsApp link (Stay Connected + HelpLine)','Telegram link (Stay Connected + HelpLine)','Join Group / Channel link','YouTube channel link'];
+var QDEF=['WhatsApp','Telegram','Join Group','YouTube','Email'],QICON=['phone','tg','grp','yt','mail'],QNAME=['WhatsApp link (Stay Connected + HelpLine)','Telegram link (Stay Connected + HelpLine)','Join Group / Channel link','YouTube channel link','Email address (Stay Connected)'];
 function svgi(id,fill){return '<svg class="'+(fill?'s-f':'s-i')+'"><use href="#'+id+'"/></svg>'}
 function pen(label,id,inset){return '<button type="button" class="pen'+(inset?' in':'')+'" data-edit="'+id+'" aria-label="'+esc(label)+'">'+icon('pen')+'</button>'}
 function tv(id){var t=state.cfg.texts.filter(function(x){return x.id===id})[0];return t?t.value:''}
@@ -579,6 +579,7 @@ function drawSite(){
        '<div class="ed" style="display:block;margin:8px 0"><b style="font-size:13px">'+esc(tv('supportTitle')||'SUPPORT CENTER')+'</b>'+pen('Edit title','t:supportTitle')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">'+esc(tv('waHelpLabel')||'WhatsApp HelpLine')+'</span>'+pen('Edit WhatsApp label','t:waHelpLabel')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">'+esc(tv('tgHelpLabel')||'Telegram HelpLine')+'</span>'+pen('Edit Telegram label','t:tgHelpLabel')+'</div>'+
+       '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">Email: '+esc(q[4].url||'Not set')+'</span>'+pen('Edit Email link','q4')+'</div>'+
        '<div class="ed" style="display:block;margin:8px 0"><small style="color:#64748b">Support hours: '+esc(tv('hours'))+'</small>'+pen('Edit support hours','t:hours')+'</div>'+
        '</div>'+
        '<h2>Contact Us</h2>'+
@@ -702,12 +703,12 @@ function sc(num,ic,title,sub,cls){
 }
 
 function editQuick(i){
-  var cur=state.cfg.quick[i];
+  var cur=state.cfg.quick[i] || {label:QDEF[i],url:''};
   openSheet('Edit '+QNAME[i],function(b){
     var s1=sc(1,'edit','Button text','The words shown on the button');
     $('.sc-b',s1).innerHTML='<input class="inp" id="qLab" maxlength="30" value="'+esc(cur.label)+'" placeholder="'+esc(QDEF[i])+'">';
     var s2=sc(2,'ext','Button link','Where the button takes the visitor');
-    $('.sc-b',s2).innerHTML='<input class="inp" id="qUrl" inputmode="url" autocapitalize="off" value="'+esc(cur.url)+'" placeholder="https://t.me/...">'+
+    $('.sc-b',s2).innerHTML='<input class="inp" id="qUrl" inputmode="url" autocapitalize="off" value="'+esc(cur.url)+'" placeholder="'+(i===4?'support@example.com':'https://t.me/...')+'">'+
       '<p class="d" style="margin:10px 0 0;font-size:12px">If left empty, the previous link stays. This link also applies to the same button elsewhere on the site (helpline, contact page).</p>';
     b.appendChild(s1);b.appendChild(s2);
     var act=document.createElement('div');act.className='btns';act.style.marginTop='0';
@@ -717,6 +718,7 @@ function editQuick(i){
     $('#qSave',b).onclick=async function(){
       var btn=this,old=btn.innerHTML;btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
       var items=state.cfg.quick.map(function(x){return {label:x.label,url:x.url}});
+      while(items.length<5)items.push({label:QDEF[items.length],url:''});
       items[i]={label:$('#qLab',b).value.trim()||QDEF[i],url:$('#qUrl',b).value.trim()};
       try{
         state.cfg=await api('/api/admin/quick',{items:items});

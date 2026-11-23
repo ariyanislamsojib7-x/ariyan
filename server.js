@@ -219,12 +219,20 @@ function cleanUrl(u) {
   return u;
 }
 
+function cleanEmailLink(u) {
+  u = String(u == null ? '' : u).trim().slice(0, 254);
+  if (!u) return '';
+  if (/^mailto:/i.test(u)) u = u.slice(7);
+  if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(u)) throw new Error('Email ঠিকানা ঠিক নেই');
+  return 'mailto:' + u;
+}
+
 function sanitizeQuick(list) {
-  if (!Array.isArray(list) || list.length !== 4) throw new Error('বাটনের তথ্য ঠিক নেই');
+  if (!Array.isArray(list) || (list.length !== 4 && list.length !== 5)) throw new Error('বাটনের তথ্য ঠিক নেই');
   return list.map(function (q, i) {
     return {
       label: String((q && q.label) || '').trim().slice(0, 30) || DEFAULT_QUICK[i].label,
-      url: cleanUrl(q && q.url)
+      url: i === 4 ? cleanEmailLink(q && q.url) : cleanUrl(q && q.url)
     };
   });
 }
@@ -554,12 +562,12 @@ function applySiteConfig(html) {
 
   if (config.quick) {
     const icons = ['wa', 'tg', 'grp', 'yt'], keys = ['whatsapp-link', 'telegram-channel', 'telegram-group', 'youtube-channel'], small = ['Chat', 'Support', 'Group', 'Channel'];
-    const items = config.quick.map(function (x, i) {
+    const items = config.quick.slice(0, 4).map(function (x, i) {
       return '    <a class="q" href="#" data-link="' + keys[i] + '"><span class="ic"><svg class="f"><use href="#' + icons[i] + '"/></svg></span><span><small>' + small[i] + '</small><b>' + esc(x.label) + '</b></span></a>';
     }).join('\n');
     html = html.replace(/(<div class="quick">)[\s\S]*?(<\/div>)/, function (m, a, b) { return a + '\n' + items + '\n  ' + b; });
-    const L = { wa: config.quick[0].url, tgCh: config.quick[1].url, tgGrp: config.quick[2].url, yt: config.quick[3].url };
-    if (L.tgCh || L.tgGrp || L.yt || L.wa) {
+    const L = { wa: config.quick[0].url, tgCh: config.quick[1].url, tgGrp: config.quick[2].url, yt: config.quick[3].url, email: (config.quick[4] && config.quick[4].url) || '' };
+    if (L.tgCh || L.tgGrp || L.yt || L.wa || L.email) {
       inj.push('window.__LINKS = ' + JSON.stringify(L).replace(/</g, '\\u003c') + ';');
       html = html.split("bindLinks('[data-link=\"telegram-channel\"]', validTgCh);").join("bindLinks('[data-link=\"telegram-channel\"]', (window.__LINKS && window.__LINKS.tgCh) || validTgCh);");
       html = html.split("bindLinks('[data-link=\"telegram-group\"]', validTgGrp);").join("bindLinks('[data-link=\"telegram-group\"]', (window.__LINKS && window.__LINKS.tgGrp) || validTgGrp);");

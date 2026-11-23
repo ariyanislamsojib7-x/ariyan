@@ -74,6 +74,8 @@ function syncAccountLinks() {
   bindLinks('[data-link="youtube-channel"]', validYtCh);
   bindLinks('[data-link="whatsapp-link"]', validWa);
   bindLinks('[data-link="whatsapp-helpline"]', validWa);
+  var emailLink = ((window.__LINKS && window.__LINKS.email) || '').toString().trim();
+  document.querySelectorAll('[data-link="email-contact"]').forEach(function(el){ if(/^mailto:[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/i.test(emailLink)){el.href=emailLink;el.removeAttribute('target');el.rel='';el.onclick=null;}else{el.href='#';el.onclick=function(e){e.preventDefault();};} });
 
   // নোটিফিকেশন পপআপের লেখা (account.js এর notification_text)
   var note = (typeof notification_text !== 'undefined' ? notification_text : (window.notification_text || (window.ACCOUNT_CONFIG && window.ACCOUNT_CONFIG.notificationText) || '')).toString();
@@ -1582,6 +1584,16 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 
 
 
+
+
+    <section class="ac-connect">
+    <h2><span data-tx="connectTitle">STAY CONNECTED</span></h2><p data-tx="connectSub">কোন সমস্যায় পড়লে হোয়াটসঅ্যাপ এ যোগাযোগ করবেন। তাহলে দ্রুত সমাধান পেয়ে যাবেন।</p>
+    <div class="ac-social"><a href="#" data-link="whatsapp-helpline" aria-label="WhatsApp">☏</a><a href="#" data-link="telegram-channel" aria-label="Telegram">➤</a><a href="#" data-link="youtube-channel" aria-label="YouTube">▶</a><a href="#" data-link="telegram-group" aria-label="Group">✉</a><a href="#" data-link="email-contact" aria-label="Email">@</a></div>
+    <h3 data-tx="supportTitle">SUPPORT CENTER</h3>
+    <a class="ac-support-link" href="#" data-link="whatsapp-helpline">☏ <span data-tx="waHelpLabel">WhatsApp HelpLine</span> ›</a>
+    <a class="ac-support-link" href="#" data-link="telegram-channel">➤ <span data-tx="tgHelpLabel">Telegram HelpLine</span> ›</a>
+    <div class="ac-legal">About Us&nbsp;&nbsp; Terms &amp; Conditions&nbsp;&nbsp; Privacy Policy<br>Refund &amp; Return Policy&nbsp;&nbsp; Help Center<br>© <span data-site-name>ARiYAN</span> | All Rights Reserved.</div>
+  </section>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -1726,6 +1738,8 @@ function syncAccountLinks() {
   bindLinks('[data-link="youtube-channel"]', validYtCh);
   bindLinks('[data-link="whatsapp-link"]', validWa);
   bindLinks('[data-link="whatsapp-helpline"]', validWa);
+  var emailLink = ((window.__LINKS && window.__LINKS.email) || '').toString().trim();
+  document.querySelectorAll('[data-link="email-contact"]').forEach(function(el){ if(/^mailto:[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/i.test(emailLink)){el.href=emailLink;el.removeAttribute('target');el.rel='';el.onclick=null;}else{el.href='#';el.onclick=function(e){e.preventDefault();};} });
 
   // নোটিফিকেশন পপআপের লেখা (account.js এর notification_text)
   var note = (typeof notification_text !== 'undefined' ? notification_text : (window.notification_text || '')).toString();
@@ -2825,7 +2839,7 @@ setInterval(fetchFreshAccountConfig, 15000);
     var bal=(p.balance==null?0:p.balance);
     $('acBal').textContent=bal;
     $('acOrders').textContent=p.orders||0;
-    $('acCodes').textContent=p.codes||0;
+    var acCodesEl=$('acCodes'); if(acCodesEl) acCodesEl.textContent=p.codes||0; // optional: hidden/removed from the current account layout
     var w=document.querySelector('.wallet'); if(w&&w.lastChild) w.lastChild.textContent=bal+'৳';
     $('acMemberName').textContent='Bronze Member'; $('acMemberLevel').textContent='Level 1 / Current Rank';
     // Google account picture (claims.picture) is used consistently in the page,
