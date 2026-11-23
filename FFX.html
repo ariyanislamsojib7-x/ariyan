@@ -821,6 +821,38 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .ac-account-links{margin:12px 4px;border:1px solid #e6ebf4;border-radius:20px;background:#fff;overflow:hidden}.ac-account-links .ac-mi{padding:13px 14px}.ac-connect{margin:18px -10px -120px;padding:28px 18px 34px;background:#10194f;color:#fff}.ac-connect h2{font-size:21px;letter-spacing:.08em;margin:0 0 14px}.ac-connect p{font-size:13px;line-height:1.7;color:#d7def8}.ac-social{display:flex;gap:12px;margin:20px 0 30px}.ac-social a{width:46px;height:46px;border:1px solid #6572a5;border-radius:13px;display:grid;place-items:center;color:#fff;text-decoration:none;font-size:23px}.ac-connect h3{font-size:15px;letter-spacing:.1em;margin:0 0 12px}.ac-support-link{display:flex;align-items:center;gap:12px;padding:13px;margin-top:8px;border:1px solid #7581b2;border-radius:12px;color:#fff;text-decoration:none;font-size:14px}.ac-support-link span{flex:1}.ac-legal{text-align:center;color:#c2c9e4;font-size:10px;line-height:1.8;margin-top:30px}
 @media(min-width:600px){#acView{padding-left:16px;padding-right:16px}.ac-rank{padding:30px}.ac-profile-head{padding:30px}.ac-connect{border-radius:22px}}
 
+
+
+/* Account profile/contact layout refinements */
+.ac-information{display:none!important}
+.ac-connect{margin:18px 0 24px!important;padding:0!important;background:transparent!important;color:#172033!important}
+.ac-contact-hero{position:relative;overflow:hidden;text-align:center;padding:28px 18px 26px;border-radius:28px;color:#fff;background:linear-gradient(135deg,#3b82f6 0%,#2563eb 55%,#1e3a8a 100%);box-shadow:0 14px 28px -16px rgba(37,99,235,.65)}
+.ac-contact-hero:before,.ac-contact-hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.10);pointer-events:none}
+.ac-contact-hero:before{width:180px;height:180px;right:-55px;top:-85px}
+.ac-contact-hero:after{width:130px;height:130px;left:-55px;bottom:-75px}
+.ac-contact-icon{position:relative;z-index:1;width:72px;height:72px;margin:0 auto 12px;border:1px solid rgba(255,255,255,.35);border-radius:22px;background:rgba(255,255,255,.13);display:grid;place-items:center}
+.ac-contact-icon .i{width:38px;height:38px}
+.ac-contact-hero h2{position:relative;z-index:1;margin:0 0 10px;font-size:27px;letter-spacing:0;color:#fff}
+.ac-contact-hero p{position:relative;z-index:1;margin:0;color:#eaf1ff;font-size:14px;line-height:1.8}
+.ac-contact-hours{position:relative;z-index:1;display:inline-flex;align-items:center;gap:9px;margin-top:18px;padding:10px 15px;border:1px solid rgba(255,255,255,.3);border-radius:99px;background:rgba(255,255,255,.14);font-size:13px;font-weight:800;color:#fff}
+.ac-contact-hours span{width:10px;height:10px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 5px rgba(74,222,128,.15)}
+.ac-contact-title{margin:22px 4px 12px!important;font-size:16px!important;letter-spacing:0!important;color:#64748b!important}
+.ac-contact-list{display:grid;gap:14px}
+.ac-contact-item{display:flex;align-items:center;gap:13px;min-height:88px;padding:13px 15px;border:1px solid #e3eaf4;border-radius:25px;background:#fff;box-shadow:0 10px 22px -20px rgba(20,40,90,.55);text-decoration:none;color:#172033;position:relative;overflow:hidden}
+.ac-contact-item:before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--contact-color)}
+.ac-contact-brand{width:62px;height:62px;flex:0 0 62px;border-radius:19px;display:grid;place-items:center;color:#fff;background:var(--contact-color);box-shadow:0 8px 18px -10px var(--contact-color)}
+.ac-contact-brand .f{width:30px;height:30px;fill:currentColor}
+.ac-contact-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.ac-contact-copy b{font-size:17px;font-weight:850;color:#172033}
+.ac-contact-copy small{font-size:12px;line-height:1.5;color:#718096}
+.ac-contact-arrow{width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:grid;place-items:center;background:var(--contact-soft);color:var(--contact-color);font-size:24px}
+.ac-contact-item.wa{--contact-color:#16a765;--contact-soft:#e5f7ee}
+.ac-contact-item.tg{--contact-color:#169bd5;--contact-soft:#e5f5fc}
+.ac-contact-item.grp{--contact-color:#6258dc;--contact-soft:#efedff}
+.ac-contact-item.yt{--contact-color:#e53935;--contact-soft:#ffeded}
+.ac-connect .ac-legal{color:#8a94a6}
+@media(max-width:420px){.ac-contact-item{min-height:82px;padding:11px 12px;gap:11px}.ac-contact-brand{width:56px;height:56px;flex-basis:56px}.ac-contact-copy b{font-size:15px}.ac-contact-copy small{font-size:11px}}
+
 </style>
 </head>
 <body>
@@ -861,7 +893,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 
 <header>
   <div class="wrap hd">
-    <a class="logo" href="#"><img src="Main logo.jpg" alt="Nickname" data-site-logo></a>
+    <a class="logo" href="/" aria-label="Home"><img src="Main logo.jpg" alt="Nickname" data-site-logo></a>
     <div class="hr">
       <a class="wallet" href="#"><svg class="i"><use href="#wal"/></svg>0৳</a>
       <a class="avatar" href="#account" id="avBtn" aria-label="Profile"><div class="av-inner"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM1YjQ2M2MiLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjMwIiByPSIxNCIgZmlsbD0iI2Y1ZTZkMyIvPjxlbGxpcHNlIGN4PSI0MCIgY3k9IjYyIiByeD0iMjIiIHJ5PSIxNiIgZmlsbD0iI2Y1ZTZkMyIvPjwvc3ZnPg==" alt="Profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block"></div></a>
@@ -1540,23 +1572,40 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     <div id="acRankJourney" class="ac-journey-list"></div>
   </section>
 
-  <section class="ac-information">
-    <div class="ac-section-kicker">ACCOUNT</div><h2>User Information</h2>
-    <button type="button" id="acLogout" class="ac-account-auth"><svg class="i"><use href="#a-in"/></svg><span id="acLoTx">Login</span></button>
-    <div class="ac-info-row"><span class="ac-info-icon">♟</span><span><small>NAME</small><b id="acInfoName">Guest</b></span></div>
-    <div class="ac-info-row"><span class="ac-info-icon">☎</span><span><small>PHONE</small><b id="acInfoPhone">—</b></span></div>
-    <div class="ac-info-row"><span class="ac-info-icon">✉</span><span><small>EMAIL</small><b id="acInfoEmail">—</b></span></div>
-    <div class="ac-info-row"><span class="ac-info-icon">▤</span><span><small>USER ID</small><b id="acInfoId">—</b></span></div>
-  </section>
+
 
 
 
   <section class="ac-connect">
-    <h2><span data-tx="connectTitle">STAY CONNECTED</span></h2><p data-tx="connectSub">কোন সমস্যায় পড়লে হোয়াটসঅ্যাপ এ যোগাযোগ করবেন। তাহলে দ্রুত সমাধান পেয়ে যাবেন।</p>
-    <div class="ac-social"><a href="#" data-link="whatsapp-helpline" aria-label="WhatsApp">☏</a><a href="#" data-link="telegram-channel" aria-label="Telegram">➤</a><a href="#" data-link="youtube-channel" aria-label="YouTube">▶</a><a href="#" data-link="telegram-group" aria-label="Group">✉</a></div>
-    <h3 data-tx="supportTitle">SUPPORT CENTER</h3>
-    <a class="ac-support-link" href="#" data-link="whatsapp-helpline">☏ <span data-tx="waHelpLabel">WhatsApp HelpLine</span> ›</a>
-    <a class="ac-support-link" href="#" data-link="telegram-channel">➤ <span data-tx="tgHelpLabel">Telegram HelpLine</span> ›</a>
+    <div class="ac-contact-hero">
+      <div class="ac-contact-icon"><svg class="i"><use href="#head"/></svg></div>
+      <h2>Contact Us</h2>
+      <p>যেকোনো সমস্যা বা প্রশ্নে আমাদের সাথে যোগাযোগ করুন।<br>আমরা সবসময় আপনার পাশে আছি।</p>
+      <div class="ac-contact-hours"><span></span>সকাল ৮টা থেকে রাত ১২টা সাপোর্ট চালু</div>
+    </div>
+    <h3 class="ac-contact-title">আমাদের সাথে যুক্ত হোন</h3>
+    <div class="ac-contact-list">
+      <a class="ac-contact-item wa" href="#" data-link="whatsapp-helpline">
+        <span class="ac-contact-brand"><svg class="f"><use href="#wa"/></svg></span>
+        <span class="ac-contact-copy"><b>WhatsApp HelpLine</b><small>সরাসরি WhatsApp-এ যোগাযোগ করুন</small></span>
+        <span class="ac-contact-arrow">→</span>
+      </a>
+      <a class="ac-contact-item tg" href="#" data-link="telegram-channel">
+        <span class="ac-contact-brand"><svg class="f"><use href="#tg"/></svg></span>
+        <span class="ac-contact-copy"><b>Telegram Channel</b><small>সরাসরি সাপোর্ট ও লেটেস্ট আপডেট</small></span>
+        <span class="ac-contact-arrow">→</span>
+      </a>
+      <a class="ac-contact-item grp" href="#" data-link="telegram-group">
+        <span class="ac-contact-brand"><svg class="f"><use href="#grp"/></svg></span>
+        <span class="ac-contact-copy"><b>Telegram Group</b><small>কমিউনিটিতে জয়েন করে আলোচনা করুন</small></span>
+        <span class="ac-contact-arrow">→</span>
+      </a>
+      <a class="ac-contact-item yt" href="#" data-link="youtube-channel">
+        <span class="ac-contact-brand"><svg class="f"><use href="#yt"/></svg></span>
+        <span class="ac-contact-copy"><b>YouTube Channel</b><small>টিউটোরিয়াল ও ভিডিও দেখুন</small></span>
+        <span class="ac-contact-arrow">→</span>
+      </a>
+    </div>
     <div class="ac-legal">About Us&nbsp;&nbsp; Terms &amp; Conditions&nbsp;&nbsp; Privacy Policy<br>Refund &amp; Return Policy&nbsp;&nbsp; Help Center<br>© <span data-site-name>ARiYAN</span> | All Rights Reserved.</div>
   </section>
 </main>
@@ -2138,9 +2187,9 @@ setInterval(fetchFreshAccountConfig, 15000);
     e.preventDefault();
     panel.classList.contains('show') ? closeAcc() : openAcc();
   });
-  // Main logo always returns to the home page from every view.
+  // Header logo and top profile both open the complete account sidebar.
   var siteLogo=document.querySelector('header .logo');
-  if(siteLogo) siteLogo.addEventListener('click',function(e){e.preventDefault();closeAcc();if(location.hash!=='')location.hash='';});
+  if(siteLogo) siteLogo.addEventListener('click',function(e){e.preventDefault();openAcc();});
   document.getElementById('accClose').onclick = closeAcc;
   panel.addEventListener('click', function(e){ if (e.target === panel) closeAcc(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAcc(); });
@@ -2790,27 +2839,23 @@ setInterval(fetchFreshAccountConfig, 15000);
   //             balance:0, orders:0, codes:0, avatar:'ছবির লিংক'})
   window.setProfile=function(p){
     p=p||{};
-    function put(id,value){var el=$(id);if(el)el.textContent=value;return el;}
-    function show(id,value){var el=$(id);if(el)el.style.display=value;return el;}
-    put('acName',p.name||'Guest');
-    put('acInfoName',(p.loggedIn&&p.name)?p.name:'—');
-    put('acInfoPhone',(p.loggedIn&&p.phone)?p.phone:'—');
-    put('acInfoEmail',(p.loggedIn&&p.email)?p.email:'—');
-    put('acInfoId',(p.loggedIn&&p.id)?p.id:'—');
-    show('acPinBox',(p.loggedIn&&p.id)?'flex':'none'); put('acPin',p.id||'');
+    $('acName').textContent=p.name||'Guest';
+    $('acPinBox').style.display=(p.loggedIn&&p.id)?'flex':'none'; $('acPin').textContent=p.id||'';
     // একই authenticated profile তথ্য সাইডবারেও দেখান; ইমেইল কখনো প্রকাশ করবেন না।
-    put('accName',(p.loggedIn&&p.name)?'Hi, '+p.name:'Hi, Guest');
-    put('accMail',p.loggedIn?'আপনার অ্যাকাউন্ট':'লগইন করে অর্ডার করুন');
-    put('accUserId',(p.loggedIn&&p.id)?'ID: '+p.id:'');
-    show('accUserId',(p.loggedIn&&p.id)?'block':'none');
-    show('acVf',p.verified?'inline-flex':'none');
-    put('acLoTx',p.loggedIn?'Logout':'Login');
+    $('accName').textContent=(p.loggedIn&&p.name)?'Hi, '+p.name:'Hi, Guest';
+    $('accMail').textContent=p.loggedIn?'আপনার অ্যাকাউন্ট':'লগইন করে অর্ডার করুন';
+    $('accUserId').textContent=(p.loggedIn&&p.id)?'ID: '+p.id:'';
+    $('accUserId').style.display=(p.loggedIn&&p.id)?'block':'none';
+    $('acVf').style.display=p.verified?'inline-flex':'none';
     var sideAuth=$('accLo');if(sideAuth){var sideText=sideAuth.querySelector('span');if(sideText)sideText.textContent=p.loggedIn?'Logout':'Login';sideAuth.setAttribute('aria-label',p.loggedIn?'Logout':'Login');}
     var bal=(p.balance==null?0:p.balance);
-    put('acBal',bal); put('acOrders',p.orders||0); put('acCodes',p.codes||0);
-    var w=document.querySelector('.wallet'); if(w&&w.lastChild)w.lastChild.textContent=bal+'৳';
-    put('acMemberName','Bronze Member'); put('acMemberLevel','Level 1 / Current Rank');
-    // Google account picture is used consistently in the page, header and sidebar.
+    $('acBal').textContent=bal;
+    $('acOrders').textContent=p.orders||0;
+    $('acCodes').textContent=p.codes||0;
+    var w=document.querySelector('.wallet'); if(w&&w.lastChild) w.lastChild.textContent=bal+'৳';
+    $('acMemberName').textContent='Bronze Member'; $('acMemberLevel').textContent='Level 1 / Current Rank';
+    // Google account picture (claims.picture) is used consistently in the page,
+    // header avatar and sidebar; reset all three to the default icon on logout.
     var DEFAULT_AVATAR='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM1YjQ2M2MiLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjMwIiByPSIxNCIgZmlsbD0iI2Y1ZTZkMyIvPjxlbGxpcHNlIGN4PSI0MCIgY3k9IjYyIiByeD0iMjIiIHJ5PSIxNiIgZmlsbD0iI2Y1ZTZkMyIvPjwvc3ZnPg==';
     var avatarTargets=[$('acAvatar'),$('accAv'),document.querySelector('#avBtn .av-inner')];
     avatarTargets.forEach(function(box){
@@ -2819,14 +2864,16 @@ setInterval(fetchFreshAccountConfig, 15000);
       var pic=document.createElement('img');
       pic.alt='Profile';
       pic.referrerPolicy='no-referrer';
+      pic.crossOrigin='anonymous';
       pic.decoding='async';
       pic.style.cssText='width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;background:#60463f';
-      pic.onerror=function(){this.onerror=null;this.src=DEFAULT_AVATAR;};
-      if(p.loggedIn&&p.avatar){
-        var url=String(p.avatar).trim();
-        if(url.indexOf('googleusercontent.com')!==-1){url=url.replace(/=s\d+-c/,'=s256-c').replace(/=s\d+/,'=s256');}
+      pic.onerror=function(){ this.onerror=null; this.removeAttribute('crossorigin'); this.src=DEFAULT_AVATAR; };
+      if(p.loggedIn && p.avatar){
+        var url=String(p.avatar);
+        // Prefer higher-res Google photo when possible
+        if(url.indexOf('googleusercontent.com')!==-1){ url=url.replace(/=s\d+-c/,'=s256-c').replace(/=s\d+/,'=s256'); }
         pic.src=url;
-      }else{pic.src=DEFAULT_AVATAR;}
+      } else { pic.src=DEFAULT_AVATAR; }
       box.appendChild(pic);
     });
   };
@@ -2848,7 +2895,6 @@ setInterval(fetchFreshAccountConfig, 15000);
     if(navigator.clipboard&&v){ navigator.clipboard.writeText(v).then(function(){toast('User ID কপি হয়েছে')},function(){toast(v)}); }
     else toast(v);
   };
-  $('acLogout').onclick=function(){ $('accLo').click(); };
 
   // নিচের নেভের হাইলাইট: পেজ অনুযায়ী ঠিক রাখা
   function applyNav(){
