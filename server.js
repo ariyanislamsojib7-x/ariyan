@@ -107,6 +107,31 @@ const TEXTS = [
   { id: 'acctLoginSub', label: 'Login subtitle', def: 'Access your account securely', max: 160 },
   { id: 'acctGoogleText', label: 'Google login text', def: 'Continue with Google', max: 80 },
   { id: 'acctForgotText', label: 'Forgot password text', def: 'Forgot Password?', max: 80 },
+  { id: 'acctRegisterTitle', label: 'Registration title', def: 'Create an account', max: 80 },
+  { id: 'acctRegisterSub', label: 'Registration subtitle', def: 'Enter your details to get started', max: 160 },
+  { id: 'acctGoogleSub', label: 'Google sign-in subtitle', def: 'Quick and secure sign in', max: 100 },
+  { id: 'acctEmailPlaceholder', label: 'Email placeholder', def: 'Enter your email', max: 100 },
+  { id: 'acctNameLabel', label: 'Registration name label', def: 'Full name', max: 60 },
+  { id: 'acctNamePlaceholder', label: 'Registration name placeholder', def: 'Enter your full name', max: 100 },
+  { id: 'acctPhoneLabel', label: 'Registration phone label', def: 'Phone number', max: 60 },
+  { id: 'acctPhonePlaceholder', label: 'Registration phone placeholder', def: 'Enter phone number', max: 100 },
+  { id: 'acctPasswordPlaceholder', label: 'Registration password placeholder', def: 'Create password', max: 100 },
+  { id: 'acctLoginPasswordPlaceholder', label: 'Login password placeholder', def: 'Enter your password', max: 100 },
+  { id: 'acctConfirmLabel', label: 'Confirm password label', def: 'Confirm password', max: 60 },
+  { id: 'acctConfirmPlaceholder', label: 'Confirm password placeholder', def: 'Repeat password', max: 100 },
+  { id: 'acctRegisterDivider', label: 'Registration divider text', def: 'OR REGISTER WITH DETAILS', max: 100 },
+  { id: 'acctEmailDivider', label: 'Login divider text', def: 'OR CONTINUE WITH EMAIL', max: 100 },
+  { id: 'acctRegisterButton', label: 'Registration button text', def: 'Create Account', max: 80 },
+  { id: 'acctAlreadyText', label: 'Already account text', def: 'Already have an account? Sign in', max: 120 },
+  { id: 'acctNewUserText', label: 'New user prompt', def: 'New user?', max: 80 },
+  { id: 'acctFastTitle', label: 'Fast feature title', def: 'Fast', max: 60 },
+  { id: 'acctFastSub', label: 'Fast feature subtitle', def: 'Instant access', max: 100 },
+  { id: 'acctSecureTitle', label: 'Secure feature title', def: 'Secure', max: 60 },
+  { id: 'acctSecureSub', label: 'Secure feature subtitle', def: 'Safe login', max: 100 },
+  { id: 'acctTrustedTitle', label: 'Trusted feature title', def: 'Trusted', max: 60 },
+  { id: 'acctTrustedSub', label: 'Trusted feature subtitle', def: 'Easy & reliable', max: 100 },
+  { id: 'acctSafeTitle', label: 'Safety note title', def: 'Your data is safe', max: 80 },
+  { id: 'acctSafeSub', label: 'Safety note subtitle', def: 'Secure authentication protects your account.', max: 160 },
   { id: 'acctCreateText', label: 'Create account text', def: 'Create an account', max: 80 },
   { id: 'acctEmailLabel', label: 'Email label', def: 'Email address', max: 60 },
   { id: 'acctPasswordLabel', label: 'Password label', def: 'Password', max: 60 },
@@ -655,7 +680,7 @@ function customerFromRequest(req) {
   if (!safeEq(a[2], expected)) return null;
   return customerDB.users.find(u => u.id === a[0]) || null;
 }
-function publicUser(u) { return { id:u.id, email:u.email, name:u.name, balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' }; }
+function publicUser(u) { return { id:u.id, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' }; }
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
@@ -772,20 +797,15 @@ async function handleApi(req, res, pathname) {
       if (claims.aud !== clientId || !verified || !issuerOk || !email) {
         return sendJson(res, 401, { error: 'Google অ্যাকাউন্ট যাচাই করা যায়নি' });
       }
-      // Fallback picture is decoded from the same signed ID token by the client; use only
-      // if tokeninfo omitted picture, and only if it is an HTTPS Google image URL.
-      const fallbackPhoto = String(b.photo || '').trim();
-      const photoHostOk = /^https:\/\/(?:lh[0-9]+\.googleusercontent\.com|googleusercontent\.com)\//i.test(fallbackPhoto);
-      const googlePhoto = String(claims.picture || (photoHostOk ? fallbackPhoto : '')).slice(0,1000);
       let u = customerDB.users.find(function (x) { return x.email === email; });
       if (!u) {
         u = { id:newId('usr'), email:email, name:String(claims.name || email.split('@')[0]).trim().slice(0,70),
-          googleSub:String(claims.sub || ''), avatar:googlePhoto, salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
+          googleSub:String(claims.sub || ''), avatar:String(claims.picture || '').slice(0,1000), salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
         customerDB.users.push(u);
       } else {
         // Verified Google email links to the existing account; wallet and password stay unchanged.
         u.googleSub = String(claims.sub || u.googleSub || '');
-        if (googlePhoto) u.avatar = googlePhoto;
+        if (claims.picture) u.avatar = String(claims.picture).slice(0,1000);
         if (!u.name && claims.name) u.name = String(claims.name).trim().slice(0,70);
       }
       saveCustomerDB();
@@ -794,12 +814,13 @@ async function handleApi(req, res, pathname) {
     if (req.method === 'GET' && pathname === '/api/payment-info') return sendJson(res, 200, { bkash: process.env.BKASH_NUMBER || '', nagad: process.env.NAGAD_NUMBER || '', instructions: 'নম্বর ও পেমেন্টের ধরন নিশ্চিত করে টাকা পাঠান। Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।' });
     if (req.method === 'POST' && pathname === '/api/auth/register') {
       const b = await readJson(req, 8192);
-      const email = cleanEmail(b.email), name = String(b.name || '').trim().slice(0, 70);
+      const email = cleanEmail(b.email), name = String(b.name || '').trim().slice(0, 70), phone = String(b.phone || '').trim().slice(0, 24);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJson(res, 400, { error: 'সঠিক ইমেইল দিন' });
-      if (!validPass(b.password)) return sendJson(res, 400, { error: 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে' });
+      if (!validPass(b.password)) return sendJson(res, 400, { error: 'Password must be at least 8 characters.' });
+      if (!phone || !/^[+0-9() .-]{7,24}$/.test(phone)) return sendJson(res, 400, { error: 'Enter a valid phone number.' });
       if (customerDB.users.some(u => u.email === email)) return sendJson(res, 409, { error: 'এই ইমেইলে অ্যাকাউন্ট আছে' });
       const salt = crypto.randomBytes(16).toString('hex');
-      const u = { id:newId('usr'), email, name:name || email.split('@')[0], salt, password:passHash(b.password, salt), balance:0, createdAt:new Date().toISOString() };
+      const u = { id:newId('usr'), email, name:name || email.split('@')[0], phone, salt, password:passHash(b.password, salt), balance:0, createdAt:new Date().toISOString() };
       customerDB.users.push(u); saveCustomerDB();
       return sendJson(res, 201, { token:customerToken(u.id), user:publicUser(u) });
     }
