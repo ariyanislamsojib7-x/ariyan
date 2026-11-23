@@ -6,7 +6,28 @@
     "banner-1794986797472-5078.jpg",
     "banner-1794986385799-353.jpg"
   ],
-  "quick": null,
+  "quick": [
+    {
+      "label": "WhatsApp",
+      "url": "https://wa.me/8801327414272"
+    },
+    {
+      "label": "Telegram",
+      "url": ""
+    },
+    {
+      "label": "Join Group",
+      "url": ""
+    },
+    {
+      "label": "YouTube",
+      "url": ""
+    },
+    {
+      "label": "Email",
+      "url": ""
+    }
+  ],
   "images": {
     "pop": "img-pop-1794987854178.png"
   },
