@@ -98,6 +98,12 @@ const TEXTS = [
   { id: 'sec2', label: 'Home section title (UID Checker)', def: 'UID CHECKER', max: 60, wrap: ['<em>', '</em>'] },
   { id: 'pop', label: 'Popup message', def: 'সবথেকে কম দামে টপ করার জন্য সেরা ওয়েবসাইট\n১০০% বিশ্বস্ত ও দ্রুত ডেলিভারিতে\nঅর্ডার করুন নিশ্চিন্তে 🥰', max: 400, multi: true },
   { id: 'hours', label: 'Support hours', def: 'সকাল ৮টা থেকে রাত ১২টা', max: 60 },
+  { id: 'connectTitle', label: 'Stay Connected title', def: 'STAY CONNECTED', max: 40 },
+  { id: 'connectSub', label: 'Stay Connected message', def: 'কোন সমস্যায় পড়লে হোয়াটসঅ্যাপ এ যোগাযোগ করবেন। তাহলে দ্রুত সমাধান পেয়ে যাবেন।', max: 300, multi: true },
+  { id: 'supportTitle', label: 'Support Center title', def: 'SUPPORT CENTER', max: 40 },
+  { id: 'waHelpLabel', label: 'WhatsApp HelpLine label', def: 'WhatsApp HelpLine', max: 40 },
+  { id: 'tgHelpLabel', label: 'Telegram HelpLine label', def: 'Telegram HelpLine', max: 40 },
+
   { id: 'warn', label: 'Footer warning', def: '১৮ বছরের নিচে অভিভাবকের অনুমতি ছাড়া অর্ডার করা সম্পূর্ণ নিষিদ্ধ।', max: 300, multi: true },
   { id: 'dlTitle', label: 'App download title', def: 'DOWNLOAD OUR MOBILE APP', max: 60 },
   { id: 'playUrl', label: 'Google Play link', def: '', max: 300, url: true },
@@ -519,6 +525,16 @@ function applyTexts(html, inj) {
     html = html.split(w[0] + t.def + w[1]).join(w[0] + esc(T[t.id]) + w[1]);
   });
   if (T.hours) html = html.split(TEXTS.filter(function (t) { return t.id === 'hours'; })[0].def).join(esc(T.hours));
+  // Apply Stay Connected / Support Center texts (data-tx markers)
+  ['connectTitle','connectSub','supportTitle','waHelpLabel','tgHelpLabel','hours'].forEach(function (id) {
+    var defEntry = TEXTS.filter(function (t) { return t.id === id; })[0];
+    if (!defEntry) return;
+    var val = (T[id] != null && String(T[id]).trim()) ? String(T[id]).trim() : defEntry.def;
+    // Replace inner content of data-tx="id">...</ >
+    var re = new RegExp('(data-tx="' + id + '">)([\\s\\S]*?)(</)', 'g');
+    html = html.replace(re, function (_m, a, _old, c) { return a + esc(val).replace(/\n/g, '<br>') + c; });
+  });
+
   if (T.playUrl) html = html.replace('<a class="play" href="#">', '<a class="play" href="' + esc(T.playUrl) + '" target="_blank" rel="noopener noreferrer">');
   return html;
 }
@@ -598,7 +614,8 @@ function sendHome(req, res) {
   });
 }
 
-const SECRET = crypto.createHash('sha256').update('ffx-admin-secret:' + ADMIN_PASSWORD).digest();
+const SECRET = crypto.createHash('sha256').update('ffx-admin-secret:' + (ADMIN_PASSWORD || 'ffx-default-admin')).digest();
+const CUSTOMER_SECRET = crypto.createHash('sha256').update('ffx-customer-secret:' + (process.env.CUSTOMER_SECRET || ADMIN_PASSWORD || 'ffx-default-customer')).digest();
 
 function safeEq(a, b) {
   const A = crypto.createHash('sha256').update(String(a)).digest();
@@ -682,7 +699,7 @@ ensurePublicCustomerIds();
 function customerToken(userId) {
   const exp = Date.now() + CUSTOMER_SESSION_MS;
   const payload = userId + '.' + exp;
-  const sig = crypto.createHmac('sha256', SECRET).update('customer:' + payload).digest('hex');
+  const sig = crypto.createHmac('sha256', CUSTOMER_SECRET).update('customer:' + payload).digest('hex');
   return payload + '.' + sig;
 }
 function customerFromRequest(req) {
@@ -690,7 +707,7 @@ function customerFromRequest(req) {
   const token = h.startsWith('Bearer ') ? h.slice(7).trim() : '';
   const a = token.split('.');
   if (a.length !== 3 || !/^\d+$/.test(a[1]) || Number(a[1]) < Date.now()) return null;
-  const expected = crypto.createHmac('sha256', SECRET).update('customer:' + a[0] + '.' + a[1]).digest('hex');
+  const expected = crypto.createHmac('sha256', CUSTOMER_SECRET).update('customer:' + a[0] + '.' + a[1]).digest('hex');
   if (!safeEq(a[2], expected)) return null;
   return customerDB.users.find(u => u.id === a[0]) || null;
 }
