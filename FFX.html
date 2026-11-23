@@ -2127,6 +2127,9 @@ setInterval(fetchFreshAccountConfig, 15000);
     e.preventDefault();
     panel.classList.contains('show') ? closeAcc() : openAcc();
   });
+  // Header logo and top profile both open the complete account sidebar.
+  var siteLogo=document.querySelector('header .logo');
+  if(siteLogo) siteLogo.addEventListener('click',function(e){e.preventDefault();openAcc();});
   document.getElementById('accClose').onclick = closeAcc;
   panel.addEventListener('click', function(e){ if (e.target === panel) closeAcc(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAcc(); });
@@ -2793,11 +2796,15 @@ setInterval(fetchFreshAccountConfig, 15000);
     $('acCodes').textContent=p.codes||0;
     var w=document.querySelector('.wallet'); if(w&&w.lastChild) w.lastChild.textContent=bal+'৳';
     $('acMemberName').textContent='Bronze Member'; $('acMemberLevel').textContent='Level 1 / Current Rank';
-    if(!p.avatar){$('acAvatar').innerHTML='<svg class="i"><use href="#user"/></svg>'; }
-    if(p.avatar){
-      $('acAvatar').innerHTML=''; var im=document.createElement('img'); im.src=p.avatar; im.alt='Profile'; $('acAvatar').appendChild(im);
-      var small=document.querySelector('#avBtn .av-inner'); if(small){ small.innerHTML=''; var i2=document.createElement('img'); i2.src=p.avatar; i2.alt='Profile'; i2.style.cssText='width:100%;height:100%;border-radius:50%;object-fit:cover'; small.appendChild(i2); }
-    }
+    // Google account picture (claims.picture) is used consistently in the page,
+    // header avatar and sidebar; reset all three to the default icon on logout.
+    var avatarTargets=[$('acAvatar'),$('accAv'),document.querySelector('#avBtn .av-inner')];
+    avatarTargets.forEach(function(box){
+      if(!box)return;
+      box.innerHTML='';
+      if(p.loggedIn && p.avatar){var pic=document.createElement('img');pic.src=p.avatar;pic.alt='Profile';pic.referrerPolicy='no-referrer';pic.style.cssText='width:100%;height:100%;border-radius:50%;object-fit:cover;display:block';box.appendChild(pic);}
+      else box.innerHTML='<svg class="i"><use href="#user"/></svg>';
+    });
   };
   window.setProfile({});
 
