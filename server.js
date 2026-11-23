@@ -726,8 +726,17 @@ function validPass(pass) { return typeof pass === 'string' && pass.length >= 8 &
 function userTransactions(userId) { return customerDB.transactions.filter(t => t.userId === userId).slice(-100).reverse(); }
 function adminRequired(req) { return isAuthed(req); }
 
+function decodeJwtPayload(idToken) {
+  try {
+    const part = String(idToken || '').split('.')[1];
+    if (!part) return {};
+    const json = Buffer.from(part.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+    return JSON.parse(json || '{}');
+  } catch (e) { return {}; }
+}
 function googleTokenInfo(idToken) {
   return new Promise(function (resolve, reject) {
+    const local = decodeJwtPayload(idToken);
     const url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(idToken);
     https.get(url, function (response) {
       let data = '';
@@ -737,6 +746,10 @@ function googleTokenInfo(idToken) {
         let parsed = {};
         try { parsed = JSON.parse(data || '{}'); } catch (_) {}
         if (response.statusCode !== 200) return reject(new Error('Google পরিচয় যাচাই করা যায়নি'));
+        // Prefer tokeninfo, fill picture/name from JWT if missing
+        if (!parsed.picture && local.picture) parsed.picture = local.picture;
+        if (!parsed.name && local.name) parsed.name = local.name;
+        if (!parsed.email && local.email) parsed.email = local.email;
         resolve(parsed);
       });
     }).on('error', function () { reject(new Error('Google সার্ভারে সংযোগ করা যায়নি')); });
@@ -844,7 +857,7 @@ async function handleApi(req, res, pathname) {
         // Verified Google email links to the existing account; wallet and password stay unchanged.
         u.googleSub = String(claims.sub || u.googleSub || '');
         if (claims.picture) u.avatar = String(claims.picture).slice(0,1000);
-        if (!u.name && claims.name) u.name = String(claims.name).trim().slice(0,70);
+        if (claims.name) u.name = String(claims.name).trim().slice(0,70);
       }
       saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });

@@ -2186,7 +2186,7 @@ setInterval(fetchFreshAccountConfig, 15000);
     var tv=document.getElementById('trView'); if(tv) tv.hidden=!onTr;
     var ctv=document.getElementById('ctView'); if(ctv) ctv.hidden=!onCt;
     var ucv=document.getElementById('ucView'); if(ucv) ucv.hidden=!onUc;
-    var av=document.getElementById('acView'); if(av){ var isLogged=!!localStorage.getItem('ariyan_customer_token'); if(onAc&&!isLogged){ av.hidden=true; if(location.hash==='#account'||location.hash==='#ac'){ history.replaceState(null,'',location.pathname+location.search); } if(window.ARiYANCustomer&&window.ARiYANCustomer.openLogin){ window.ARiYANCustomer.openLogin(); } } else { av.hidden=!onAc; } }
+    var av=document.getElementById('acView'); if(av){ var isLogged=!!localStorage.getItem('ariyan_customer_token'); if(onAc&&!isLogged){ av.hidden=true; if(location.hash==='#account'||location.hash==='#ac'){ history.replaceState(null,'',location.pathname+location.search); } /* don't auto-reopen login here - user will tap My Account */ } else { av.hidden=!onAc; if(onAc){ document.querySelectorAll('main.wrap').forEach(function(el){ if(el.id!=='acView') el.hidden=true; }); var home=document.getElementById('homeView'); if(home) home.hidden=true; } } }
     var cv=document.getElementById('cdView'); if(cv) cv.hidden=!onCd; ff.hidden=!onFF;
     var ov=document.getElementById('orView'); if(ov) ov.hidden=!onOr;
     var uv=document.getElementById('uidView'); if(uv) uv.hidden=!onUid;
@@ -2818,10 +2818,16 @@ setInterval(fetchFreshAccountConfig, 15000);
       var pic=document.createElement('img');
       pic.alt='Profile';
       pic.referrerPolicy='no-referrer';
-      pic.style.cssText='width:100%;height:100%;border-radius:50%;object-fit:cover;display:block';
-      pic.onerror=function(){ this.onerror=null; this.src=DEFAULT_AVATAR; };
-      if(p.loggedIn && p.avatar){ pic.src=p.avatar; }
-      else { pic.src=DEFAULT_AVATAR; }
+      pic.crossOrigin='anonymous';
+      pic.decoding='async';
+      pic.style.cssText='width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;background:#60463f';
+      pic.onerror=function(){ this.onerror=null; this.removeAttribute('crossorigin'); this.src=DEFAULT_AVATAR; };
+      if(p.loggedIn && p.avatar){
+        var url=String(p.avatar);
+        // Prefer higher-res Google photo when possible
+        if(url.indexOf('googleusercontent.com')!==-1){ url=url.replace(/=s\d+-c/,'=s256-c').replace(/=s\d+/,'=s256'); }
+        pic.src=url;
+      } else { pic.src=DEFAULT_AVATAR; }
       box.appendChild(pic);
     });
   };
@@ -3153,6 +3159,6 @@ setInterval(fetchFreshAccountConfig, 15000);
   sync();
 })();
 </script>
-<script src="customer.js?v=6"></script>
+<script src="customer.js?v=9"></script>
 </body>
 </html>

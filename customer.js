@@ -11,6 +11,53 @@ async function api(url,body){var opt={method:body===undefined?'GET':'POST',heade
 function saveSession(t,u){token=t;user=u;localStorage.setItem(TOKEN_KEY,t);localStorage.setItem(USER_KEY,JSON.stringify(u));syncProfile()}
 function clearSession(){token='';user=null;localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(USER_KEY);syncProfile();if(location.hash==='#account')location.hash=''}
 function logged(){return !!(token&&user)}
+
+function openMyAccountPage(){
+  // 1) Close login modal hard
+  try{
+    if(typeof close==='function') close();
+    var m=document.getElementById('ariyanModal');
+    if(m){ m.classList.remove('show'); m.style.display='none'; m.setAttribute('aria-hidden','true'); }
+    document.body.style.overflow='';
+  }catch(e){}
+  // 2) Cancel Google One Tap if any
+  try{ if(window.google&&google.accounts&&google.accounts.id&&google.accounts.id.cancel) google.accounts.id.cancel(); }catch(e){}
+  // 3) Close account sidebar panel
+  try{
+    var ap=document.getElementById('accPanel');
+    if(ap){ ap.classList.remove('show'); ap.setAttribute('aria-hidden','true'); }
+  }catch(e){}
+  // 4) Navigate + force show My Account page
+  function showAccount(){
+    try{
+      var av=document.getElementById('acView');
+      var tokenOk=!!(token||localStorage.getItem('ariyan_customer_token'));
+      // hide other mains
+      document.querySelectorAll('main.wrap').forEach(function(el){
+        if(el.id==='acView') return;
+        el.hidden=true;
+      });
+      var home=document.getElementById('homeView');
+      if(home) home.hidden=true;
+      var foot=document.getElementById('siteFooter')||document.querySelector('footer');
+      if(foot) foot.hidden=true;
+      if(av && tokenOk){
+        av.hidden=false;
+      }
+      if(location.hash!=='#account'){
+        location.hash='account';
+      } else {
+        try{ window.dispatchEvent(new HashChangeEvent('hashchange')); }catch(e){}
+      }
+      window.scrollTo(0,0);
+      if(typeof syncProfile==='function') syncProfile();
+    }catch(e){}
+  }
+  showAccount();
+  setTimeout(showAccount, 50);
+  setTimeout(showAccount, 200);
+}
+
 function money(n){return Number(n||0).toFixed(2)}
 function syncProfile(){if(!user){if(window.setProfile)window.setProfile({});renderRank(0,0);return}if(window.setProfile)window.setProfile({loggedIn:true,id:user.userId||'',name:user.name,email:user.email||'',phone:user.phone||'',balance:user.balance,orders:window._ariyanOrderCount||0,codes:0,verified:true,avatar:user.avatar||''});var w=$('.wallet');if(w&&w.lastChild)w.lastChild.textContent=money(user.balance)+'৳';loadRankStats();}
 async function refreshMe(){if(!token)return;try{var opt={method:'GET',headers:{Authorization:'Bearer '+token}};var rr=await fetch('/api/customer/me',opt);var j={};try{j=await rr.json()}catch(_e){}if(rr.status===401){clearSession();return}if(!rr.ok)return;user=j.user;localStorage.setItem(USER_KEY,JSON.stringify(user));syncProfile()}catch(e){/* network error - keep session */}}
@@ -40,8 +87,20 @@ var style=document.createElement('style');style.textContent=`#acWelcome{margin:1
 document.head.appendChild(style);
 var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='<div class="am-card" role="dialog" aria-modal="true"><div class="am-head"><h2 id="amTitle">ARiYAN</h2><button class="am-x" type="button" aria-label="Close">×</button></div><div id="amBody"></div></div>';document.body.appendChild(modal);
 $('.am-x',modal).onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});
-function open(title,html){$('#amTitle').textContent=title;$('#amBody').innerHTML=html;modal.classList.add('show')}
-function close(){modal.classList.remove('show')}
+function open(title,html){$('#amTitle').textContent=title;$('#amBody').innerHTML=html;modal.style.display='flex';modal.classList.add('show')}
+function close(){
+  modal.classList.remove('show');
+  modal.style.display='none';
+  try{ document.body.style.overflow=''; }catch(e){}
+}
+function forceCloseLogin(){
+  close();
+  modal.style.display='none';
+  modal.classList.remove('show');
+  var m=document.getElementById('ariyanModal');
+  if(m){ m.classList.remove('show'); m.style.display='none'; }
+  try{ document.body.style.overflow=''; document.body.classList.remove('modal-open'); }catch(e){}
+}
 
 var googleScriptPromise=null;
 function loadGoogleScript(){
@@ -64,7 +123,7 @@ async function setupGoogleButton(){
       var hostNow=$('#amGoogleButton');if(hostNow)hostNow.style.opacity='.6';
       try{
         var result=await api('/api/auth/google',{credential:response.credential});
-        saveSession(result.token,result.user);close();toast('Google দিয়ে লগইন সফল হয়েছে');await refreshMe();location.hash='account';
+        saveSession(result.token,result.user);toast('Google দিয়ে লগইন সফল হয়েছে');try{await refreshMe()}catch(e){}openMyAccountPage();
       }catch(err){var er=$('#amErr');if(er)er.textContent=err.message}
       finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
     }});
@@ -90,7 +149,7 @@ function authView(mode){
   var pe=$('#amPwEye');if(pe)pe.onclick=function(){eye('#amPassword',pe)};var ce=$('#amConfirmEye');if(ce)ce.onclick=function(){eye('#amConfirm',ce)};
   var forgot=$('#amForgot');if(forgot)forgot.onclick=function(){open('Password Recovery','<div class="am-note">Password reset is not configured yet. Please contact support to recover your account.</div><button class="am-btn" id="amBackLogin">Back to Login</button>');$('#amBackLogin').onclick=function(){authView('login')}};
   $('#amSwitch').onclick=function(){authView(reg?'login':'register')};
-  $('#amAuth').onsubmit=async function(e){e.preventDefault();var f=new FormData(this),password=f.get('password');if(reg&&password!==f.get('confirm')){$('#amErr').textContent='Passwords do not match.';return}var b={email:f.get('email'),password:password,name:f.get('name')||'',phone:f.get('phone')||''},btn=$('button[type=submit]',this);btn.disabled=true;try{var r=await api(reg?'/api/auth/register':'/api/auth/login',b);saveSession(r.token,r.user);close();toast(reg?'Account created successfully':'Signed in successfully');await refreshMe();location.hash='account'}catch(ex){$('#amErr').textContent=ex.message}finally{btn.disabled=false}};
+  $('#amAuth').onsubmit=async function(e){e.preventDefault();var f=new FormData(this),password=f.get('password');if(reg&&password!==f.get('confirm')){$('#amErr').textContent='Passwords do not match.';return}var b={email:f.get('email'),password:password,name:f.get('name')||'',phone:f.get('phone')||''},btn=$('button[type=submit]',this);btn.disabled=true;try{var r=await api(reg?'/api/auth/register':'/api/auth/login',b);saveSession(r.token,r.user);toast(reg?'Account created successfully':'Signed in successfully');try{await refreshMe()}catch(e){}openMyAccountPage()}catch(ex){$('#amErr').textContent=ex.message}finally{btn.disabled=false}};
 }
 async function requireLogin(){if(logged())return true;authView('login');return false}
 async function addMoney(){if(!await requireLogin())return;try{paymentInfo=await api('/api/payment-info')}catch(e){toast(e.message);return}var nums='<div class="am-note"><b>পেমেন্ট নম্বর</b><br>bKash: '+esc(paymentInfo.bkash||'নম্বর সেট করা হয়নি')+'<br>Nagad: '+esc(paymentInfo.nagad||'নম্বর সেট করা হয়নি')+'<br><span class="am-muted">নিজের পেমেন্ট অ্যাপ থেকে Send Money করুন। টাকা আসার পরই Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।</span></div>';open('Add Money',nums+`<form id="amDeposit"><label>পরিমাণ (৳)</label><input name="amount" type="number" min="10" max="50000" step="1" required placeholder="যেমন 100"><label>পেমেন্ট মাধ্যম</label><select name="method"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select><label>Transaction ID</label><input name="trxId" required minlength="6" maxlength="30" placeholder="TrxID"><button class="am-btn" type="submit">পেমেন্ট যাচাইয়ের জন্য জমা দিন</button><div id="amErr" class="am-muted"></div></form>`);$('#amDeposit').onsubmit=async function(e){e.preventDefault();var f=new FormData(this),btn=$('button[type=submit]',this);btn.disabled=true;try{var r=await api('/api/customer/deposits',{amount:Number(f.get('amount')),method:f.get('method'),trxId:f.get('trxId')});$('#amErr').textContent=r.message+'। Admin যাচাই করলে ব্যালেন্স যোগ হবে।';$('#amErr').className='am-success';this.reset()}catch(ex){$('#amErr').textContent=ex.message;$('#amErr').className='am-danger'}finally{btn.disabled=false}}}
