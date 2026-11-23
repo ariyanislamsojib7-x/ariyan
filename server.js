@@ -104,6 +104,7 @@ const TEXTS = [
   { id: 'supportTitle', label: 'Support Center title', def: 'SUPPORT CENTER', max: 40 },
   { id: 'waHelpLabel', label: 'WhatsApp HelpLine label', def: 'WhatsApp HelpLine', max: 40 },
   { id: 'tgHelpLabel', label: 'Telegram HelpLine label', def: 'Telegram HelpLine', max: 40 },
+  { id: 'contactPhone', label: 'Personal contact phone number', def: '', max: 30 },
 
   { id: 'warn', label: 'Footer warning', def: '১৮ বছরের নিচে অভিভাবকের অনুমতি ছাড়া অর্ডার করা সম্পূর্ণ নিষিদ্ধ।', max: 300, multi: true },
   { id: 'dlTitle', label: 'App download title', def: 'DOWNLOAD OUR MOBILE APP', max: 60 },
@@ -576,6 +577,11 @@ function applySiteConfig(html) {
       html = html.split("bindLinks('[data-link=\"whatsapp-link\"]', validWa);").join("bindLinks('[data-link=\"whatsapp-link\"]', (window.__LINKS && window.__LINKS.wa) || validWa);");
       html = html.split("bindLinks('[data-link=\"whatsapp-helpline\"]', validWa);").join("bindLinks('[data-link=\"whatsapp-helpline\"]', (window.__LINKS && window.__LINKS.wa) || validWa);");
     }
+  }
+  const personalPhone = (config.texts && config.texts.contactPhone) || '';
+  if (personalPhone) {
+    const tel = personalPhone.replace(/[^0-9+]/g, '').slice(0, 20);
+    inj.push('window.__PERSONAL_PHONE = ' + JSON.stringify(tel).replace(/</g, '\\u003c') + ';');
   }
   html = applyProducts(html);
   html = applyTexts(html, inj);
