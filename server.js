@@ -110,6 +110,7 @@ const TEXTS = [
   { id: 'dlTitle', label: 'App download title', def: 'DOWNLOAD OUR MOBILE APP', max: 60 },
   { id: 'playUrl', label: 'Google Play link', def: '', max: 300, url: true },
   { id: 'howOrderUrl', label: 'How to Order video link (all packages)', def: '', max: 500, url: true },
+  { id: 'redeemCodeUrl', label: 'My Codes Redeem Code link', def: '', max: 500, url: true },
   { id: 'acctWelcomeTitle', label: 'Account Welcome title', def: 'Welcome Back', max: 80 },
   { id: 'acctWelcomeSub', label: 'Account Welcome subtitle', def: 'Welcome to your account dashboard', max: 160 },
   { id: 'acctLoginTitle', label: 'Login title', def: 'Sign in to continue', max: 80 },
@@ -590,6 +591,7 @@ function applyTexts(html, inj) {
   });
 
   if (T.playUrl) html = html.replace('<a class="play" href="#">', '<a class="play" href="' + esc(T.playUrl) + '" target="_blank" rel="noopener noreferrer">');
+  inj.push('window.__REDEEM_CODE_URL = ' + jsStr(T.redeemCodeUrl || '') + ';');
   if (T.howOrderUrl) {
     // Share the configured URL with each package script. Those scripts set the
     // anchor href during initialization, so a server-only href replacement is

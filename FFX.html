@@ -2818,7 +2818,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 // 11. MY CODES PAGE
 // ==========================================
 (function(){
-  var REDEEM_URL='#'; // "Redeem Code" বাটনের লিংক/পেজ এখানে বসান
+  var REDEEM_URL=(window.__REDEEM_CODE_URL || '#'); // configured by Admin Panel
   var list=document.getElementById('cdList'), empty=document.getElementById('cdEmpty');
   var panel=document.getElementById('accPanel');
   var navLinks=[].slice.call(document.querySelectorAll('nav.nav a'));
@@ -2850,8 +2850,8 @@ setInterval(fetchFreshAccountConfig, 15000);
   document.getElementById('cdMenu').onclick=function(){ document.getElementById('avBtn').click(); };
   document.getElementById('cdOrder').onclick=function(e){ e.preventDefault(); location.hash=''; if(navHome) navHome.classList.add('on'); };
   document.getElementById('cdRedeem').onclick=function(){
-    if(REDEEM_URL && REDEEM_URL!=='#'){ location.href=REDEEM_URL; return; }
-    var t=document.getElementById('toast'); t.textContent='Redeem Code পেজ শীঘ্রই আসছে'; t.classList.add('show'); setTimeout(function(){t.classList.remove('show')},2400);
+    if(REDEEM_URL && REDEEM_URL!=='#'){ window.open(REDEEM_URL,'_blank','noopener,noreferrer'); return; }
+    var t=document.getElementById('toast'); t.textContent='Redeem Code লিংক এখনো সেট করা হয়নি'; t.classList.add('show'); setTimeout(function(){t.classList.remove('show')},2400);
   };
   window.addEventListener('hashchange',sync);
   sync();
