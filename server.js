@@ -109,6 +109,7 @@ const TEXTS = [
   { id: 'warn', label: 'Footer warning', def: '১৮ বছরের নিচে অভিভাবকের অনুমতি ছাড়া অর্ডার করা সম্পূর্ণ নিষিদ্ধ।', max: 300, multi: true },
   { id: 'dlTitle', label: 'App download title', def: 'DOWNLOAD OUR MOBILE APP', max: 60 },
   { id: 'playUrl', label: 'Google Play link', def: '', max: 300, url: true },
+  { id: 'howOrderUrl', label: 'How to Order video link (all packages)', def: '', max: 500, url: true },
   { id: 'acctWelcomeTitle', label: 'Account Welcome title', def: 'Welcome Back', max: 80 },
   { id: 'acctWelcomeSub', label: 'Account Welcome subtitle', def: 'Welcome to your account dashboard', max: 160 },
   { id: 'acctLoginTitle', label: 'Login title', def: 'Sign in to continue', max: 80 },
@@ -589,6 +590,9 @@ function applyTexts(html, inj) {
   });
 
   if (T.playUrl) html = html.replace('<a class="play" href="#">', '<a class="play" href="' + esc(T.playUrl) + '" target="_blank" rel="noopener noreferrer">');
+  if (T.howOrderUrl) {
+    html = html.replace(/(<a class="how" id="(?:uidHow|wmHow|wlHow|luHow|inHow)") href="#"/g, '$1 href="' + esc(T.howOrderUrl) + '" target="_blank" rel="noopener noreferrer"');
+  }
   return html;
 }
 
