@@ -6,28 +6,7 @@
     "banner-1794986797472-5078.jpg",
     "banner-1794986385799-353.jpg"
   ],
-  "quick": [
-    {
-      "label": "WhatsApp",
-      "url": "https://wa.me/qr/2QTETELLULTSP1"
-    },
-    {
-      "label": "Telegram",
-      "url": "https://t.me/Ariyan_x12"
-    },
-    {
-      "label": "Join Group",
-      "url": ""
-    },
-    {
-      "label": "YouTube",
-      "url": ""
-    },
-    {
-      "label": "Email",
-      "url": "mailto:sksojibahmed29@gmail.com"
-    }
-  ],
+  "quick": null,
   "images": {
     "pop": "img-pop-1794987854178.png"
   },
