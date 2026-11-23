@@ -98,6 +98,12 @@ const TEXTS = [
   { id: 'sec2', label: 'Home section title (UID Checker)', def: 'UID CHECKER', max: 60, wrap: ['<em>', '</em>'] },
   { id: 'pop', label: 'Popup message', def: 'সবথেকে কম দামে টপ করার জন্য সেরা ওয়েবসাইট\n১০০% বিশ্বস্ত ও দ্রুত ডেলিভারিতে\nঅর্ডার করুন নিশ্চিন্তে 🥰', max: 400, multi: true },
   { id: 'hours', label: 'Support hours', def: 'সকাল ৮টা থেকে রাত ১২টা', max: 60 },
+  { id: 'connectTitle', label: 'Stay Connected title', def: 'STAY CONNECTED', max: 40 },
+  { id: 'connectSub', label: 'Stay Connected message', def: 'কোন সমস্যায় পড়লে হোয়াটসঅ্যাপ এ যোগাযোগ করবেন। তাহলে দ্রুত সমাধান পেয়ে যাবেন।', max: 300, multi: true },
+  { id: 'supportTitle', label: 'Support Center title', def: 'SUPPORT CENTER', max: 40 },
+  { id: 'waHelpLabel', label: 'WhatsApp HelpLine label', def: 'WhatsApp HelpLine', max: 40 },
+  { id: 'tgHelpLabel', label: 'Telegram HelpLine label', def: 'Telegram HelpLine', max: 40 },
+
   { id: 'warn', label: 'Footer warning', def: '১৮ বছরের নিচে অভিভাবকের অনুমতি ছাড়া অর্ডার করা সম্পূর্ণ নিষিদ্ধ।', max: 300, multi: true },
   { id: 'dlTitle', label: 'App download title', def: 'DOWNLOAD OUR MOBILE APP', max: 60 },
   { id: 'playUrl', label: 'Google Play link', def: '', max: 300, url: true },
@@ -519,6 +525,16 @@ function applyTexts(html, inj) {
     html = html.split(w[0] + t.def + w[1]).join(w[0] + esc(T[t.id]) + w[1]);
   });
   if (T.hours) html = html.split(TEXTS.filter(function (t) { return t.id === 'hours'; })[0].def).join(esc(T.hours));
+  // Apply Stay Connected / Support Center texts (data-tx markers)
+  ['connectTitle','connectSub','supportTitle','waHelpLabel','tgHelpLabel','hours'].forEach(function (id) {
+    var defEntry = TEXTS.filter(function (t) { return t.id === id; })[0];
+    if (!defEntry) return;
+    var val = (T[id] != null && String(T[id]).trim()) ? String(T[id]).trim() : defEntry.def;
+    // Replace inner content of data-tx="id">...</ >
+    var re = new RegExp('(data-tx="' + id + '">)([\\s\\S]*?)(</)', 'g');
+    html = html.replace(re, function (_m, a, _old, c) { return a + esc(val).replace(/\n/g, '<br>') + c; });
+  });
+
   if (T.playUrl) html = html.replace('<a class="play" href="#">', '<a class="play" href="' + esc(T.playUrl) + '" target="_blank" rel="noopener noreferrer">');
   return html;
 }
@@ -598,7 +614,8 @@ function sendHome(req, res) {
   });
 }
 
-const SECRET = crypto.createHash('sha256').update('ffx-admin-secret:' + ADMIN_PASSWORD).digest();
+const SECRET = crypto.createHash('sha256').update('ffx-admin-secret:' + (ADMIN_PASSWORD || 'ffx-default-admin')).digest();
+const CUSTOMER_SECRET = crypto.createHash('sha256').update('ffx-customer-secret:' + (process.env.CUSTOMER_SECRET || ADMIN_PASSWORD || 'ffx-default-customer')).digest();
 
 function safeEq(a, b) {
   const A = crypto.createHash('sha256').update(String(a)).digest();
@@ -665,10 +682,24 @@ function saveCustomerDB() {
   fs.renameSync(tmp, CUSTOMER_DB);
 }
 loadCustomerDB();
+// Stable, unique five-digit public customer ID (kept separate from the private auth ID).
+function ensurePublicCustomerIds() {
+  const used = new Set(customerDB.users.map(u => String(u.publicId || '')).filter(v => /^\d{5}$/.test(v)));
+  let changed = false;
+  customerDB.users.forEach(u => {
+    if (!/^\d{5}$/.test(String(u.publicId || '')) || customerDB.users.some(v => v !== u && v.publicId === u.publicId)) {
+      let id;
+      do { id = String(10000 + crypto.randomInt(0, 90000)); } while (used.has(id));
+      u.publicId = id; used.add(id); changed = true;
+    }
+  });
+  if (changed) saveCustomerDB();
+}
+ensurePublicCustomerIds();
 function customerToken(userId) {
   const exp = Date.now() + CUSTOMER_SESSION_MS;
   const payload = userId + '.' + exp;
-  const sig = crypto.createHmac('sha256', SECRET).update('customer:' + payload).digest('hex');
+  const sig = crypto.createHmac('sha256', CUSTOMER_SECRET).update('customer:' + payload).digest('hex');
   return payload + '.' + sig;
 }
 function customerFromRequest(req) {
@@ -676,11 +707,18 @@ function customerFromRequest(req) {
   const token = h.startsWith('Bearer ') ? h.slice(7).trim() : '';
   const a = token.split('.');
   if (a.length !== 3 || !/^\d+$/.test(a[1]) || Number(a[1]) < Date.now()) return null;
-  const expected = crypto.createHmac('sha256', SECRET).update('customer:' + a[0] + '.' + a[1]).digest('hex');
+  const expected = crypto.createHmac('sha256', CUSTOMER_SECRET).update('customer:' + a[0] + '.' + a[1]).digest('hex');
   if (!safeEq(a[2], expected)) return null;
   return customerDB.users.find(u => u.id === a[0]) || null;
 }
-function publicUser(u) { return { id:u.id, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' }; }
+function publicUser(u) {
+  if (!/^\d{5}$/.test(String(u.publicId || ''))) {
+    const used = new Set(customerDB.users.filter(x => x !== u).map(x => String(x.publicId || '')));
+    let id; do { id = String(10000 + crypto.randomInt(0, 90000)); } while (used.has(id));
+    u.publicId = id; saveCustomerDB();
+  }
+  return { id:u.id, userId:u.publicId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' };
+}
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
@@ -688,8 +726,17 @@ function validPass(pass) { return typeof pass === 'string' && pass.length >= 8 &
 function userTransactions(userId) { return customerDB.transactions.filter(t => t.userId === userId).slice(-100).reverse(); }
 function adminRequired(req) { return isAuthed(req); }
 
+function decodeJwtPayload(idToken) {
+  try {
+    const part = String(idToken || '').split('.')[1];
+    if (!part) return {};
+    const json = Buffer.from(part.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+    return JSON.parse(json || '{}');
+  } catch (e) { return {}; }
+}
 function googleTokenInfo(idToken) {
   return new Promise(function (resolve, reject) {
+    const local = decodeJwtPayload(idToken);
     const url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(idToken);
     https.get(url, function (response) {
       let data = '';
@@ -699,6 +746,10 @@ function googleTokenInfo(idToken) {
         let parsed = {};
         try { parsed = JSON.parse(data || '{}'); } catch (_) {}
         if (response.statusCode !== 200) return reject(new Error('Google পরিচয় যাচাই করা যায়নি'));
+        // Prefer tokeninfo, fill picture/name from JWT if missing
+        if (!parsed.picture && local.picture) parsed.picture = local.picture;
+        if (!parsed.name && local.name) parsed.name = local.name;
+        if (!parsed.email && local.email) parsed.email = local.email;
         resolve(parsed);
       });
     }).on('error', function () { reject(new Error('Google সার্ভারে সংযোগ করা যায়নি')); });
@@ -806,7 +857,7 @@ async function handleApi(req, res, pathname) {
         // Verified Google email links to the existing account; wallet and password stay unchanged.
         u.googleSub = String(claims.sub || u.googleSub || '');
         if (claims.picture) u.avatar = String(claims.picture).slice(0,1000);
-        if (!u.name && claims.name) u.name = String(claims.name).trim().slice(0,70);
+        if (claims.name) u.name = String(claims.name).trim().slice(0,70);
       }
       saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });

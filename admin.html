@@ -509,7 +509,7 @@ function imageCard(o){
 }
 
 var siteRoot=null,prevIdx=0;
-var QDEF=['WhatsApp','Telegram','Join Group','YouTube'],QICON=['phone','tg','grp','yt'],QNAME=['Personal WhatsApp link','Telegram account link','Telegram group/channel link','YouTube channel link'];
+var QDEF=['WhatsApp','Telegram','Join Group','YouTube'],QICON=['phone','tg','grp','yt'],QNAME=['WhatsApp link (Stay Connected + HelpLine)','Telegram link (Stay Connected + HelpLine)','Join Group / Channel link','YouTube channel link'];
 function svgi(id,fill){return '<svg class="'+(fill?'s-f':'s-i')+'"><use href="#'+id+'"/></svg>'}
 function pen(label,id,inset){return '<button type="button" class="pen'+(inset?' in':'')+'" data-edit="'+id+'" aria-label="'+esc(label)+'">'+icon('pen')+'</button>'}
 function tv(id){var t=state.cfg.texts.filter(function(x){return x.id===id})[0];return t?t.value:''}
@@ -567,14 +567,20 @@ function drawSite(){
      }).join('')+'</div>'+
      sec('sec1')+'<div class="s-grid">'+top.map(pc).join('')+'</div>'+
      sec('sec2')+'<div class="s-grid">'+uc.map(pc).join('')+'</div>'+
-     '<div class="s-sec"><i></i><h3>LOGIN & MY ACCOUNT TEXTS</h3></div>'+
-     '<div class="ed" style="display:block;padding:14px;border:1px solid #dbe2ef;border-radius:14px;margin:12px 0"><p style="margin:0 0 10px;font-size:12px;color:#64748b">Welcome Back, login এবং account পেজের সব লেখা এখানে Admin Panel থেকে সম্পাদনা করুন।</p>'+
-     ['acctWelcomeTitle','acctWelcomeSub','acctLoginTitle','acctLoginSub','acctGoogleText','acctForgotText','acctCreateText','acctEmailLabel','acctPasswordLabel','acctSignInText','acctProfileSub','acctVerifiedText','acctRankTitle','acctRankSub','acctRankJourney','acctRankBronze','acctRankSilver','acctRankGold','acctRankPlatinum','acctRankDiamond'].map(function(id){var t=c.texts.filter(function(x){return x.id===id})[0];return '<div style="margin:8px 0;padding:8px;background:#f8fafc;border-radius:10px"><b>'+esc(t.label)+'</b>'+pen('Edit '+t.label,'t:'+id)+'</div>'}).join('')+'</div>'+
-     '<div class="s-sec"><i></i><h3>POPUP</h3></div>'+
      '<div class="ed"><div class="s-pop"><img src="'+esc(I.pop.src||I.pop.def)+'" alt=""><p>'+esc(tv('pop')).replace(/\n/g,'<br>')+'</p><span class="pcl">CLOSE</span></div>'+pen('Edit popup','pop',true)+'</div>'+
      '<div class="s-ft">'+
        '<div class="s-chips"><span>দ্রুত</span><span>নিরাপদ</span><span>নির্ভরযোগ্য</span></div>'+
        '<div class="ed s-nt"><b>বিশেষ সতর্কতা:</b><p>'+esc(tv('warn'))+'</p>'+pen('Edit warning','t:warn')+'</div>'+
+       '<div class="s-sec"><i></i><h3>STAY CONNECTED / SUPPORT</h3></div>'+
+       '<div class="ed" style="display:block;padding:14px;border:1px solid #dbe2ef;border-radius:14px;margin:12px 0;background:#f8fafc">'+
+       '<p style="margin:0 0 10px;font-size:12px;color:#64748b">My Account পেজের নিচের STAY CONNECTED ও SUPPORT CENTER সেকশন। উপরের ৪টি Social বাটনের লিংক দিয়েই আইকনগুলো কাজ করে।</p>'+
+       '<div class="ed" style="display:block;margin:8px 0"><b style="font-size:13px">'+esc(tv('connectTitle')||'STAY CONNECTED')+'</b>'+pen('Edit title','t:connectTitle')+'</div>'+
+       '<div class="ed" style="display:block;margin:8px 0"><p style="margin:0;font-size:12px;color:#475569">'+esc(tv('connectSub')||'')+'</p>'+pen('Edit message','t:connectSub')+'</div>'+
+       '<div class="ed" style="display:block;margin:8px 0"><b style="font-size:13px">'+esc(tv('supportTitle')||'SUPPORT CENTER')+'</b>'+pen('Edit title','t:supportTitle')+'</div>'+
+       '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">'+esc(tv('waHelpLabel')||'WhatsApp HelpLine')+'</span>'+pen('Edit WhatsApp label','t:waHelpLabel')+'</div>'+
+       '<div class="ed" style="display:block;margin:8px 0"><span style="font-size:13px">'+esc(tv('tgHelpLabel')||'Telegram HelpLine')+'</span>'+pen('Edit Telegram label','t:tgHelpLabel')+'</div>'+
+       '<div class="ed" style="display:block;margin:8px 0"><small style="color:#64748b">Support hours: '+esc(tv('hours'))+'</small>'+pen('Edit support hours','t:hours')+'</div>'+
+       '</div>'+
        '<h2>Contact Us</h2>'+
        '<div class="ed s-help"><span class="s-ic">'+svgi('tg',1)+'</span><span><b>Telegram HelpLine</b><small>'+esc(tv('hours'))+'</small></span>'+pen('Edit support hours','t:hours')+'</div>'+
        '<div class="s-dl"><div class="ed"><h3>'+esc(tv('dlTitle'))+'</h3>'+pen('Edit title','t:dlTitle')+'</div>'+
