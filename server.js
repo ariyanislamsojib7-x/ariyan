@@ -574,7 +574,7 @@ function applyTexts(html, inj) {
     html = html.replace(/(<p id="popText">)[\s\S]*?(<\/p>)/, function (m, a, b) { return a + esc(T.pop).split(/\r?\n/).join('<br>') + b; });
   }
   TEXTS.forEach(function (t) {
-    if (!T[t.id] || t.id === 'siteName' || t.id === 'pop' || t.id === 'playUrl') return;
+    if (!T[t.id] || t.id === 'siteName' || t.id === 'pop' || t.id === 'playUrl' || t.url) return;
     const w = t.wrap || ['>', '<'];
     html = html.split(w[0] + t.def + w[1]).join(w[0] + esc(T[t.id]) + w[1]);
   });
