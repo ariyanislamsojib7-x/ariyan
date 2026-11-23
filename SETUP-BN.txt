@@ -86,3 +86,9 @@ Google Login চালু করার ধাপ:
 
 
 সোশ্যাল লিংক বাটনের নতুন ক্রম: ১) WhatsApp ২) Telegram ৩) Join Group ৪) YouTube। Deploy করার পর Admin Panel থেকে চারটি লিংক আবার যাচাই/সেভ করুন, যাতে আগের সংরক্ষিত লিংক ভুল বাটনে না যায়।
+
+Rank Journey visual update:
+- Added eight rank emblem image assets under rank-icons/ (Bronze, Silver, Gold, Platinum, Diamond, Heroic, Master, Grand Master).
+- The Rank Journey now displays the emblem artwork instead of emoji; current-rank badge and member badge use the Bronze crest by default and switch with eligible spend.
+- Bottom My Account navigation opens the My Account page directly. Header profile opens the account sidebar; the sidebar Login/Logout control follows the active session.
+- Google profile image is displayed in the account page, sidebar, and header when Google sign-in returns a picture URL.
