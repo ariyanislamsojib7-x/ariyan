@@ -542,7 +542,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .acc.show .acc-in{transform:none}
 .acc-top{position:relative;display:flex;flex-direction:column;align-items:center;padding:calc(14px + env(safe-area-inset-top,0px)) 12px 14px;background:#fff;border-bottom:1px solid var(--bd)}
 .acc-x{display:none}
-.acc-user{display:flex;align-items:center;gap:10px;width:100%}
+.acc-user{cursor:pointer}.acc-user:focus-visible{outline:2px solid var(--v);outline-offset:4px;border-radius:12px}.acc-user{display:flex;align-items:center;gap:10px;width:100%}
 .acc-av{width:52px;height:52px;border-radius:14px;padding:2.5px;background:var(--g);box-shadow:0 6px 14px -6px rgba(37,99,235,.6);flex-shrink:0}
 .acc-av div{width:100%;height:100%;border-radius:11.5px;overflow:hidden;background:#eff6ff;display:grid;place-items:center;color:var(--v);font-size:24px}
 .acc-av img{width:100%;height:100%;object-fit:cover;display:block}
@@ -579,7 +579,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .acc.show .acc-in{transform:none}
 .acc-top{position:relative;display:flex;flex-direction:column;align-items:center;padding:calc(14px + env(safe-area-inset-top,0px)) 12px 14px;background:#fff;border-bottom:1px solid var(--bd)}
 .acc-x{display:none}
-.acc-user{display:flex;align-items:center;gap:10px;width:100%}
+.acc-user{cursor:pointer}.acc-user:focus-visible{outline:2px solid var(--v);outline-offset:4px;border-radius:12px}.acc-user{display:flex;align-items:center;gap:10px;width:100%}
 .acc-av{width:52px;height:52px;border-radius:14px;padding:2.5px;background:var(--g);box-shadow:0 6px 14px -6px rgba(37,99,235,.6);flex-shrink:0}
 .acc-av div{width:100%;height:100%;border-radius:11.5px;overflow:hidden;background:#eff6ff;display:grid;place-items:center;color:var(--v);font-size:24px}
 .acc-av img{width:100%;height:100%;object-fit:cover;display:block}
@@ -616,7 +616,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .acc.show .acc-in{transform:none}
 .acc-top{position:relative;display:flex;flex-direction:column;align-items:center;padding:calc(14px + env(safe-area-inset-top,0px)) 12px 14px;background:#fff;border-bottom:1px solid var(--bd)}
 .acc-x{display:none}
-.acc-user{display:flex;align-items:center;gap:10px;width:100%}
+.acc-user{cursor:pointer}.acc-user:focus-visible{outline:2px solid var(--v);outline-offset:4px;border-radius:12px}.acc-user{display:flex;align-items:center;gap:10px;width:100%}
 .acc-av{width:52px;height:52px;border-radius:14px;padding:2.5px;background:var(--g);box-shadow:0 6px 14px -6px rgba(37,99,235,.6);flex-shrink:0}
 .acc-av div{width:100%;height:100%;border-radius:11.5px;overflow:hidden;background:#eff6ff;display:grid;place-items:center;color:var(--v);font-size:24px}
 .acc-av img{width:100%;height:100%;object-fit:cover;display:block}
@@ -751,7 +751,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .ac-nm h1{font-size:23px;font-weight:800;letter-spacing:-.5px;color:#0b1330;overflow-wrap:anywhere}
 .ac-vf{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:99px;background:#e6f7ed;border:1px solid #bfe8cf;color:#15803d;font-size:12px;font-weight:700}
 .ac-vf svg{width:14px;height:14px;stroke-width:2.4}
-.ac-mail{margin-top:4px;font-size:13px;color:var(--mu);overflow-wrap:anywhere}
+.ac-mail{margin-top:4px;font-size:13px;color:var(--mu);overflow-wrap:anywhere}.ac-id{margin-top:6px;font-size:13px;color:var(--mu);font-weight:700;letter-spacing:.02em}.ac-id b{color:#0b1330;font-weight:800}
 .ac-pin{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 8px 8px 14px;border-radius:99px;background:#f1f5fd;border:1px solid var(--bd);font-size:13px;font-weight:600;color:#475569}
 .ac-pin svg{font-size:16px;color:var(--v)}
 .ac-pin b{color:#0b1330;font-weight:800;letter-spacing:.6px}
@@ -1471,7 +1471,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     <div class="ac-body">
       <div class="ac-av"><div class="in" id="acAvatar"><svg class="i"><use href="#user"/></svg></div><span class="dot"></span></div>
       <div class="ac-nm"><h1 id="acName">Guest</h1><span class="ac-vf" id="acVf" style="display:none"><svg class="i"><use href="#chk"/></svg>Verified</span></div>
-      <p class="ac-mail" id="acMail">লগইন করে অর্ডার করুন</p>
+      <p class="ac-id" id="acIdRow" style="display:none">Account ID: <b id="acId"></b></p>
       <div class="ac-pin" id="acPinBox" style="display:none"><svg class="i"><use href="#shield"/></svg>Support PIN <b id="acPin"></b><button class="ac-cp" type="button" id="acCopy" aria-label="Copy PIN"><svg class="i"><use href="#doc"/></svg></button></div>
     </div>
   </section>
@@ -1555,9 +1555,9 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
   <div class="acc-in">
     <div class="acc-top">
       <button class="acc-x" type="button" id="accClose" aria-label="Close"><svg class="i"><use href="#x"/></svg></button>
-      <div class="acc-user">
+      <div class="acc-user" id="accUserProfile" role="button" tabindex="0" aria-label="Open My Account">
         <div class="acc-av"><div id="accAv"><svg class="i"><use href="#user"/></svg></div></div>
-        <div class="acc-nm"><b id="accName">Hi, Guest</b><span id="accMail">লগইন করে অর্ডার করুন</span></div>
+        <div class="acc-nm"><b id="accName">Hi, Guest</b><span id="accMail">Login to place an order</span><span id="accUserId" style="display:none;font-size:12px;color:#64748b;font-weight:700"></span></div>
       </div>
       <button class="acc-lo" type="button" id="accLo"><svg class="i"><use href="#a-in"/></svg><span>Login</span></button>
     </div>
@@ -2034,7 +2034,7 @@ setInterval(fetchFreshAccountConfig, 15000);
   (function render(){
     var n = USER.name ? USER.name.trim() : '';
     document.getElementById('accName').textContent = USER.loggedIn && n ? 'Hi, ' + n : 'Hi, Guest';
-    document.getElementById('accMail').textContent = USER.loggedIn && USER.email ? USER.email : 'লগইন করে অর্ডার করুন';
+    document.getElementById('accMail').textContent = USER.loggedIn ? 'আপনার অ্যাকাউন্ট' : 'লগইন করে অর্ডার করুন';
     if (USER.avatar) {
       var box = document.getElementById('accAv');
       box.innerHTML = '';
@@ -2723,8 +2723,13 @@ setInterval(fetchFreshAccountConfig, 15000);
   window.setProfile=function(p){
     p=p||{};
     $('acName').textContent=p.name||'Guest';
-    $('acMail').textContent=p.email||(p.loggedIn?'':'লগইন করে অর্ডার করুন');
-    $('acMail').style.display=$('acMail').textContent?'block':'none';
+    $('acId').textContent=p.id||'';
+    $('acIdRow').style.display=(p.loggedIn&&p.id)?'block':'none';
+    // একই authenticated profile তথ্য সাইডবারেও দেখান; ইমেইল কখনো প্রকাশ করবেন না।
+    $('accName').textContent=(p.loggedIn&&p.name)?'Hi, '+p.name:'Hi, Guest';
+    $('accMail').textContent=p.loggedIn?'আপনার অ্যাকাউন্ট':'লগইন করে অর্ডার করুন';
+    $('accUserId').textContent=(p.loggedIn&&p.id)?'ID: '+p.id:'';
+    $('accUserId').style.display=(p.loggedIn&&p.id)?'block':'none';
     $('acVf').style.display=p.verified?'inline-flex':'none';
     $('acPinBox').style.display=p.supportPin?'inline-flex':'none';
     $('acPin').textContent=p.supportPin||'';
@@ -2740,6 +2745,9 @@ setInterval(fetchFreshAccountConfig, 15000);
     }
   };
   window.setProfile({});
+
+  var profileEntry=$('accUserProfile');
+  if(profileEntry){var openProfile=function(){if(window.closeAccountPanel)window.closeAccountPanel();else{var ap=$('accPanel');if(ap){ap.classList.remove('show');ap.setAttribute('aria-hidden','true');document.body.style.overflow='';}}location.hash='account';};profileEntry.addEventListener('click',openProfile);profileEntry.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openProfile();}});}
 
   $('acRf').onclick=function(){
     var b=this; b.classList.remove('spin'); void b.offsetWidth; b.classList.add('spin');
