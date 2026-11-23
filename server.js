@@ -652,28 +652,11 @@ setInterval(function () {
 const CUSTOMER_DB = path.join(DATA_DIR, 'customers.json');
 const CUSTOMER_SESSION_MS = 7 * 24 * 60 * 60 * 1000;
 let customerDB = { users: [], deposits: [], orders: [], transactions: [] };
-function makeCustomerNumber() {
-  const used = new Set(customerDB.users.map(u => String(u.customerId || '')));
-  let value;
-  do { value = String(10000 + crypto.randomInt(0, 90000)); } while (used.has(value));
-  return value;
-}
 function loadCustomerDB() {
   try {
     const d = JSON.parse(fs.readFileSync(CUSTOMER_DB, 'utf8'));
     customerDB = Object.assign({ users: [], deposits: [], orders: [], transactions: [] }, d);
   } catch (_) { customerDB = { users: [], deposits: [], orders: [], transactions: [] }; }
-  let changed = false;
-  const used = new Set();
-  customerDB.users.forEach(u => {
-    let code = String(u.customerId || '');
-    if (!/^\d{5}$/.test(code) || used.has(code)) {
-      do { code = String(10000 + crypto.randomInt(0, 90000)); } while (used.has(code));
-      u.customerId = code; changed = true;
-    }
-    used.add(code);
-  });
-  if (changed) saveCustomerDB();
 }
 function saveCustomerDB() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -681,7 +664,26 @@ function saveCustomerDB() {
   fs.writeFileSync(tmp, JSON.stringify(customerDB, null, 2), { mode: 0o600 });
   fs.renameSync(tmp, CUSTOMER_DB);
 }
+function ensureCustomerPublicId(user) {
+  if (!user) return '';
+  if (/^\d{5}$/.test(String(user.userId || ''))) return user.userId;
+  let candidate;
+  do { candidate = String(crypto.randomInt(10000, 100000)); }
+  while (customerDB.users.some(function (x) { return x !== user && String(x.userId || '') === candidate; }));
+  user.userId = candidate;
+  return candidate;
+}
 loadCustomerDB();
+let customerIdsMigrated = false;
+const seenCustomerPublicIds = new Set();
+customerDB.users.forEach(function (u) {
+  if (!/^\d{5}$/.test(String(u.userId || '')) || seenCustomerPublicIds.has(String(u.userId))) {
+    let candidate; do { candidate = String(crypto.randomInt(10000, 100000)); } while (seenCustomerPublicIds.has(candidate));
+    u.userId = candidate; customerIdsMigrated = true;
+  }
+  seenCustomerPublicIds.add(String(u.userId));
+});
+if (customerIdsMigrated) saveCustomerDB();
 function customerToken(userId) {
   const exp = Date.now() + CUSTOMER_SESSION_MS;
   const payload = userId + '.' + exp;
@@ -697,7 +699,7 @@ function customerFromRequest(req) {
   if (!safeEq(a[2], expected)) return null;
   return customerDB.users.find(u => u.id === a[0]) || null;
 }
-function publicUser(u) { return { id:u.id, customerId:u.customerId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' }; }
+function publicUser(u) { ensureCustomerPublicId(u); return { id:u.id, userId:u.userId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' }; }
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
@@ -816,9 +818,9 @@ async function handleApi(req, res, pathname) {
       }
       let u = customerDB.users.find(function (x) { return x.email === email; });
       if (!u) {
-        u = { id:newId('usr'), customerId:makeCustomerNumber(), email:email, name:String(claims.name || email.split('@')[0]).trim().slice(0,70),
+        u = { id:newId('usr'), email:email, name:String(claims.name || email.split('@')[0]).trim().slice(0,70),
           googleSub:String(claims.sub || ''), avatar:String(claims.picture || '').slice(0,1000), salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
-        customerDB.users.push(u);
+        ensureCustomerPublicId(u); customerDB.users.push(u);
       } else {
         // Verified Google email links to the existing account; wallet and password stay unchanged.
         u.googleSub = String(claims.sub || u.googleSub || '');
@@ -837,8 +839,8 @@ async function handleApi(req, res, pathname) {
       if (!phone || !/^[+0-9() .-]{7,24}$/.test(phone)) return sendJson(res, 400, { error: 'Enter a valid phone number.' });
       if (customerDB.users.some(u => u.email === email)) return sendJson(res, 409, { error: 'এই ইমেইলে অ্যাকাউন্ট আছে' });
       const salt = crypto.randomBytes(16).toString('hex');
-      const u = { id:newId('usr'), customerId:makeCustomerNumber(), email, name:name || email.split('@')[0], phone, salt, password:passHash(b.password, salt), balance:0, createdAt:new Date().toISOString() };
-      customerDB.users.push(u); saveCustomerDB();
+      const u = { id:newId('usr'), email, name:name || email.split('@')[0], phone, salt, password:passHash(b.password, salt), balance:0, createdAt:new Date().toISOString() };
+      ensureCustomerPublicId(u); customerDB.users.push(u); saveCustomerDB();
       return sendJson(res, 201, { token:customerToken(u.id), user:publicUser(u) });
     }
     if (req.method === 'POST' && pathname === '/api/auth/login') {

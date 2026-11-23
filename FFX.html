@@ -1471,17 +1471,18 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     <div class="ac-body">
       <div class="ac-av"><div class="in" id="acAvatar"><svg class="i"><use href="#user"/></svg></div><span class="dot"></span></div>
       <div class="ac-nm"><h1 id="acName">Guest</h1><span class="ac-vf" id="acVf" style="display:none"><svg class="i"><use href="#chk"/></svg>Verified</span></div>
-      <p class="ac-id" id="acIdRow" style="display:none">Account ID: <b id="acId"></b></p>
-      <div class="ac-pin" id="acPinBox" style="display:none"><svg class="i"><use href="#shield"/></svg>User ID <b id="acPin"></b><button class="ac-cp" type="button" id="acCopy" aria-label="Copy User ID"><svg class="i"><use href="#doc"/></svg></button></div>
+      <div class="ac-pin" id="acPinBox" style="display:none"><svg class="i"><use href="#shield"/></svg>User ID: <b id="acPin"></b><button class="ac-cp" type="button" id="acCopy" aria-label="Copy User ID"><svg class="i"><use href="#doc"/></svg></button></div>
     </div>
   </section>
 
-  <section class="ac-rank" id="acRankCard" style="margin-top:12px;padding:16px;border:1px solid var(--bd);border-radius:22px;background:var(--card);color:var(--tx)"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><small id="acRankTitleText" style="color:var(--mu);font-weight:700">MEMBER RANK</small><h2 id="acRankName" style="margin:4px 0;font-size:22px">Bronze</h2><p id="acRankDesc" style="margin:0;color:var(--mu);font-size:13px">Your membership level</p></div><div id="acRankBadge" style="font-size:36px">🥉</div></div><div style="height:8px;background:var(--bd);border-radius:99px;margin:14px 0 8px;overflow:hidden"><div id="acRankProgress" style="height:100%;width:0;background:var(--v);border-radius:99px"></div></div><div style="display:flex;justify-content:space-between;color:var(--mu);font-size:12px"><span id="acRankSpend">৳0 spent</span><span id="acRankNext">Next rank: Silver</span></div><div style="margin-top:12px;font-weight:800;letter-spacing:.06em;color:var(--v)" id="acRankJourneyTitle">RANK JOURNEY</div><div id="acRankJourney" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div></section>
+  
   <section class="ac-wal">
     <div class="ac-wh"><span><svg class="i"><use href="#wal"/></svg>Wallet Balance</span><button class="ac-rf" type="button" id="acRf" aria-label="Refresh"><svg class="i"><use href="#refresh"/></svg></button></div>
     <div class="ac-bal"><small>৳</small><b id="acBal">0</b></div>
     <button class="ac-add" type="button" id="acAdd"><svg class="i"><use href="#plus"/></svg>Add Money</button>
   </section>
+
+  <section class="ac-rank" id="acRankCard" style="margin-top:12px;padding:16px;border:1px solid var(--bd);border-radius:22px;background:linear-gradient(135deg,#5b321e 0%,#9a4d1d 58%,#c47a36 100%);color:#fff;box-shadow:0 18px 36px -20px rgba(120,53,15,.75)"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><small id="acRankTitleText" style="color:rgba(255,255,255,.72);font-weight:800;letter-spacing:.14em">CURRENT RANK</small><h2 id="acRankName" style="margin:4px 0;font-size:22px">Bronze</h2><p id="acRankDesc" style="margin:0;color:rgba(255,255,255,.78);font-size:13px">Start your journey from Bronze.</p></div><div id="acRankBadge" style="font-size:36px">🥉</div></div><div style="height:8px;background:var(--bd);border-radius:99px;margin:14px 0 8px;overflow:hidden"><div id="acRankProgress" style="height:100%;width:0;background:var(--v);border-radius:99px"></div></div><div style="display:flex;justify-content:space-between;color:var(--mu);font-size:12px"><span id="acRankSpend">0 - 100 Tk</span><span id="acRankNext">1%</span></div><div id="acRankUnlock" style="margin-top:8px;text-align:center;color:rgba(255,255,255,.8);font-size:13px">Need only 101 Tk to unlock Silver</div><div style="margin-top:16px;font-weight:800;letter-spacing:.06em;color:rgba(255,255,255,.78)" id="acRankJourneyTitle">RANK JOURNEY</div><div id="acRankJourney" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div></section>
 
   <div class="ac-stats">
     <div class="ac-st"><b id="acOrders">0</b><span>Total Orders</span></div>
@@ -2723,16 +2724,14 @@ setInterval(fetchFreshAccountConfig, 15000);
   window.setProfile=function(p){
     p=p||{};
     $('acName').textContent=p.name||'Guest';
-    $('acId').textContent=p.id||'';
-    $('acIdRow').style.display='none';
     // একই authenticated profile তথ্য সাইডবারেও দেখান; ইমেইল কখনো প্রকাশ করবেন না।
     $('accName').textContent=(p.loggedIn&&p.name)?'Hi, '+p.name:'Hi, Guest';
     $('accMail').textContent=p.loggedIn?'আপনার অ্যাকাউন্ট':'লগইন করে অর্ডার করুন';
-    $('accUserId').textContent=(p.loggedIn&&p.id)?'ID: '+p.id:'';
-    $('accUserId').style.display=(p.loggedIn&&p.id)?'block':'none';
+    $('accUserId').textContent=(p.loggedIn&&p.userId)?'User ID: '+p.userId:'';
+    $('accUserId').style.display=(p.loggedIn&&p.userId)?'block':'none';
     $('acVf').style.display=p.verified?'inline-flex':'none';
-    $('acPinBox').style.display=(p.loggedIn&&p.id)?'inline-flex':'none';
-    $('acPin').textContent=(p.loggedIn&&p.id)?p.id:'';
+    $('acPinBox').style.display=(p.loggedIn&&p.userId)?'inline-flex':'none';
+    $('acPin').textContent=p.userId||'';
     $('acLoTx').textContent=p.loggedIn?'Logout':'Login';
     var bal=(p.balance==null?0:p.balance);
     $('acBal').textContent=bal;
