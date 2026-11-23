@@ -108,5 +108,5 @@ document.querySelectorAll('.po[data-pay="Instant Pay"]').forEach(function(el){el
 window.addEventListener('load',function(){if(token)refreshMe();else syncProfile()});
 window.addEventListener('storage',function(e){if(e.key===TOKEN_KEY){token=e.newValue||'';if(!token){user=null;syncProfile()}}});
 // Expose a simple API for other site components.
-renderAccountWelcome();window.ARiYANCustomer={openLogin:function(){authView('login')},addMoney:addMoney,orders:showOrders,transactions:showTransactions,refresh:refreshMe};
+renderRank(0,0);renderAccountWelcome();window.ARiYANCustomer={openLogin:function(){authView('login')},addMoney:addMoney,orders:showOrders,transactions:showTransactions,refresh:refreshMe};
 })();
