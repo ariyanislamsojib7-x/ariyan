@@ -591,6 +591,10 @@ function applyTexts(html, inj) {
 
   if (T.playUrl) html = html.replace('<a class="play" href="#">', '<a class="play" href="' + esc(T.playUrl) + '" target="_blank" rel="noopener noreferrer">');
   if (T.howOrderUrl) {
+    // Share the configured URL with each package script. Those scripts set the
+    // anchor href during initialization, so a server-only href replacement is
+    // otherwise overwritten by their legacy HOWTO_URL = '#' value.
+    inj.push('window.__HOW_ORDER_URL = ' + jsStr(T.howOrderUrl) + ';');
     html = html.replace(/(<a class="how" id="(?:uidHow|wmHow|wlHow|luHow|inHow)") href="#"/g, '$1 href="' + esc(T.howOrderUrl) + '" target="_blank" rel="noopener noreferrer"');
   }
   return html;
