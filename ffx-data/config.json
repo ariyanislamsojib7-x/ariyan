@@ -181,7 +181,6 @@
   "paymentSettings": {
     "bkashLogoUrl": "/uploads/payment-bkashLogo-1795521665511.jpg",
     "nagadLogoUrl": "/uploads/payment-nagadLogo-1795521673808.png",
-    "bkashTilesBannerUrl": "/uploads/payment-bkashTilesBanner-1795515157719.jpg",
     "paymentSelectText": "পেমেন্ট  Payment নির্বাচন করুন"
   }
 }
