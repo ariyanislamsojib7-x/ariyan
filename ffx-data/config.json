@@ -181,6 +181,8 @@
   "paymentSettings": {
     "bkashLogoUrl": "/uploads/payment-bkashLogo-1795515363569.jpg",
     "nagadLogoUrl": "/uploads/payment-nagadLogo-1795515145055.png",
-    "bkashTilesBannerUrl": "/uploads/payment-bkashTilesBanner-1795515157719.jpg"
+    "bkashTilesBannerUrl": "/uploads/payment-bkashTilesBanner-1795515157719.jpg",
+    "paymentSelectText": "পেমেন্ট (Payment) নির্বাচন করুন",
+    "trxIdTitle": "ট্রানজেকশন আইডি দিন"
   }
 }
