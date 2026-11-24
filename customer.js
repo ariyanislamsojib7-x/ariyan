@@ -143,7 +143,18 @@ try{paymentInfo=await api('/api/payment-info')}catch(e){toast(e.message);return}
 var styleId='ariyan-payment-style';
 if(!document.getElementById(styleId)){
 var st=document.createElement('style');st.id=styleId;st.textContent=`
-.ariyan-pay-banner{display:flex;align-items:center;justify-content:center;min-height:58px;margin:0 0 16px;border-radius:12px;background:var(--v);color:#fff;font-size:23px;font-weight:900;letter-spacing:1px}
+.ariyan-add-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:145px;padding:20px 18px;margin:0 0 16px;border-radius:18px;background:linear-gradient(125deg,#0f766e 0%,var(--v) 58%,#172554 100%);color:#fff;box-shadow:0 10px 25px #17255420}
+.ariyan-add-hero:after{content:"";position:absolute;width:190px;height:190px;border:1px solid #ffffff22;border-radius:50%;right:-55px;top:-48px;box-shadow:0 0 0 22px #ffffff0b,0 0 0 45px #ffffff08}
+.ariyan-add-copy{position:relative;z-index:1;max-width:75%}.ariyan-add-kicker{display:inline-flex;padding:5px 10px;border-radius:20px;background:#ffffff20;font-size:10px;font-weight:800;letter-spacing:.8px;margin-bottom:12px}
+.ariyan-add-title{font-size:21px;font-weight:900;line-height:1.2}.ariyan-add-title em{display:block;font-style:normal;color:#bfdbfe}.ariyan-add-sub{font-size:11px;line-height:1.5;color:#e0e7ff;margin-top:9px}
+.ariyan-add-symbol{position:relative;z-index:1;flex:0 0 62px;height:62px;border-radius:18px;background:#ffffff20;border:1px solid #ffffff35;display:grid;place-items:center;font-size:30px;font-weight:900}
+.ariyan-add-card{padding:18px;border:1px solid var(--bd);border-radius:16px;background:var(--card);box-shadow:0 7px 22px #1720330b}
+.ariyan-add-card h3{font-size:16px;color:var(--tx);margin:0 0 5px}.ariyan-add-hint{font-size:11px;color:var(--mu);margin-bottom:18px}
+.ariyan-add-label{display:block;font-size:11px;font-weight:800;color:var(--mu);margin:0 0 7px}
+.ariyan-add-input{width:100%;height:52px;border:1px solid var(--bd);border-radius:13px;background:var(--bg);padding:0 14px;color:var(--tx);font:inherit;font-size:16px;outline:none}
+.ariyan-add-input:focus{border-color:var(--v);box-shadow:0 0 0 3px #2563eb18}
+.ariyan-add-safe{font-size:10px;color:var(--mu);margin:9px 0 16px}.ariyan-add-safe b{color:#0f9f6e}
+.ariyan-add-secure{width:100%;border:0;border-radius:12px;min-height:48px;background:var(--g);color:#fff;font:inherit;font-size:14px;font-weight:850;cursor:pointer;box-shadow:0 6px 15px #2563eb25}
 .ariyan-pay-caption{background:var(--v);color:#fff;text-align:center;border-radius:9px;padding:12px;font-weight:700;margin:8px 0 14px}
 .ariyan-pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ariyan-pay-method{position:relative;min-height:92px;border:1px solid var(--bd);border-radius:13px;background:#fff;color:var(--tx);font:inherit;font-size:21px;font-weight:850;cursor:pointer;box-shadow:0 5px 15px #17203312}
@@ -154,10 +165,10 @@ var st=document.createElement('style');st.id=styleId;st.textContent=`
 .ariyan-pay-shop{display:flex;align-items:center;gap:12px;padding:13px;border-radius:13px;background:#fff;border:1px solid var(--bd);margin-bottom:12px}
 .ariyan-pay-shop .shop-icon{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--card);color:var(--v);font-size:22px}
 .ariyan-pay-shop b{font-size:16px;color:var(--tx)}
-.ariyan-pay-amount{padding:13px;border-radius:12px;background:var(--card);font-size:21px;font-weight:850;color:var(--tx);margin-bottom:12px}
+.ariyan-pay-amount{padding:13px;border-radius:12px;background:var(--card);font-size:21px;font-weight:850;color:var(--tx);margin-bottom:12px;border:1px solid var(--bd)}
 .ariyan-pay-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:10px;border-radius:13px;background:#fff;border:1px solid var(--bd);margin:12px 0}
 .ariyan-pay-step{text-align:center;font-size:10px;font-weight:700;color:var(--mu);line-height:1.35}
-.ariyan-pay-step b{display:grid;place-items:center;width:35px;height:35px;border-radius:50%;margin:0 auto 5px;background:#fff;border:1px solid #e5e7eb;font-size:22px;color:#d71920}
+.ariyan-pay-step b{display:grid;place-items:center;width:35px;height:35px;border-radius:10px;margin:0 auto 5px;background:#fff;border:1px solid #e5e7eb;font-size:22px;color:#d71920}
 .ariyan-pay-step.active b{background:#0aaf63;color:#fff;border-color:#0aaf63}
 .ariyan-pay-instructions{background:var(--v);color:#fff;padding:14px;border-radius:13px;margin:12px 0;line-height:1.75;font-size:13px}
 .ariyan-pay-instructions h3{font-size:17px;text-align:center;margin:0 0 12px}
@@ -165,31 +176,35 @@ var st=document.createElement('style');st.id=styleId;st.textContent=`
 .ariyan-pay-number strong{flex:1;font-size:16px;letter-spacing:.4px;word-break:break-all}
 .ariyan-pay-number button{border:0;border-radius:8px;padding:8px 10px;background:#fff;color:var(--v);font:inherit;font-size:12px;font-weight:800;white-space:nowrap}
 .ariyan-pay-instructions ol{padding-left:20px;margin:10px 0 0}.ariyan-pay-instructions li{padding:6px 0;border-bottom:1px solid #ffffff30}
-@media(max-width:360px){.ariyan-pay-steps{gap:2px;padding:7px}.ariyan-pay-step{font-size:9px}.ariyan-pay-step b{width:30px;height:30px}}
+@media(max-width:360px){.ariyan-pay-steps{gap:2px;padding:7px}.ariyan-pay-step{font-size:9px}.ariyan-pay-step b{width:30px;height:30px}.ariyan-add-title{font-size:19px}}
 `;
 document.head.appendChild(st)}
+function amountPage(){
+var val=initialAmount>0?String(initialAmount):'';
+var html='<div class="ariyan-add-hero"><div class="ariyan-add-copy"><span class="ariyan-add-kicker">✦ INSTANT &amp; SECURE</span><div class="ariyan-add-title">Add Money to <em>ARIYANTOPUP</em></div><div class="ariyan-add-sub">Fast, protected wallet recharge for uninterrupted top-ups.</div></div><div class="ariyan-add-symbol">৳<span style="font-size:17px;position:absolute;transform:translate(18px,18px);background:#0aaf63;border:2px solid #fff;border-radius:50%;width:25px;height:25px;display:grid;place-items:center">+</span></div></div><div class="ariyan-add-card"><h3>▣ &nbsp;Enter Amount</h3><div class="ariyan-add-hint">Type the amount you want to add.</div><form id="ariyanAddAmountForm"><label class="ariyan-add-label" for="ariyanAddAmount">AMOUNT</label><input class="ariyan-add-input" id="ariyanAddAmount" name="amount" type="number" min="10" max="50000" step="1" required placeholder="৳  Enter amount" value="'+esc(val)+'"><div class="ariyan-add-safe"><b>●</b> Amount will be added to your ARIYANTOPUP wallet after verification.</div><button class="ariyan-add-secure" type="submit">▣ &nbsp; Add Money Securely &nbsp; →</button></form></div>';
+open('Add Money',html);
+$('#ariyanAddAmountForm').onsubmit=function(e){e.preventDefault();var amount=Number($('#ariyanAddAmount').value);if(!Number.isFinite(amount)||amount<10||amount>50000){toast('১০ থেকে ৫০,০০০ টাকার মধ্যে পরিমাণ দিন');return}initialAmount=amount;methodsPage()};
+}
 function methodsPage(){
-var html='<div class="ariyan-pay-banner">ARIYANTOPUP</div><div class="ariyan-pay-caption">পেমেন্ট মেথড</div><div class="ariyan-pay-methods"><button type="button" class="ariyan-pay-method bk" data-method="bKash">bKash<span class="brand-mark">Send Money</span></button><button type="button" class="ariyan-pay-method ng" data-method="Nagad">নগদ<span class="brand-mark">Send Money</span></button></div>';
+var html='<div class="ariyan-add-hero"><div class="ariyan-add-copy"><span class="ariyan-add-kicker">✦ INSTANT &amp; SECURE</span><div class="ariyan-add-title">Choose Payment <em>ARIYANTOPUP</em></div><div class="ariyan-add-sub">নিরাপদে পেমেন্ট করার জন্য একটি মাধ্যম নির্বাচন করুন</div></div><div class="ariyan-add-symbol">৳</div></div><div class="ariyan-pay-caption">পেমেন্ট মেথড</div><div class="ariyan-pay-methods"><button type="button" class="ariyan-pay-method bk" data-method="bKash">bKash<span class="brand-mark">Send Money</span></button><button type="button" class="ariyan-pay-method ng" data-method="Nagad">নগদ<span class="brand-mark">Send Money</span></button></div><div class="ariyan-pay-amount" style="margin-top:14px">আপনার পেমেন্ট: ৳ '+initialAmount.toLocaleString('en-BD')+'</div>';
 open('পেমেন্ট মেথড',html);
 $('#amBody').querySelectorAll('[data-method]').forEach(function(btn){btn.onclick=function(){detailPage(btn.dataset.method,initialAmount)}});
 }
 function detailPage(method,amount){
 var isBk=method==='bKash',number=isBk?(paymentInfo.bkash||'নম্বর সেট করা হয়নি'):(paymentInfo.nagad||'নম্বর সেট করা হয়নি');
 var brand=isBk?'bKash':'নগদ';
-var html='<button type="button" class="ariyan-pay-back" id="amPayBack">‹ ফিরে যান</button>'+ 
-'<div class="ariyan-pay-logo" style="color:'+(isBk?'#c21865':'#e04428')+'">'+brand+'</div>'+ 
-'<div class="ariyan-pay-shop"><span class="shop-icon">♧</span><div><b>ARIYANTOPUP</b><div class="am-muted">Merchant Payment</div></div></div>'+ 
-'<div class="ariyan-pay-amount" id="amAmountPreview">৳ '+(amount?Number(amount).toLocaleString('en-BD'):'0')+'</div>'+ 
-'<div class="ariyan-pay-steps"><div class="ariyan-pay-step active"><b>✓</b>Send Money</div><div class="ariyan-pay-step"><b>×</b>Mobile Recharge</div><div class="ariyan-pay-step"><b>×</b>Cash Out</div><div class="ariyan-pay-step"><b>×</b>Payment</div></div>'+ 
-'<form id="amDeposit"><input type="hidden" name="method" value="'+method+'"><label>টাকার পরিমাণ (৳)</label><input name="amount" id="amAmount" type="number" min="10" max="50000" step="1" required placeholder="যেমন 100" value="'+(amount?esc(amount):'')+'" '+(amount?'readonly':'')+'><label>ট্রানজেকশন আইডি দিন</label><input name="trxId" required minlength="6" maxlength="30" placeholder="ট্রানজেকশন আইডি দিন" autocomplete="off"><div class="ariyan-pay-instructions"><h3>পেমেন্ট সম্পন্ন করার নিয়ম</h3><div>• *247# ডায়াল করে অথবা '+brand+' অ্যাপ খুলুন</div><div>• Send Money নির্বাচন করুন</div><div class="ariyan-pay-number"><strong>'+esc(number)+'</strong><button type="button" id="amCopyNumber">▣ কপি</button></div><div>• টাকার পরিমাণ: <b id="amAmountText">৳ '+(amount?Number(amount).toLocaleString('en-BD'):'0')+'</b></div><ol><li>নিশ্চিত করে নম্বরে টাকা পাঠান</li><li>টাকা পাঠানোর পর Transaction ID কপি করুন</li><li>নিচে Transaction ID লিখে Verify চাপুন</li></ol></div><button class="am-btn" type="submit">ভেরিফাই</button><div id="amErr" class="am-muted" role="status"></div></form>';
+var html='<button type="button" class="ariyan-pay-back" id="amPayBack">‹ ফিরে যান</button>'+
+'<div class="ariyan-pay-logo" style="color:'+(isBk?'#c21865':'#e04428')+'">'+brand+'</div>'+
+'<div class="ariyan-pay-shop"><span class="shop-icon">♧</span><div><b>ARIYANTOPUP</b><div class="am-muted">Wallet Payment</div></div></div>'+
+'<div class="ariyan-pay-amount" id="amAmountPreview">৳ '+(amount?Number(amount).toLocaleString('en-BD'):'0')+'</div>'+
+'<div class="ariyan-pay-steps"><div class="ariyan-pay-step active"><b>✓</b>Send Money</div><div class="ariyan-pay-step"><b>×</b>Cash Out</div><div class="ariyan-pay-step"><b>×</b>Mobile Recharge</div><div class="ariyan-pay-step"><b>×</b>Add Money</div></div>'+
+'<form id="amDeposit"><input type="hidden" name="method" value="'+method+'"><label>টাকার পরিমাণ (৳)</label><input name="amount" id="amAmount" type="number" min="10" max="50000" step="1" required placeholder="যেমন 100" value="'+(amount?esc(amount):'')+'" readonly><label>ট্রানজেকশন আইডি দিন</label><input name="trxId" required minlength="6" maxlength="30" placeholder="ট্রানজেকশন আইডি দিন" autocomplete="off"><div class="ariyan-pay-instructions"><h3>ট্রানজেকশন আইডি দিন</h3><div>• '+(isBk?'*247#':'*167#')+' ডায়াল করে আপনার '+brand+' মোবাইল মেনুতে যান অথবা '+brand+' অ্যাপ খুলুন</div><div>• Send Money নির্বাচন করুন</div><div class="ariyan-pay-number"><strong>'+esc(number)+'</strong><button type="button" id="amCopyNumber">▣ কপি</button></div><div>• টাকার পরিমাণ: <b id="amAmountText">৳ '+(amount?Number(amount).toLocaleString('en-BD'):'0')+'</b></div><ol><li>নিশ্চিত করে এই নম্বরে টাকা পাঠান</li><li>টাকা পাঠানোর পর Transaction ID কপি করুন</li><li>নিচে Transaction ID লিখে Verify চাপুন</li></ol></div><button class="am-btn" type="submit">ভেরিফাই</button><div id="amErr" class="am-muted" role="status"></div></form>';
 open(brand+' পেমেন্ট',html);
 $('#amPayBack').onclick=methodsPage;
-function updateAmount(){var v=Number($('#amAmount').value||0);$('#amAmountPreview').textContent='৳ '+(v?v.toLocaleString('en-BD'):'0');$('#amAmountText').textContent='৳ '+(v?v.toLocaleString('en-BD'):'0')}
-$('#amAmount').addEventListener('input',updateAmount);updateAmount();
 $('#amCopyNumber').onclick=async function(){try{if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(String(number));else{var ta=document.createElement('textarea');ta.value=String(number);document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}toast('নম্বর কপি হয়েছে')}catch(e){toast('কপি করা যায়নি, নম্বরটি হাতে কপি করুন')}};
 $('#amDeposit').onsubmit=async function(e){e.preventDefault();var f=new FormData(this),btn=$('button[type=submit]',this);btn.disabled=true;try{var r=await api('/api/customer/deposits',{amount:Number(f.get('amount')),method:f.get('method'),trxId:f.get('trxId').trim()});$('#amErr').textContent=(r.message||'পেমেন্ট জমা হয়েছে')+'। Admin যাচাই করলে ব্যালেন্স যোগ হবে।';$('#amErr').className='am-success';btn.textContent='জমা হয়েছে';}catch(ex){$('#amErr').textContent=ex.message;$('#amErr').className='am-danger';btn.disabled=false}};
 }
-methodsPage();
+amountPage();
 }
 
 async function showOrders(){if(!await requireLogin())return;var panel=$('#accPanel');if(panel){panel.classList.remove('show');panel.setAttribute('aria-hidden','true');document.body.style.overflow=''}location.hash='my-orders';try{var r=await api('/api/customer/orders');window._ariyanOrderCount=r.orders.length;syncProfile();if(window.renderOrders)window.renderOrders(r.orders.map(function(o){return {id:o.id,status:o.status,date:new Date(o.createdAt).toLocaleString('en-GB'),updated:new Date(o.updatedAt||o.createdAt).toLocaleString('en-GB'),package:o.packageName,price:o.price,playerId:o.playerId}}))}catch(e){var el=$('#orList');if(el)el.textContent=e.message}}
