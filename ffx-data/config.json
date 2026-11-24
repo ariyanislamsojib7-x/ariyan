@@ -179,6 +179,7 @@
     ]
   },
   "paymentSettings": {
-    "bkashNumber": "01327414272"
+    "bkashNumber": "01327414272",
+    "tileSendUrl": "/uploads/payment-tileSend-1795514220094.jpg"
   }
 }
