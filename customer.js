@@ -553,7 +553,7 @@ function currentProduct(btn){
   var x=map[id];if(!x)return null;
   var page=btn.closest('main');
   var pk=page&&$('.pk.on',page),input=$('#'+x.input);
-  return {key:x.key,packageName:pk&&pk.dataset.name,price:pk?Number(pk.dataset.price):0,playerId:input?input.value.trim():'',server:x.key==='in'?'Indonesia':'BD'};
+  return {key:x.key,product:x.key,packageName:pk&&pk.dataset.name,price:pk?Number(pk.dataset.price):0,playerId:input?input.value.trim():'',server:x.key==='in'?'Indonesia':'BD'};
 }
 
 async function placeOrder(btn){

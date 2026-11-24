@@ -1018,8 +1018,8 @@ async function handleApi(req, res, pathname) {
         customerDB.deposits.push(d); saveCustomerDB(); return sendJson(res, 201, { deposit:d, message:'পেমেন্ট যাচাইয়ের জন্য জমা হয়েছে' });
       }
       if (req.method === 'POST' && pathname === '/api/customer/order-payments') {
-        const b=await readJson(req,8192), product=String(b.product||'').slice(0,20), packageName=String(b.packageName||'').slice(0,100), price=Number(b.price), playerId=String(b.playerId||'').trim().slice(0,40), server=String(b.server||'').slice(0,40), method=String(b.method||''), trx=String(b.trxId||'').trim().toUpperCase();
-        const productDef=PRODUCTS.find(x=>x.key===product), productCfg=(config.prod||{})[product]||{}, validPackages=productCfg.packages||(getDefaults()[product]||{}).packages||[], validPackage=validPackages.find(x=>x.name===packageName&&Number(x.price)===price);
+        const b=await readJson(req,8192), product=String(b.product||b.key||'').slice(0,20), packageName=String(b.packageName||'').slice(0,100), price=Number(b.price), playerId=String(b.playerId||'').trim().slice(0,40), server=String(b.server||'').slice(0,40), method=String(b.method||''), trx=String(b.trxId||'').trim().toUpperCase();
+        const productDef=PRODUCTS.find(x=>x.key===product), productCfg=(config.prod||{})[product]||{}, validPackages=productCfg.packages||(getDefaults()[product]||{}).packages||[], validPackage=validPackages.find(x=>x.name===packageName&&Math.abs(Number(x.price)-price)<0.001);
         if(!productDef||!validPackage||!Number.isFinite(price)||price<=0||!playerId) return sendJson(res,400,{error:'প্যাকেজ, দাম বা Player UID সঠিক নয়'});
         if(!['bKash','Nagad'].includes(method)) return sendJson(res,400,{error:'শুধু bKash অথবা Nagad নির্বাচন করুন'});
         if(!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res,400,{error:'সঠিক Transaction ID দিন'});
@@ -1029,11 +1029,11 @@ async function handleApi(req, res, pathname) {
         customerDB.orderPayments.push(reqPay); saveCustomerDB(); return sendJson(res,201,{payment:reqPay,message:'অর্ডারের পেমেন্ট যাচাইয়ের জন্য জমা হয়েছে। Admin অনুমোদন করলে অর্ডার তৈরি হবে।'});
       }
       if (req.method === 'POST' && pathname === '/api/customer/orders') {
-        const b = await readJson(req, 8192), product = String(b.product||'').slice(0,20), packageName = String(b.packageName||'').slice(0,100), price = Number(b.price), playerId = String(b.playerId||'').trim().slice(0,40), server = String(b.server||'').slice(0,40);
+        const b = await readJson(req, 8192), product = String(b.product||b.key||'').slice(0,20), packageName = String(b.packageName||'').slice(0,100), price = Number(b.price), playerId = String(b.playerId||'').trim().slice(0,40), server = String(b.server||'').slice(0,40);
         const productDef = PRODUCTS.find(x=>x.key===product);
         const productCfg = (config.prod||{})[product] || {};
         const validPackages = productCfg.packages || (getDefaults()[product]||{}).packages || [];
-        const validPackage = validPackages.find(x=>x.name===packageName && Number(x.price)===price);
+        const validPackage = validPackages.find(x=>x.name===packageName && Math.abs(Number(x.price)-price)<0.001);
         if (!productDef || !validPackage || !Number.isFinite(price) || price <= 0 || !playerId) return sendJson(res,400,{error:'প্যাকেজ বা দাম সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন'});
         if (u.balance < price) return sendJson(res,400,{error:'ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই'});
         u.balance = Math.round((u.balance-price)*100)/100;
