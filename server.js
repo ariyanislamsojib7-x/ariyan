@@ -179,7 +179,14 @@ function emptyAccountSupport() {
     ]
   };
 }
-function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null, accountSupport: null }; }
+function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null, accountSupport: null, paymentSettings: null }; }
+function sanitizePaymentSettings(input) {
+  const x = input && typeof input === 'object' ? input : {};
+  const out = {};
+  ['bkashNumber','nagadNumber'].forEach(k => { const v=String(x[k]||'').replace(/[^0-9+]/g,'').slice(0,20); if(v) out[k]=v; });
+  ['walletLogoUrl','instantLogoUrl','bkashLogoUrl','nagadLogoUrl','addMoneyBannerUrl','facebookUrl','youtubeUrl','howToVideoUrl'].forEach(k => { const v=cleanUrl(x[k]||''); if(v) out[k]=v; });
+  return out;
+}
 function sanitizeAccountSupport(input) {
   const d = emptyAccountSupport(), src = input && typeof input === 'object' ? input : {};
   function rows(key, count, emailIndex, phoneIndex) {
@@ -323,6 +330,7 @@ function loadLocal() {
     }
     if (j.quick) config.quick = sanitizeQuick(j.quick);
     if (j.accountSupport) { try { config.accountSupport = sanitizeAccountSupport(j.accountSupport); } catch (e) {} }
+    if (j.paymentSettings) { try { config.paymentSettings = sanitizePaymentSettings(j.paymentSettings); } catch (e) {} }
   } catch (e) {}
   cfgVersion++;
   renderCache = null;
@@ -760,12 +768,12 @@ setInterval(function () {
 // -------------------------------------------------------
 const CUSTOMER_DB = path.join(DATA_DIR, 'customers.json');
 const CUSTOMER_SESSION_MS = 7 * 24 * 60 * 60 * 1000;
-let customerDB = { users: [], deposits: [], orders: [], transactions: [] };
+let customerDB = { users: [], deposits: [], orders: [], transactions: [], orderPayments: [] };
 function loadCustomerDB() {
   try {
     const d = JSON.parse(fs.readFileSync(CUSTOMER_DB, 'utf8'));
-    customerDB = Object.assign({ users: [], deposits: [], orders: [], transactions: [] }, d);
-  } catch (_) { customerDB = { users: [], deposits: [], orders: [], transactions: [] }; }
+    customerDB = Object.assign({ users: [], deposits: [], orders: [], transactions: [], orderPayments: [] }, d);
+  } catch (_) { customerDB = { users: [], deposits: [], orders: [], transactions: [], orderPayments: [] }; }
 }
 function saveCustomerDB() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -902,6 +910,7 @@ function currentView() {
     quick: visibleQuick,
     quickCustom: !!config.quick,
     accountSupport: sanitizeAccountSupport(config.accountSupport || emptyAccountSupport()),
+    paymentSettings: Object.assign({bkashNumber:'',nagadNumber:'',walletLogoUrl:'',instantLogoUrl:'',bkashLogoUrl:'',nagadLogoUrl:'',addMoneyBannerUrl:'',facebookUrl:'',youtubeUrl:'',howToVideoUrl:''}, config.paymentSettings || {}),
     maxBanners: MAX_BANNERS,
     storage: { mode: storage.mode, ok: storage.ok, error: storage.error, repo: storage.repo, branch: storage.branch },
     persistent: USE_GH || !!process.env.DATA_DIR
@@ -958,7 +967,7 @@ async function handleApi(req, res, pathname) {
       saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
-    if (req.method === 'GET' && pathname === '/api/payment-info') return sendJson(res, 200, { bkash: process.env.BKASH_NUMBER || '', nagad: process.env.NAGAD_NUMBER || '', instructions: 'নম্বর ও পেমেন্টের ধরন নিশ্চিত করে টাকা পাঠান। Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।' });
+    if (req.method === 'GET' && pathname === '/api/payment-info') { const ps=config.paymentSettings||{}; return sendJson(res, 200, { bkash: ps.bkashNumber || process.env.BKASH_NUMBER || '', nagad: ps.nagadNumber || process.env.NAGAD_NUMBER || '', settings: Object.assign({bkashLogoUrl:'',nagadLogoUrl:'',walletLogoUrl:'',instantLogoUrl:'',addMoneyBannerUrl:'',facebookUrl:'',youtubeUrl:'',howToVideoUrl:''},ps), instructions: 'নম্বর ও পেমেন্টের ধরন নিশ্চিত করে টাকা পাঠান। Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।' }); }
     if (req.method === 'POST' && pathname === '/api/auth/register') {
       const b = await readJson(req, 8192);
       const email = cleanEmail(b.email), name = String(b.name || '').trim().slice(0, 70), phone = String(b.phone || '').trim().slice(0, 24);
@@ -991,6 +1000,17 @@ async function handleApi(req, res, pathname) {
         if (customerDB.deposits.some(d=>d.trxId===trx && d.method===method)) return sendJson(res, 409, { error:'এই Transaction ID আগে জমা হয়েছে' });
         const d = { id:newId('dep'), userId:u.id, email:u.email, amount:Math.round(amount*100)/100, method, trxId:trx, status:'pending', createdAt:new Date().toISOString() };
         customerDB.deposits.push(d); saveCustomerDB(); return sendJson(res, 201, { deposit:d, message:'পেমেন্ট যাচাইয়ের জন্য জমা হয়েছে' });
+      }
+      if (req.method === 'POST' && pathname === '/api/customer/order-payments') {
+        const b=await readJson(req,8192), product=String(b.product||'').slice(0,20), packageName=String(b.packageName||'').slice(0,100), price=Number(b.price), playerId=String(b.playerId||'').trim().slice(0,40), server=String(b.server||'').slice(0,40), method=String(b.method||''), trx=String(b.trxId||'').trim().toUpperCase();
+        const productDef=PRODUCTS.find(x=>x.key===product), productCfg=(config.prod||{})[product]||{}, validPackages=productCfg.packages||(getDefaults()[product]||{}).packages||[], validPackage=validPackages.find(x=>x.name===packageName&&Number(x.price)===price);
+        if(!productDef||!validPackage||!Number.isFinite(price)||price<=0||!playerId) return sendJson(res,400,{error:'প্যাকেজ, দাম বা Player UID সঠিক নয়'});
+        if(!['bKash','Nagad'].includes(method)) return sendJson(res,400,{error:'শুধু bKash অথবা Nagad নির্বাচন করুন'});
+        if(!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res,400,{error:'সঠিক Transaction ID দিন'});
+        const used=customerDB.deposits.some(d=>d.trxId===trx&&d.method===method)||customerDB.orderPayments.some(d=>d.trxId===trx&&d.method===method);
+        if(used) return sendJson(res,409,{error:'এই Transaction ID আগে জমা হয়েছে'});
+        const reqPay={id:newId('opay'),userId:u.id,email:u.email,product,packageName,price:Math.round(price*100)/100,playerId,server,method,trxId:trx,status:'pending',createdAt:new Date().toISOString()};
+        customerDB.orderPayments.push(reqPay); saveCustomerDB(); return sendJson(res,201,{payment:reqPay,message:'অর্ডারের পেমেন্ট যাচাইয়ের জন্য জমা হয়েছে। Admin অনুমোদন করলে অর্ডার তৈরি হবে।'});
       }
       if (req.method === 'POST' && pathname === '/api/customer/orders') {
         const b = await readJson(req, 8192), product = String(b.product||'').slice(0,20), packageName = String(b.packageName||'').slice(0,100), price = Number(b.price), playerId = String(b.playerId||'').trim().slice(0,40), server = String(b.server||'').slice(0,40);
@@ -1032,10 +1052,11 @@ async function handleApi(req, res, pathname) {
         saveCustomerDB();
         return sendJson(res,200,{success:true,order:o,message:'Manual Delivery নির্বাচন করা হয়েছে'});
       }
-      if (['/api/admin/deposits','/api/admin/orders','/api/admin/users'].includes(pathname) && req.method==='GET') {
+      if (['/api/admin/deposits','/api/admin/orders','/api/admin/users','/api/admin/order-payments'].includes(pathname) && req.method==='GET') {
         if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
         if (pathname.endsWith('/deposits')) return sendJson(res,200,{deposits:customerDB.deposits.slice(-300).reverse()});
         if (pathname.endsWith('/orders')) return sendJson(res,200,{orders:customerDB.orders.slice(-300).reverse()});
+        if (pathname.endsWith('/order-payments')) return sendJson(res,200,{orderPayments:customerDB.orderPayments.slice(-300).reverse()});
         return sendJson(res,200,{users:customerDB.users.map(publicUser)});
       }
       if (req.method==='POST' && (pathname==='/api/admin/deposit-action' || pathname==='/api/admin/order-action')) {
@@ -1047,6 +1068,13 @@ async function handleApi(req, res, pathname) {
           if(action==='approve') { const u=customerDB.users.find(x=>x.id===d.userId); if(!u) return sendJson(res,404,{error:'User পাওয়া যায়নি'}); u.balance=Math.round((u.balance+d.amount)*100)/100; d.status='approved'; customerDB.transactions.push({id:newId('txn'),userId:u.id,type:'deposit',amount:d.amount,description:d.method+' deposit approved',depositId:d.id,createdAt:new Date().toISOString()}); }
           else if(action==='reject') d.status='rejected'; else return sendJson(res,400,{error:'ভুল action'});
           d.reviewedAt=new Date().toISOString(); saveCustomerDB(); return sendJson(res,200,{success:true,deposit:d});
+        }
+        if (pathname.endsWith('order-action') && String(b.id||'').startsWith('opay_')) {
+          const op=customerDB.orderPayments.find(x=>x.id===b.id); if(!op) return sendJson(res,404,{error:'Order payment পাওয়া যায়নি'});
+          if(op.status!=='pending') return sendJson(res,409,{error:'এই পেমেন্ট আগে প্রসেস করা হয়েছে'});
+          if(action==='approve') { const o={id:newId('ord'),userId:op.userId,email:op.email,product:op.product,packageName:op.packageName,price:op.price,playerId:op.playerId,server:op.server,status:'pending',paymentStatus:'approved',paymentMethod:op.method,paymentTrxId:op.trxId,deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()}; customerDB.orders.push(o); customerDB.transactions.push({id:newId('txn'),userId:op.userId,type:'purchase',amount:-op.price,description:op.product+' - '+op.packageName+' (Instant Pay)',orderId:o.id,createdAt:new Date().toISOString()}); op.status='approved'; op.orderId=o.id; }
+          else if(action==='reject') op.status='rejected'; else return sendJson(res,400,{error:'ভুল action'});
+          op.reviewedAt=new Date().toISOString(); saveCustomerDB(); return sendJson(res,200,{success:true,orderPayment:op});
         }
         const o=customerDB.orders.find(x=>x.id===b.id); if(!o) return sendJson(res,404,{error:'Order পাওয়া যায়নি'});
         if (!['pending','processing'].includes(o.status)) return sendJson(res,409,{error:'এই Order ইতিমধ্যে শেষ/বাতিল হয়েছে'});
@@ -1079,6 +1107,12 @@ async function handleApi(req, res, pathname) {
 
     if (req.method === 'GET' && pathname === '/api/admin/config') {
       return sendJson(res, 200, currentView());
+    }
+
+    if (req.method === 'POST' && pathname === '/api/admin/payment-settings') {
+      const body=await readJson(req,16384), next=Object.assign({},config,{paymentSettings:sanitizePaymentSettings(body.settings||{})});
+      await commit(next,'Update ARIYANTOPUP payment settings',[],[]);
+      return sendJson(res,200,{success:true,paymentSettings:currentView().paymentSettings});
     }
 
     if (req.method === 'POST' && pathname === '/api/admin/packages') {

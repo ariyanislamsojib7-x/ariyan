@@ -4,7 +4,9 @@ ARiYAN - Backend setup (Render)
 এই আপডেটে যোগ হয়েছে:
 - Email registration/login API (password hashed with scrypt)
 - Customer profile and wallet balance API
-- Manual bKash/Nagad deposit request with Transaction ID
+- Manual bKash/Nagad wallet deposit request with Transaction ID (approved amount credits Wallet)
+- Separate Instant Pay order-payment request: admin approval creates the order directly and never credits Wallet
+- Admin-editable bKash/Nagad receiving numbers, payment logos, Wallet/Instant checkout artwork, Add Money banner, Facebook/YouTube links and How-to video URL
 - Admin-only deposit approval/rejection; balance is credited only after approval
 - Wallet-funded order API; server verifies package and price against website configuration
 - Customer order/transaction history API
@@ -27,13 +29,16 @@ GET  /api/customer/me                 Authorization: Bearer <customer token>
 GET  /api/customer/orders             Authorization: Bearer <customer token>
 GET  /api/customer/transactions       Authorization: Bearer <customer token>
 POST /api/customer/deposits {amount,method:"bKash"|"Nagad",trxId}
-POST /api/customer/orders {product:<key>,packageName,price,playerId,server}
+POST /api/customer/orders {product:<key>,packageName,price,playerId,server} (Wallet Pay)
+POST /api/customer/order-payments {product,packageName,price,playerId,server,method,trxId} (Instant Pay; direct order after admin approval)
 GET  /api/payment-info
 
 Admin endpoints (use existing Admin Panel token):
 GET  /api/admin/users
 GET  /api/admin/deposits
 GET  /api/admin/orders
+GET  /api/admin/order-payments
+POST /api/admin/payment-settings {settings:{bkashNumber,nagadNumber,walletLogoUrl,instantLogoUrl,bkashLogoUrl,nagadLogoUrl,addMoneyBannerUrl,facebookUrl,youtubeUrl,howToVideoUrl}}
 POST /api/admin/deposit-action {id,action:"approve"|"reject"}
 POST /api/admin/order-action {id,action:"processing"|"delivered"|"rejected"}
 
@@ -48,14 +53,14 @@ NOTE:
 Frontend connection added:
 - customer.js connects the existing site account/login, Add Money, Wallet and product purchase buttons to the APIs.
 - Admin Panel now has an Orders & Payments section for deposits, orders and customer list.
-- Purchases use Wallet Pay only. Direct/Instant Pay is hidden because no gateway is configured.
+- Wallet Pay orders debit the Wallet balance. Instant Pay order requests are submitted separately for bKash/Nagad manual review; approval creates the order directly without crediting Wallet. Add Money deposits remain a separate Wallet top-up flow.
 - My Codes remains a placeholder because no redeem-code feature existed in the original project.
 
 Before deploying:
 1. Back up any existing Render persistent data and current environment settings. Do not delete the existing disk or data folder.
 2. Keep the existing FFX-PASS value unchanged; it protects the existing Admin Panel.
 3. Add a Render Persistent Disk (mount path /var/data) and set DATA_DIR=/var/data. If the existing site already has a data folder, migrate/copy it to the disk before switching DATA_DIR, otherwise the old site customizations may not appear.
-4. Set BKASH_NUMBER and NAGAD_NUMBER to the correct receiving numbers. Do not put private API keys in frontend files.
+4. Set bKash/Nagad receiving numbers in Admin Panel → Site Editor → Add Money / Payment Settings (or use BKASH_NUMBER and NAGAD_NUMBER as fallback environment variables). Set payment logos, social URLs and the How-to video URL there too. Do not put private API keys in frontend files.
 5. Deploy one instance only when using the JSON customer database. For multi-instance production use a managed database.
 6. Test a small deposit first. Admin must verify the actual incoming payment in the bKash/Nagad account before approval.
 
