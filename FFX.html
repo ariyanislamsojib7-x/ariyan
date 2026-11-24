@@ -2266,7 +2266,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 // ==========================================
 (function(){
   // লগইন সিস্টেম যুক্ত করলে এটা true করে দিন
-  var isLoggedIn=false;
+  var isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
   var LOGIN_URL='#';
 
   var home=document.getElementById('homeView'), ff=document.getElementById('ffView'), foot=document.getElementById('siteFooter');
@@ -2297,8 +2297,9 @@ setInterval(fetchFreshAccountConfig, 15000);
 
   var buy=document.getElementById('buyBtn'), warn=document.getElementById('loginWarn');
   function upd(){
+    isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
     document.getElementById('needAmt').textContent=sel.price;
-    if(isLoggedIn){warn.style.display='none';buy.textContent='অর্ডার করুন';buy.href='#';}
+    if(isLoggedIn){warn.style.display='none';buy.textContent='Buy Now';buy.href='#';}
     else{warn.style.display='flex';buy.textContent='Login';buy.href=LOGIN_URL;}
   }
   document.querySelectorAll('#pkGrid .pk').forEach(function(b){
@@ -2340,7 +2341,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 // ==========================================
 (function(){
   // লগইন সিস্টেম যুক্ত করলে এটা true করে দিন
-  var isLoggedIn=false;
+  var isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
   var LOGIN_URL='#';
 
   var BALANCE=0;          // ইউজারের ওয়ালেট ব্যালেন্স (ব্যাকএন্ড থেকে বসান)
@@ -2357,6 +2358,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 
   var buy=document.getElementById('uidBuy'), warn=document.getElementById('uidLoginWarn');
   function upd(){
+    isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
     document.getElementById('uidNeed').textContent=sel.price;
     document.getElementById('uidBal').textContent=BALANCE.toFixed(2);
     if(isLoggedIn){warn.style.display='none';balRow.style.display='flex';buy.textContent='Buy Now';buy.href='#';}
@@ -2423,7 +2425,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 // ==========================================
 (function(){
   // লগইন সিস্টেম যুক্ত করলে এটা true করে দিন
-  var isLoggedIn=false;
+  var isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
   var LOGIN_URL='#';
 
   var BALANCE=0;          // ইউজারের ওয়ালেট ব্যালেন্স (ব্যাকএন্ড থেকে বসান)
@@ -2440,6 +2442,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 
   var buy=document.getElementById('wmBuy'), warn=document.getElementById('wmLoginWarn');
   function upd(){
+    isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
     document.getElementById('wmNeed').textContent=sel.price;
     document.getElementById('wmBal').textContent=BALANCE.toFixed(2);
     if(isLoggedIn){warn.style.display='none';balRow.style.display='flex';buy.textContent='Buy Now';buy.href='#';}
@@ -2506,7 +2509,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 // ==========================================
 (function(){
   // লগইন সিস্টেম যুক্ত করলে এটা true করে দিন
-  var isLoggedIn=false;
+  var isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
   var LOGIN_URL='#';
 
   var BALANCE=0;          // ইউজারের ওয়ালেট ব্যালেন্স (ব্যাকএন্ড থেকে বসান)
@@ -2523,6 +2526,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 
   var buy=document.getElementById('wlBuy'), warn=document.getElementById('wlLoginWarn');
   function upd(){
+    isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
     document.getElementById('wlNeed').textContent=sel.price;
     document.getElementById('wlBal').textContent=BALANCE.toFixed(2);
     if(isLoggedIn){warn.style.display='none';balRow.style.display='flex';buy.textContent='Buy Now';buy.href='#';}
@@ -2589,7 +2593,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 // ==========================================
 (function(){
   // লগইন সিস্টেম যুক্ত করলে এটা true করে দিন
-  var isLoggedIn=false;
+  var isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
   var LOGIN_URL='#';
 
   var BALANCE=0;          // ইউজারের ওয়ালেট ব্যালেন্স (ব্যাকএন্ড থেকে বসান)
@@ -2606,6 +2610,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 
   var buy=document.getElementById('luBuy'), warn=document.getElementById('luLoginWarn');
   function upd(){
+    isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
     document.getElementById('luNeed').textContent=sel.price;
     document.getElementById('luBal').textContent=BALANCE.toFixed(2);
     if(isLoggedIn){warn.style.display='none';balRow.style.display='flex';buy.textContent='Buy Now';buy.href='#';}
@@ -2672,7 +2677,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 // ==========================================
 (function(){
   // লগইন সিস্টেম যুক্ত করলে এটা true করে দিন
-  var isLoggedIn=false;
+  var isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
   var LOGIN_URL='#';
 
   var BALANCE=0;          // ইউজারের ওয়ালেট ব্যালেন্স (ব্যাকএন্ড থেকে বসান)
@@ -2689,6 +2694,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 
   var buy=document.getElementById('inBuy'), warn=document.getElementById('inLoginWarn');
   function upd(){
+    isLoggedIn=!!localStorage.getItem('ariyan_customer_token');
     document.getElementById('inNeed').textContent=sel.price;
     document.getElementById('inBal').textContent=BALANCE.toFixed(2);
     if(isLoggedIn){warn.style.display='none';balRow.style.display='flex';buy.textContent='Buy Now';buy.href='#';}
