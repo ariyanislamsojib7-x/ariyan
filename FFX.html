@@ -662,9 +662,9 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .or-dt{display:flex;align-items:center;gap:10px;min-width:0}
 .or-dt+.or-dt{padding-left:12px;border-left:1px solid var(--bd)}
 .or-dt .di{width:38px;height:38px;border-radius:12px;border:1px solid var(--bd);background:#fff;color:var(--v);display:grid;place-items:center;font-size:19px;flex-shrink:0}
-.or-dt.or-refresh-btn{cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:12px}
+.or-dt.or-refresh-btn{cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:12px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .or-dt.or-refresh-btn:active{opacity:.7;transform:scale(.98)}
-.or-dt.or-refresh-btn .di{background:#eef4ff;border-color:#c7d7f5}
+.or-dt.or-refresh-btn .di{background:#eef4ff;border-color:#c7d7f5;-webkit-user-select:none;user-select:none;pointer-events:none}
 .or-dt small{display:block;font-size:11.5px;font-weight:700;color:var(--tx)}
 .or-dt b{display:block;margin-top:1px;font-size:12.5px;font-weight:800;color:var(--tx)}
 .or-dt span{display:block;margin-top:1px;font-size:11.5px;font-weight:500;color:var(--mu)}
@@ -2800,7 +2800,10 @@ setInterval(fetchFreshAccountConfig, 15000);
       var st=String(o.status||'Completed'), cls=/pend|process/i.test(st)?'pending':(/cancel|fail|reject/i.test(st)?'cancelled':'');
       var a=dt(o.date), b=dt(o.updated||o.date);
       var price=Number(o.price||0).toFixed(2);
+      // delivered / delivery → Complete (user request)
       var stLabel=st.replace(/_/g,' ');
+      if(/^(delivered|delivery)$/i.test(stLabel.trim())) stLabel='Complete';
+      else if(/^completed?$/i.test(stLabel.trim())) stLabel='Complete';
       var c=document.createElement('article'); c.className='or-card';
       c.innerHTML=
         '<div class="or-hd"><span class="or-ico">'+ICO.box+'</span><div class="or-id">Order #'+esc(o.id)+'</div>'+
@@ -2817,8 +2820,12 @@ setInterval(fetchFreshAccountConfig, 15000);
       list.appendChild(c);
       var refBtn=c.querySelector('.or-refresh-btn');
       if(refBtn){
+        // Only refresh on click — block copy / context menu / long-press selection
+        refBtn.oncontextmenu=function(e){ e.preventDefault(); e.stopPropagation(); return false; };
+        refBtn.onselectstart=function(e){ e.preventDefault(); return false; };
         refBtn.onclick=function(e){
           e.preventDefault();
+          e.stopPropagation();
           if(typeof window.showOrders==='function') window.showOrders();
           else if(typeof showOrders==='function') showOrders();
           else location.hash='my-orders';

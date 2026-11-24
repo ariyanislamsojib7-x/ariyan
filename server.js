@@ -836,6 +836,14 @@ function publicUser(u) {
   return { id:u.id, userId:u.publicId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' };
 }
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
+function nextOrderId() {
+  let max = 100000;
+  for (const o of (customerDB.orders || [])) {
+    const n = parseInt(String(o.id || '').replace(/\D/g, ''), 10);
+    if (Number.isFinite(n) && n > max) max = n;
+  }
+  return String(max + 1);
+}
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
 function validPass(pass) { return typeof pass === 'string' && pass.length >= 8 && pass.length <= 128; }
@@ -1037,7 +1045,7 @@ async function handleApi(req, res, pathname) {
         if (!productDef || !validPackage || !Number.isFinite(price) || price <= 0 || !playerId) return sendJson(res,400,{error:'প্যাকেজ বা দাম সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন'});
         if (u.balance < price) return sendJson(res,400,{error:'ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই'});
         u.balance = Math.round((u.balance-price)*100)/100;
-        const o={id:newId('ord'),userId:u.id,email:u.email,product,packageName,price,playerId,server,status:'pending',deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()};
+        const o={id:nextOrderId(),userId:u.id,email:u.email,product,packageName,price,playerId,server,status:'pending',deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()};
         customerDB.orders.push(o); customerDB.transactions.push({id:newId('txn'),userId:u.id,type:'purchase',amount:-price,description:product+' - '+packageName,orderId:o.id,createdAt:new Date().toISOString()});
         saveCustomerDB(); return sendJson(res,201,{order:o,user:publicUser(u)});
       }
@@ -1088,7 +1096,7 @@ async function handleApi(req, res, pathname) {
         if (pathname.endsWith('order-action') && String(b.id||'').startsWith('opay_')) {
           const op=customerDB.orderPayments.find(x=>x.id===b.id); if(!op) return sendJson(res,404,{error:'Order payment পাওয়া যায়নি'});
           if(op.status!=='pending') return sendJson(res,409,{error:'এই পেমেন্ট আগে প্রসেস করা হয়েছে'});
-          if(action==='approve') { const o={id:newId('ord'),userId:op.userId,email:op.email,product:op.product,packageName:op.packageName,price:op.price,playerId:op.playerId,server:op.server,status:'pending',paymentStatus:'approved',paymentMethod:op.method,paymentTrxId:op.trxId,deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()}; customerDB.orders.push(o); customerDB.transactions.push({id:newId('txn'),userId:op.userId,type:'purchase',amount:-op.price,description:op.product+' - '+op.packageName+' (Instant Pay)',orderId:o.id,createdAt:new Date().toISOString()}); op.status='approved'; op.orderId=o.id; }
+          if(action==='approve') { const o={id:nextOrderId(),userId:op.userId,email:op.email,product:op.product,packageName:op.packageName,price:op.price,playerId:op.playerId,server:op.server,status:'pending',paymentStatus:'approved',paymentMethod:op.method,paymentTrxId:op.trxId,deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()}; customerDB.orders.push(o); customerDB.transactions.push({id:newId('txn'),userId:op.userId,type:'purchase',amount:-op.price,description:op.product+' - '+op.packageName+' (Instant Pay)',orderId:o.id,createdAt:new Date().toISOString()}); op.status='approved'; op.orderId=o.id; }
           else if(action==='reject') op.status='rejected'; else return sendJson(res,400,{error:'ভুল action'});
           op.reviewedAt=new Date().toISOString(); saveCustomerDB(); return sendJson(res,200,{success:true,orderPayment:op});
         }
