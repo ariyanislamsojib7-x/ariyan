@@ -189,6 +189,7 @@
     "nagadPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
     "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
     "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।",
-    "walletLogoFile": "payment-wallet-1795524305680.jpg"
+    "walletLogoFile": "payment-wallet-1795524305680.jpg",
+    "nagadTilesBannerUrl": "/uploads/payment-nagadTilesBanner-1795525207828.png"
   }
 }
