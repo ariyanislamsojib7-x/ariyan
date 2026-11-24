@@ -653,8 +653,8 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .or-card{border-radius:22px;background:#fff;border:1px solid var(--bd);box-shadow:0 8px 22px -14px rgba(20,40,90,.3);padding:16px 16px 14px}
 .or-hd{display:flex;align-items:center;gap:12px}
 .or-ico{width:42px;height:42px;border-radius:14px;background:#e8f0ff;color:var(--v);display:grid;place-items:center;font-size:21px;flex-shrink:0}
-.or-id{flex:1;min-width:0;font-size:17px;font-weight:800;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.or-st{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:99px;font-size:13px;font-weight:700;flex-shrink:0;background:#e3f9ec;color:#067647}
+.or-id{flex:1;min-width:0;font-size:14px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.or-st{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:99px;font-size:12px;font-weight:700;flex-shrink:0;background:#e3f9ec;color:#067647;text-transform:capitalize;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .or-st svg{font-size:15px;stroke-width:2.4}
 .or-st.pending{background:#fff4dc;color:#b45309}
 .or-st.cancelled{background:#fee4e2;color:#b42318}
@@ -662,6 +662,9 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .or-dt{display:flex;align-items:center;gap:10px;min-width:0}
 .or-dt+.or-dt{padding-left:12px;border-left:1px solid var(--bd)}
 .or-dt .di{width:38px;height:38px;border-radius:12px;border:1px solid var(--bd);background:#fff;color:var(--v);display:grid;place-items:center;font-size:19px;flex-shrink:0}
+.or-dt.or-refresh-btn{cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:12px}
+.or-dt.or-refresh-btn:active{opacity:.7;transform:scale(.98)}
+.or-dt.or-refresh-btn .di{background:#eef4ff;border-color:#c7d7f5}
 .or-dt small{display:block;font-size:11.5px;font-weight:700;color:var(--tx)}
 .or-dt b{display:block;margin-top:1px;font-size:12.5px;font-weight:800;color:var(--tx)}
 .or-dt span{display:block;margin-top:1px;font-size:11.5px;font-weight:500;color:var(--mu)}
@@ -2776,8 +2779,13 @@ setInterval(fetchFreshAccountConfig, 15000);
     ok:'<svg class="i"><use href="#chk"/></svg>'
   };
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-  function dt(v){ // "24-09-2026 05:55:50 PM" অথবা আলাদা date/time
-    var t=esc(v||'').split(' ');
+  function dt(v){
+    var s=String(v||'').trim();
+    if(!s) return {d:'—',t:''};
+    // "24/11/2026, 19:36:18" or "24-09-2026 05:55:50 PM"
+    var m=s.match(/^(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}),?\s*(.*)$/);
+    if(m) return {d:esc(m[1]), t:esc((m[2]||'').trim())};
+    var t=esc(s).split(' ');
     return {d:t[0]||'',t:t.slice(1).join(' ')};
   }
 
@@ -2792,13 +2800,14 @@ setInterval(fetchFreshAccountConfig, 15000);
       var st=String(o.status||'Completed'), cls=/pend|process/i.test(st)?'pending':(/cancel|fail|reject/i.test(st)?'cancelled':'');
       var a=dt(o.date), b=dt(o.updated||o.date);
       var price=Number(o.price||0).toFixed(2);
+      var stLabel=st.replace(/_/g,' ');
       var c=document.createElement('article'); c.className='or-card';
       c.innerHTML=
         '<div class="or-hd"><span class="or-ico">'+ICO.box+'</span><div class="or-id">Order #'+esc(o.id)+'</div>'+
-        '<span class="or-st '+cls+'">'+(cls?'':ICO.ok)+esc(st)+'</span></div>'+
+        '<span class="or-st '+cls+'">'+(cls?'':ICO.ok)+esc(stLabel)+'</span></div>'+
         '<div class="or-dates">'+
           '<div class="or-dt"><span class="di">'+ICO.cal+'</span><div><small>Order Date</small><b>'+a.d+'</b><span>'+a.t+'</span></div></div>'+
-          '<div class="or-dt"><span class="di">'+ICO.ref+'</span><div><small>Updated</small><b>'+b.d+'</b><span>'+b.t+'</span></div></div>'+
+          '<div class="or-dt or-refresh-btn" role="button" tabindex="0" title="Refresh orders"><span class="di">'+ICO.ref+'</span><div><small>Updated</small><b>'+b.d+'</b><span>'+b.t+'</span></div></div>'+
         '</div>'+
         '<div class="or-rows">'+
           '<div class="or-row">'+ICO.pkg+'<span>Package</span><b>'+esc(o.package)+'</b></div>'+
@@ -2806,6 +2815,15 @@ setInterval(fetchFreshAccountConfig, 15000);
           '<div class="or-row">'+ICO.user+'<span>Player ID</span><b>'+esc(o.playerId)+'</b></div>'+
         '</div>';
       list.appendChild(c);
+      var refBtn=c.querySelector('.or-refresh-btn');
+      if(refBtn){
+        refBtn.onclick=function(e){
+          e.preventDefault();
+          if(typeof window.showOrders==='function') window.showOrders();
+          else if(typeof showOrders==='function') showOrders();
+          else location.hash='my-orders';
+        };
+      }
     });
   };
   window.renderOrders([]); // এখন ফাঁকা

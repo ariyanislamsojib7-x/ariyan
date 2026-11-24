@@ -515,6 +515,7 @@ function detailPage(method, amount, orderData){
   };
 }
 
+window.showOrders=showOrders;
 async function showOrders(){
   if(!await requireLogin())return;
   var panel=$('#accPanel');
