@@ -605,12 +605,7 @@ function drawSite(){
 ['howToVideoUrl','How to Add Money YouTube video URL']
 ];
 var shortTexts=[
-['paymentSelectText','পেমেন্ট (Payment) নির্বাচন করুন','bKash ও নগদ পেজের হলুদ ব্যানার টেক্সট'],
-['trxIdTitle','ট্রানজেকশন আইডি দিন','ট্রানজেকশন আইডি হেডিং ও ইনপুট প্লেসহোল্ডার (দুই পেজেই)']
-];
-var textAreas=[
-['bkashInstructions','bKash রুলস / ইনস্ট্রাকশন (প্রতি লাইনে একটি নিয়ম)\nপ্লেসহোল্ডার: {number} {amount} {brand}\n“পেমেন্ট-এ ক্লিক করুন” লাইন এখানে এডিট করুন'],
-['nagadInstructions','নগদ রুলস / ইনস্ট্রাকশন (প্রতি লাইনে একটি নিয়ম)\nপ্লেসহোল্ডার: {number} {amount} {brand}\n“পেমেন্ট-এ ক্লিক করুন” লাইন এখানে এডিট করুন']
+['paymentSelectText','পেমেন্ট (Payment) নির্বাচন করুন','bKash ও নগদ পেজের হলুদ ব্যানার টেক্সট']
 ];
 function payField(f){
   var isImg=/LogoUrl|tile|BannerUrl/.test(f[0]);
@@ -629,8 +624,7 @@ function shortRow(f){
 }
 return fields.map(payField).join('')+
   '<div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0"><b style="font-size:13px;color:#334155">পেমেন্ট পেজ টেক্সট (কলম দিয়ে এডিট)</b></div>'+
-  shortTexts.map(shortRow).join('')+
-  textAreas.map(function(f){return '<label style="font-size:12px;font-weight:700;color:#475569;margin-top:12px;display:block">'+f[1].replace(/\n/g,'<br>')+'<textarea data-payment-setting="'+f[0]+'" rows="6" placeholder="প্রতি লাইনে একটি নিয়ম...\nউদাহরণ:\n*247# ডায়াল করে {brand} অ্যাপ খুলুন\nপেমেন্ট-এ ক্লিক করুন\nএই নম্বরে টাকা পাঠান: {number}\nটাকার পরিমাণ: {amount}" style="display:block;width:100%;box-sizing:border-box;padding:10px;margin:5px 0 0;border:1px solid #cbd5e1;border-radius:8px;font:inherit;min-height:120px">'+esc(ps[f[0]]||'')+'</textarea></label>'}).join('')})()+'</div><button type="button" class="btn" id="savePaymentSettings" style="margin-top:12px">Save Payment Settings</button><span id="paymentSettingsStatus" class="muted" style="margin-left:8px"></span></div>'+
+  shortTexts.map(shortRow).join('')})()+'</div><button type="button" class="btn" id="savePaymentSettings" style="margin-top:12px">Save Payment Settings</button><span id="paymentSettingsStatus" class="muted" style="margin-left:8px"></span></div>'+
      '<div class="s-quick">'+q.slice(0,4).map(function(x,i){
         return '<div class="ed"><span class="s-q"><span class="s-ic">'+svgi(QICON[i],1)+'</span><b>'+esc(x.label)+'</b></span>'+pen('Edit '+QNAME[i],'q'+i)+'</div>';
      }).join('')+'</div>'+
