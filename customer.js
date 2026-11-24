@@ -240,9 +240,9 @@ function ensurePaymentStyles(){
 .ariyan-tile .tile-x{position:absolute;top:2px;right:4px;font-size:16px;font-weight:900;color:#e11d48;line-height:1}
 .ariyan-tile.ok{border-color:#86efac;background:#f0fdf4}
 .ariyan-tile.ok .tile-x{color:#16a34a;font-size:14px}
-.ariyan-tile-banner{display:block;text-align:center;background:#fbbf24;color:#78350f;font-size:11px;font-weight:800;padding:6px 8px;border-radius:8px;margin:-6px 8px 12px;position:relative;z-index:1}
+.ariyan-tile-banner{display:block;text-align:center;background:#fbbf24;color:#78350f;font-size:11px;font-weight:800;padding:6px 8px;border-radius:8px;margin:-6px 8px 10px;position:relative;z-index:1}
 
-.ariyan-detail-card h3{margin:0 0 8px;font-size:16px;font-weight:800;text-align:center}
+.ariyan-detail-card h3{margin:0 0 6px;font-size:16px;font-weight:800;text-align:center}
 .ariyan-detail-card .step{font-size:13px;line-height:1.65;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.18)}
 .ariyan-detail-card .step:last-child{border-bottom:0}
 .ariyan-detail-card .num-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0}
@@ -250,10 +250,10 @@ function ensurePaymentStyles(){
 .ariyan-detail-card .num-row button{border:0;background:rgba(0,0,0,.25);color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}
 .ariyan-detail-card .amt-hl{color:#fef08a;font-weight:800}
 
-.ariyan-trx-field{margin:0 0 12px}
-.ariyan-trx-field label{display:none}
+.ariyan-trx-field{margin:0 0 10px}
+.ariyan-trx-field label{display:none!important}
 .ariyan-trx-field input{width:100%;padding:13px 14px;border:1px solid #cbd5e1;border-radius:12px;font:inherit;background:#fff;box-sizing:border-box;color:#0f172a}
-.ariyan-detail-card .ariyan-trx-field{margin:0 0 14px}
+.ariyan-detail-card .ariyan-trx-field{margin:0 0 12px}
 .ariyan-detail-card .ariyan-trx-field input{border-color:rgba(255,255,255,.45);background:#fff}
 
 .ariyan-verify-btn{width:100%;border:0;border-radius:12px;padding:15px;font-size:17px;font-weight:900;color:#fff;cursor:pointer;background:#b91c1c}
@@ -372,8 +372,10 @@ function detailPage(method, amount, orderData){
   var icoCash = '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="#e11d48" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#e11d48" stroke-width="2"/></svg>';
   var icoPay = '<svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12v12H6z" stroke="#16a34a" stroke-width="2"/><path d="M9 11h6M9 15h4" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/><path d="M9 3v4M15 3v4" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/></svg>';
 
-  // Single full-width instruction banner image (admin) OR default 4 tiles
+  // Single full-width instruction banner image (admin) OR default 4 tiles + selectable banner text
   var tilesBannerUrl = isBk ? (cfg.bkashTilesBannerUrl || cfg.tilesBannerUrl || '') : (cfg.nagadTilesBannerUrl || cfg.tilesBannerUrl || '');
+  var selectBannerText = (cfg.paymentSelectText || 'পেমেন্ট (Payment) নির্বাচন করুন').trim() || 'পেমেন্ট (Payment) নির্বাচন করুন';
+  var trxTitle = (cfg.trxIdTitle || 'ট্রানজেকশন আইডি দিন').trim() || 'ট্রানজেকশন আইডি দিন';
   var tiles;
   if(tilesBannerUrl){
     tiles = '<div class="ariyan-tiles-banner-img"><img src="'+esc(tilesBannerUrl)+'" alt="Payment options"></div>';
@@ -385,7 +387,7 @@ function detailPage(method, amount, orderData){
         tileImg(cfg.tileCashoutUrl, icoCash, 'ক্যাশ আউট', false)+
         tileImg(cfg.tilePaymentUrl, icoPay, 'পেমেন্ট', true)+
       '</div>'+
-      '<div class="ariyan-tile-banner">পেমেন্ট (Payment) নির্বাচন করুন</div>';
+      '<div class="ariyan-tile-banner">'+esc(selectBannerText)+'</div>';
   }
 
   var customRules = isBk ? (cfg.bkashInstructions || '') : (cfg.nagadInstructions || '');
@@ -428,8 +430,8 @@ function detailPage(method, amount, orderData){
         '<input type="hidden" name="amount" value="'+esc(amount)+'">'+
         '<div class="ariyan-detail-card '+theme+'">'+
           tiles+
-          '<h3>ট্রানজেকশন আইডি দিন</h3>'+
-          '<div class="ariyan-trx-field"><label for="amTrxId">ট্রানজেকশন আইডি দিন</label><input id="amTrxId" name="trxId" required minlength="6" maxlength="40" placeholder="ট্রানজেকশন আইডি দিন" autocomplete="off"></div>'+
+          '<h3>'+esc(trxTitle)+'</h3>'+
+          '<div class="ariyan-trx-field"><input id="amTrxId" name="trxId" required minlength="6" maxlength="40" placeholder="'+esc(trxTitle)+'" autocomplete="off" aria-label="'+esc(trxTitle)+'"></div>'+
           stepsHtml+
         '</div>'+
         '<button class="ariyan-verify-btn'+(isBk?'':' nagad')+'" type="submit">ভেরিফাই</button>'+
