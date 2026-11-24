@@ -92,3 +92,10 @@ Rank Journey visual update:
 - The Rank Journey now displays the emblem artwork instead of emoji; current-rank badge and member badge use the Bronze crest by default and switch with eligible spend.
 - Bottom My Account navigation opens the My Account page directly. Header profile opens the account sidebar; the sidebar Login/Logout control follows the active session.
 - Google profile image is displayed in the account page, sidebar, and header when Google sign-in returns a picture URL.
+
+
+ARIYANTOPUP payment screen update:
+- Add Money modal now displays the blue ARIYANTOPUP banner and selectable bKash/Nagad methods only.
+- The visual method selector uses a check mark for the selected method; unsupported Recharge/Cash Out actions are shown as inactive.
+- Deposit remains manual: customer submits amount + Transaction ID; Admin must verify actual incoming payment before approval.
+- The generated banner asset is ariyantopup-banner.png. No Binance Pay or Rocket option is included.
