@@ -204,9 +204,9 @@ function ensurePaymentStyles(){
 .ariyan-pay-caption{background:#1d4ed8;color:#fff;border-radius:12px;text-align:center;padding:14px;margin:0 0 16px;font-size:15px;font-weight:800}
 .ariyan-pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .ariyan-pay-method{min-height:100px;border:1px solid #e2e8f0;border-radius:14px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;box-shadow:0 2px 10px #1725540c;padding:12px;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
-.ariyan-pay-method img{max-width:70%;max-height:40px;object-fit:contain}
+.ariyan-pay-method img{max-width:80%;max-height:48px;object-fit:contain}
 .ariyan-pay-method strong,.ariyan-pay-method .brand-text{font-size:20px;font-weight:800}
-.ariyan-pay-method .brand-mark{font-size:11px;color:#64748b;font-weight:600}
+.ariyan-pay-method .brand-mark{display:none}
 .ariyan-pay-method.bk strong,.ariyan-pay-method.bk .brand-text{color:#c21865}
 .ariyan-pay-method.ng strong,.ariyan-pay-method.ng .brand-text{color:#e04428}
 .ariyan-pay-amount{background:#dbeafe;color:#1d4ed8;text-align:center;padding:16px;border-radius:12px;font-size:18px;font-weight:900}
@@ -334,8 +334,8 @@ function methodsPage(){
     '<div class="ariyan-add-hero"><div class="ariyan-add-copy"><span class="ariyan-add-kicker">✦ INSTANT &amp; SECURE</span><div class="ariyan-add-title">Choose Payment <em>ARIYANTOPUP</em></div><div class="ariyan-add-sub">নিরাপদে পেমেন্ট করার জন্য একটি মাধ্যম নির্বাচন করুন</div></div><div class="ariyan-add-symbol">৳</div></div>'+
     '<div class="ariyan-pay-caption">পেমেন্ট মেথড</div>'+
     '<div class="ariyan-pay-methods">'+
-      '<button type="button" class="ariyan-pay-method bk" data-method="bKash">'+(cfg.bkashLogoUrl?'<img src="'+esc(cfg.bkashLogoUrl)+'" alt="bKash">':'<strong class="brand-text">bKash</strong>')+'<span class="brand-mark">Send Money</span></button>'+
-      '<button type="button" class="ariyan-pay-method ng" data-method="Nagad">'+(cfg.nagadLogoUrl?'<img src="'+esc(cfg.nagadLogoUrl)+'" alt="Nagad">':'<strong class="brand-text">নগদ</strong>')+'<span class="brand-mark">Send Money</span></button>'+
+      '<button type="button" class="ariyan-pay-method bk" data-method="bKash">'+(cfg.bkashLogoUrl?'<img src="'+esc(cfg.bkashLogoUrl)+'" alt="bKash">':'<strong class="brand-text">bKash</strong>')+'</button>'+
+      '<button type="button" class="ariyan-pay-method ng" data-method="Nagad">'+(cfg.nagadLogoUrl?'<img src="'+esc(cfg.nagadLogoUrl)+'" alt="Nagad">':'<strong class="brand-text">নগদ</strong>')+'</button>'+
     '</div>'+
     '<div class="ariyan-pay-amount">আপনার পেমেন্ট: ৳ '+Number(activePaymentAmount||0).toLocaleString('en-BD')+'</div>';
   open('পেমেন্ট মেথড',html);
@@ -397,23 +397,22 @@ function detailPage(method, amount, orderData){
   var icoCash = '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="#e11d48" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#e11d48" stroke-width="2"/></svg>';
   var icoPay = '<svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12v12H6z" stroke="#16a34a" stroke-width="2"/><path d="M9 11h6M9 15h4" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/><path d="M9 3v4M15 3v4" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/></svg>';
 
-  // Single full-width instruction banner image (admin) OR default 4 tiles + selectable banner text
-  var tilesBannerUrl = isBk ? (cfg.bkashTilesBannerUrl || cfg.tilesBannerUrl || '') : (cfg.nagadTilesBannerUrl || cfg.tilesBannerUrl || '');
+  // Always show 4 tiles + editable banner text (same on bKash & Nagad)
   var selectBannerText = (cfg.paymentSelectText || 'পেমেন্ট (Payment) নির্বাচন করুন').trim() || 'পেমেন্ট (Payment) নির্বাচন করুন';
   var trxTitle = (cfg.trxIdTitle || 'ট্রানজেকশন আইডি দিন').trim() || 'ট্রানজেকশন আইডি দিন';
-  var tiles;
-  if(tilesBannerUrl){
-    tiles = '<div class="ariyan-tiles-banner-img"><img src="'+esc(tilesBannerUrl)+'" alt="Payment options"></div>';
-  } else {
-    tiles =
-      '<div class="ariyan-tiles">'+
-        tileImg(cfg.tileSendUrl, icoSend, 'সেন্ড মানি', false)+
-        tileImg(cfg.tileRechargeUrl, icoRecharge, 'মোবাইল রিচার্জ', false)+
-        tileImg(cfg.tileCashoutUrl, icoCash, 'ক্যাশ আউট', false)+
-        tileImg(cfg.tilePaymentUrl, icoPay, 'পেমেন্ট', true)+
-      '</div>'+
-      '<div class="ariyan-tile-banner">'+esc(selectBannerText)+'</div>';
-  }
+  // Per-method tile image overrides if set, else shared
+  var tSend = isBk ? (cfg.bkashTileSendUrl || cfg.tileSendUrl || '') : (cfg.nagadTileSendUrl || cfg.tileSendUrl || '');
+  var tRech = isBk ? (cfg.bkashTileRechargeUrl || cfg.tileRechargeUrl || '') : (cfg.nagadTileRechargeUrl || cfg.tileRechargeUrl || '');
+  var tCash = isBk ? (cfg.bkashTileCashoutUrl || cfg.tileCashoutUrl || '') : (cfg.nagadTileCashoutUrl || cfg.tileCashoutUrl || '');
+  var tPay  = isBk ? (cfg.bkashTilePaymentUrl || cfg.tilePaymentUrl || '') : (cfg.nagadTilePaymentUrl || cfg.tilePaymentUrl || '');
+  var tiles =
+    '<div class="ariyan-tiles">'+
+      tileImg(tSend, icoSend, 'সেন্ড মানি', false)+
+      tileImg(tRech, icoRecharge, 'মোবাইল রিচার্জ', false)+
+      tileImg(tCash, icoCash, 'ক্যাশ আউট', false)+
+      tileImg(tPay, icoPay, 'পেমেন্ট', true)+
+    '</div>'+
+    '<div class="ariyan-tile-banner">'+esc(selectBannerText)+'</div>';
 
   var customRules = isBk ? (cfg.bkashInstructions || '') : (cfg.nagadInstructions || '');
   var dial = isBk ? '*247#' : '*167#';
