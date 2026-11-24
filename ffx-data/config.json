@@ -179,6 +179,10 @@
     ]
   },
   "paymentSettings": {
+    "walletBkashNumber": "01327414272",
+    "walletNagadNumber": "01327414272",
+    "instantBkashNumber": "01327414272",
+    "instantNagadNumber": "01327414272",
     "bkashLogoUrl": "/uploads/payment-bkashLogo-1795521665511.jpg",
     "nagadLogoUrl": "/uploads/payment-nagadLogo-1795521673808.png",
     "bkashPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
