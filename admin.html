@@ -596,10 +596,9 @@ function drawSite(){
 ['instantNagadNumber','Instant Pay — Nagad number'],
 ['bkashLogoUrl','bKash logo image URL (উপরের bKash লোগো)'],
 ['nagadLogoUrl','Nagad logo image URL (উপরের নগদ লোগো)'],
-['tileSendUrl','Tile image URL — সেন্ড মানি'],
-['tileRechargeUrl','Tile image URL — মোবাইল রিচার্জ'],
-['tileCashoutUrl','Tile image URL — ক্যাশ আউট'],
-['tilePaymentUrl','Tile image URL — পেমেন্ট (selected)'],
+['bkashTilesBannerUrl','bKash — পেমেন্ট অপশন ব্যানার (একটা ছবি: সেন্ড মানি/রিচার্জ/ক্যাশআউট/পেমেন্ট পুরো বার)'],
+['nagadTilesBannerUrl','নগদ — পেমেন্ট অপশন ব্যানার (একটা ছবি, পুরো বার)'],
+['tilesBannerUrl','Shared fallback — পেমেন্ট অপশন ব্যানার (bKash/নগদ আলাদা না থাকলে)'],
 ['addMoneyBannerUrl','Add Money hero banner image URL'],
 ['facebookUrl','Facebook page URL'],
 ['youtubeUrl','YouTube channel URL'],
@@ -654,7 +653,7 @@ siteRoot.querySelectorAll('[data-pay-upload]').forEach(function(inp){
     var file=inp.files&&inp.files[0]; if(!file)return;
     if(file.size>3*1024*1024){toast('ছবি ৩MB এর বেশি','bad');return}
     var key=inp.getAttribute('data-pay-upload');
-    var kindMap={bkashLogoUrl:'bkashLogo',nagadLogoUrl:'nagadLogo',tileSendUrl:'tileSend',tileRechargeUrl:'tileRecharge',tileCashoutUrl:'tileCashout',tilePaymentUrl:'tilePayment',addMoneyBannerUrl:'wallet'};
+    var kindMap={bkashLogoUrl:'bkashLogo',nagadLogoUrl:'nagadLogo',bkashTilesBannerUrl:'bkashTilesBanner',nagadTilesBannerUrl:'nagadTilesBanner',tilesBannerUrl:'tilesBanner',addMoneyBannerUrl:'wallet'};
     var kind=kindMap[key];
     var reader=new FileReader();
     reader.onload=async function(){

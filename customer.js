@@ -211,8 +211,16 @@ function ensurePaymentStyles(){
 .ariyan-detail-logo-row.nagad .brand-chip span{color:#f6921e}
 
 .ariyan-detail-site-logo{display:flex;justify-content:center;align-items:center;background:#fff;border:1px solid #e5eaf2;border-radius:14px;padding:18px 16px;margin:0 0 12px;min-height:96px}
-.ariyan-detail-site-logo img{max-height:80px;max-width:240px;width:auto;object-fit:contain;display:block;margin:0 auto}
-.ariyan-detail-logo-row .brand-chip-logo{padding:14px 28px;min-width:170px;justify-content:center;display:inline-flex;align-items:center}
+.ariyan-detail-site-logo img{max-height:88px;max-width:100%;width:auto;object-fit:contain;display:block;margin:0 auto}
+.ariyan-detail-logo-row{padding:0 0 4px}
+.ariyan-detail-logo-row .brand-chip{width:100%;max-width:100%;box-sizing:border-box;border-radius:14px;padding:18px 16px;min-height:96px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #e5eaf2}
+.ariyan-detail-logo-row .brand-chip-logo{padding:18px 16px;min-width:0;width:100%}
+.ariyan-detail-logo-row .brand-chip img{height:56px;max-width:90%;object-fit:contain}
+.ariyan-detail-logo-row .brand-chip svg{width:56px;height:56px}
+.ariyan-detail-logo-row .brand-chip span[style*="font-size"]{font-size:28px!important}
+.ariyan-tiles-banner-img{width:100%;display:block;border-radius:12px;margin:0 0 12px;background:#fff}
+.ariyan-tiles-banner-img img{width:100%;height:auto;display:block;border-radius:12px;object-fit:contain}
+
 .ariyan-detail-shop{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e5eaf2;border-radius:14px;padding:12px 14px;margin:0 0 12px}
 .ariyan-detail-shop img{width:44px;height:44px;border-radius:10px;object-fit:contain;background:#f8fafc;border:1px solid #eef2f7}
 .ariyan-detail-shop b{display:block;font-size:15px;color:#0f172a}
@@ -342,9 +350,9 @@ function detailPage(method, amount, orderData){
 
   var brandLogoHtml;
   if(isBk && cfg.bkashLogoUrl){
-    brandLogoHtml = '<img src="'+esc(cfg.bkashLogoUrl)+'" alt="bKash" style="height:38px;object-fit:contain">';
+    brandLogoHtml = '<img src="'+esc(cfg.bkashLogoUrl)+'" alt="bKash" style="height:56px;max-width:100%;object-fit:contain">';
   } else if(!isBk && cfg.nagadLogoUrl){
-    brandLogoHtml = '<img src="'+esc(cfg.nagadLogoUrl)+'" alt="Nagad" style="height:38px;object-fit:contain">';
+    brandLogoHtml = '<img src="'+esc(cfg.nagadLogoUrl)+'" alt="Nagad" style="height:56px;max-width:100%;object-fit:contain">';
   } else if(isBk){
     brandLogoHtml = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:22px;font-weight:800;color:#e2136e;letter-spacing:-.02em">bKash</span><svg width="36" height="36" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 40c10-3 16-14 20-26 3 10 10 18 20 22-12 3-18 12-20 26-3-12-10-20-20-22z" fill="#e2136e"/><path d="M32 14c3 8 10 14 18 17-9 2-14 9-16 18-2-8-7-14-16-17 7-1 11-8 14-18z" fill="#c2185b"/></svg></span>';
   } else {
@@ -362,14 +370,21 @@ function detailPage(method, amount, orderData){
   var icoCash = '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="#e11d48" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#e11d48" stroke-width="2"/></svg>';
   var icoPay = '<svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12v12H6z" stroke="#16a34a" stroke-width="2"/><path d="M9 11h6M9 15h4" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/><path d="M9 3v4M15 3v4" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/></svg>';
 
-  var tiles =
-    '<div class="ariyan-tiles">'+
-      tileImg(cfg.tileSendUrl, icoSend, 'সেন্ড মানি', false)+
-      tileImg(cfg.tileRechargeUrl, icoRecharge, 'মোবাইল রিচার্জ', false)+
-      tileImg(cfg.tileCashoutUrl, icoCash, 'ক্যাশ আউট', false)+
-      tileImg(cfg.tilePaymentUrl, icoPay, 'পেমেন্ট', true)+
-    '</div>'+
-    '<div class="ariyan-tile-banner">পেমেন্ট (Payment) নির্বাচন করুন</div>';
+  // Single full-width instruction banner image (admin) OR default 4 tiles
+  var tilesBannerUrl = isBk ? (cfg.bkashTilesBannerUrl || cfg.tilesBannerUrl || '') : (cfg.nagadTilesBannerUrl || cfg.tilesBannerUrl || '');
+  var tiles;
+  if(tilesBannerUrl){
+    tiles = '<div class="ariyan-tiles-banner-img"><img src="'+esc(tilesBannerUrl)+'" alt="Payment options"></div>';
+  } else {
+    tiles =
+      '<div class="ariyan-tiles">'+
+        tileImg(cfg.tileSendUrl, icoSend, 'সেন্ড মানি', false)+
+        tileImg(cfg.tileRechargeUrl, icoRecharge, 'মোবাইল রিচার্জ', false)+
+        tileImg(cfg.tileCashoutUrl, icoCash, 'ক্যাশ আউট', false)+
+        tileImg(cfg.tilePaymentUrl, icoPay, 'পেমেন্ট', true)+
+      '</div>'+
+      '<div class="ariyan-tile-banner">পেমেন্ট (Payment) নির্বাচন করুন</div>';
+  }
 
   var customRules = isBk ? (cfg.bkashInstructions || '') : (cfg.nagadInstructions || '');
   var dial = isBk ? '*247#' : '*167#';

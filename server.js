@@ -186,6 +186,7 @@ function sanitizePaymentSettings(input) {
   ['bkashNumber','nagadNumber','walletBkashNumber','walletNagadNumber','instantBkashNumber','instantNagadNumber'].forEach(k => { const v=String(x[k]||'').replace(/[^0-9+]/g,'').slice(0,20); if(v) out[k]=v; });
   ['walletLogoUrl','instantLogoUrl','bkashLogoUrl','nagadLogoUrl','addMoneyBannerUrl','facebookUrl','youtubeUrl','howToVideoUrl',
    'tileSendUrl','tileRechargeUrl','tileCashoutUrl','tilePaymentUrl',
+   'tilesBannerUrl','bkashTilesBannerUrl','nagadTilesBannerUrl',
    'bkashTileSendUrl','bkashTileRechargeUrl','bkashTileCashoutUrl','bkashTilePaymentUrl',
    'nagadTileSendUrl','nagadTileRechargeUrl','nagadTileCashoutUrl','nagadTilePaymentUrl'
   ].forEach(k => { const raw=String(x[k]||'').trim(); if(raw.startsWith('/uploads/')) { out[k]=raw.slice(0,300); return; } const v=cleanUrl(raw); if(v) out[k]=v; });
@@ -977,7 +978,7 @@ async function handleApi(req, res, pathname) {
       saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
-    if (req.method === 'GET' && pathname === '/api/payment-info') { const ps=Object.assign({},config.paymentSettings||{}); if(ps.walletLogoFile) ps.walletLogoUrl='/uploads/'+ps.walletLogoFile; if(ps.instantLogoFile) ps.instantLogoUrl='/uploads/'+ps.instantLogoFile; return sendJson(res, 200, { bkash: ps.walletBkashNumber || '', nagad: ps.walletNagadNumber || '', instantBkash: ps.instantBkashNumber || '', instantNagad: ps.instantNagadNumber || '', settings: Object.assign({bkashLogoUrl:'',nagadLogoUrl:'',walletLogoUrl:'',instantLogoUrl:'',addMoneyBannerUrl:'',facebookUrl:'',youtubeUrl:'',howToVideoUrl:'',tileSendUrl:'',tileRechargeUrl:'',tileCashoutUrl:'',tilePaymentUrl:'',bkashInstructions:'',nagadInstructions:''},ps), instructions: 'নম্বর ও পেমেন্টের ধরন নিশ্চিত করে টাকা পাঠান। Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।' }); }
+    if (req.method === 'GET' && pathname === '/api/payment-info') { const ps=Object.assign({},config.paymentSettings||{}); if(ps.walletLogoFile) ps.walletLogoUrl='/uploads/'+ps.walletLogoFile; if(ps.instantLogoFile) ps.instantLogoUrl='/uploads/'+ps.instantLogoFile; return sendJson(res, 200, { bkash: ps.walletBkashNumber || '', nagad: ps.walletNagadNumber || '', instantBkash: ps.instantBkashNumber || '', instantNagad: ps.instantNagadNumber || '', settings: Object.assign({bkashLogoUrl:'',nagadLogoUrl:'',walletLogoUrl:'',instantLogoUrl:'',addMoneyBannerUrl:'',facebookUrl:'',youtubeUrl:'',howToVideoUrl:'',tileSendUrl:'',tileRechargeUrl:'',tileCashoutUrl:'',tilePaymentUrl:'',tilesBannerUrl:'',bkashTilesBannerUrl:'',nagadTilesBannerUrl:'',bkashInstructions:'',nagadInstructions:''},ps), instructions: 'নম্বর ও পেমেন্টের ধরন নিশ্চিত করে টাকা পাঠান। Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।' }); }
     if (req.method === 'POST' && pathname === '/api/auth/register') {
       const b = await readJson(req, 8192);
       const email = cleanEmail(b.email), name = String(b.name || '').trim().slice(0, 70), phone = String(b.phone || '').trim().slice(0, 24);
@@ -1125,7 +1126,8 @@ async function handleApi(req, res, pathname) {
         wallet: 'walletLogoFile', instant: 'instantLogoFile',
         bkashLogo: 'bkashLogoUrl', nagadLogo: 'nagadLogoUrl',
         tileSend: 'tileSendUrl', tileRecharge: 'tileRechargeUrl',
-        tileCashout: 'tileCashoutUrl', tilePayment: 'tilePaymentUrl'
+        tileCashout: 'tileCashoutUrl', tilePayment: 'tilePaymentUrl',
+        tilesBanner: 'tilesBannerUrl', bkashTilesBanner: 'bkashTilesBannerUrl', nagadTilesBanner: 'nagadTilesBannerUrl'
       };
       const key = kindMap[body.kind];
       if (!key) return sendJson(res,400,{error:'ভুল ছবির ধরন'});
