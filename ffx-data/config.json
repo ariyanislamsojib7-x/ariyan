@@ -177,5 +177,8 @@
         "url": ""
       }
     ]
+  },
+  "paymentSettings": {
+    "bkashNumber": "01327414272"
   }
 }
