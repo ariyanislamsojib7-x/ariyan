@@ -589,7 +589,32 @@ function drawSite(){
      '<div class="ed hero-ed"><section class="s-hero"><img id="sHeroImg" src="'+esc(bn[prevIdx].src)+'" alt="">'+
        '<div class="s-dots">'+bn.map(function(b,i){return '<i data-i="'+i+'" class="'+(i===prevIdx?'on':'')+'"></i>'}).join('')+'</div></section>'+
        pen('Edit banner','banners',true)+'</div>'+
-     '<div class="panel" style="padding:16px;margin:16px 0;background:#fff;border:1px solid #dbe2ef;border-radius:14px"><h3 style="margin:0 0 10px">Add Money / Payment Settings</h3><p class="muted">Wallet Pay ও Instant Pay-এর bKash/Nagad নম্বর আলাদাভাবে সেট করুন।</p><div id="paymentSettingsEditor" style="display:grid;grid-template-columns:1fr;gap:9px">'+(function(){var ps=c.paymentSettings||{},fields=[['walletBkashNumber','Wallet Pay — bKash number'],['walletNagadNumber','Wallet Pay — Nagad number'],['instantBkashNumber','Instant Pay — bKash number'],['instantNagadNumber','Instant Pay — Nagad number'],['addMoneyBannerUrl','Add Money hero banner image URL'],['facebookUrl','Facebook page URL'],['youtubeUrl','YouTube channel URL'],['howToVideoUrl','How to Add Money YouTube video URL']];return fields.map(function(f){return '<label style="font-size:12px;font-weight:700;color:#475569">'+f[1]+'<input data-payment-setting="'+f[0]+'" value="'+esc(ps[f[0]]||'')+'" placeholder="'+f[1]+'" style="display:block;width:100%;box-sizing:border-box;padding:10px;margin:5px 0 0;border:1px solid #cbd5e1;border-radius:8px"></label>'}).join('')})()+'</div><button type="button" class="btn" id="savePaymentSettings" style="margin-top:12px">Save Payment Settings</button><span id="paymentSettingsStatus" class="muted" style="margin-left:8px"></span></div>'+
+     '<div class="panel" style="padding:16px;margin:16px 0;background:#fff;border:1px solid #dbe2ef;border-radius:14px"><h3 style="margin:0 0 10px">Add Money / Payment Settings</h3><p class="muted">Wallet Pay ও Instant Pay-এর bKash/Nagad নম্বর আলাদাভাবে সেট করুন।</p><div id="paymentSettingsEditor" style="display:grid;grid-template-columns:1fr;gap:9px">'+(function(){var ps=c.paymentSettings||{},fields=[
+['walletBkashNumber','Wallet Pay — bKash number'],
+['walletNagadNumber','Wallet Pay — Nagad number'],
+['instantBkashNumber','Instant Pay — bKash number'],
+['instantNagadNumber','Instant Pay — Nagad number'],
+['bkashLogoUrl','bKash logo image URL (উপরের bKash লোগো)'],
+['nagadLogoUrl','Nagad logo image URL (উপরের নগদ লোগো)'],
+['tileSendUrl','Tile image URL — সেন্ড মানি'],
+['tileRechargeUrl','Tile image URL — মোবাইল রিচার্জ'],
+['tileCashoutUrl','Tile image URL — ক্যাশ আউট'],
+['tilePaymentUrl','Tile image URL — পেমেন্ট (selected)'],
+['addMoneyBannerUrl','Add Money hero banner image URL'],
+['facebookUrl','Facebook page URL'],
+['youtubeUrl','YouTube channel URL'],
+['howToVideoUrl','How to Add Money YouTube video URL']
+];
+var textAreas=[
+['bkashInstructions','bKash রুলস / ইনস্ট্রাকশন (প্রতি লাইনে একটি নিয়ম)\nপ্লেসহোল্ডার: {number} {amount} {brand}'],
+['nagadInstructions','নগদ রুলস / ইনস্ট্রাকশন (প্রতি লাইনে একটি নিয়ম)\nপ্লেসহোল্ডার: {number} {amount} {brand}']
+];
+function payField(f){
+  var isImg=/LogoUrl|tile|BannerUrl/.test(f[0]);
+  var extra=isImg?'<div style="display:flex;gap:8px;margin-top:6px;align-items:center"><input type="file" accept="image/png,image/jpeg,image/webp" data-pay-upload="'+f[0]+'" style="font-size:12px"><span class="muted" style="font-size:11px">অথবা নিচে URL দিন</span></div>':'';
+  return '<label style="font-size:12px;font-weight:700;color:#475569;display:block;margin-top:6px">'+f[1]+extra+'<input data-payment-setting="'+f[0]+'" value="'+esc(ps[f[0]]||'')+'" placeholder="'+f[1].split('\n')[0]+'" style="display:block;width:100%;box-sizing:border-box;padding:10px;margin:5px 0 0;border:1px solid #cbd5e1;border-radius:8px"></label>';
+}
+return fields.map(payField).join('')+textAreas.map(function(f){return '<label style="font-size:12px;font-weight:700;color:#475569;margin-top:10px;display:block">'+f[1].replace(/\n/g,'<br>')+'<textarea data-payment-setting="'+f[0]+'" rows="7" placeholder="প্রতি লাইনে একটি নিয়ম...\nউদাহরণ:\n*247# ডায়াল করে {brand} অ্যাপ খুলুন\nপেমেন্ট-এ ক্লিক করুন\nএই নম্বরে টাকা পাঠান: {number}\nটাকার পরিমাণ: {amount}" style="display:block;width:100%;box-sizing:border-box;padding:10px;margin:5px 0 0;border:1px solid #cbd5e1;border-radius:8px;font:inherit;min-height:130px">'+esc(ps[f[0]]||'')+'</textarea></label>'}).join('')})()+'</div><button type="button" class="btn" id="savePaymentSettings" style="margin-top:12px">Save Payment Settings</button><span id="paymentSettingsStatus" class="muted" style="margin-left:8px"></span></div>'+
      '<div class="s-quick">'+q.slice(0,4).map(function(x,i){
         return '<div class="ed"><span class="s-q"><span class="s-ic">'+svgi(QICON[i],1)+'</span><b>'+esc(x.label)+'</b></span>'+pen('Edit '+QNAME[i],'q'+i)+'</div>';
      }).join('')+'</div>'+
@@ -623,6 +648,34 @@ function drawSite(){
      '</div>';
   siteRoot.innerHTML=h;
   var savePay=siteRoot.querySelector('#savePaymentSettings');if(savePay)savePay.onclick=async function(){var settings={};siteRoot.querySelectorAll('[data-payment-setting]').forEach(function(el){settings[el.dataset.paymentSetting]=el.value.trim()});savePay.disabled=true;var status=siteRoot.querySelector('#paymentSettingsStatus');try{await api('/api/admin/payment-settings',{settings:settings});if(status)status.textContent='Saved successfully';toast('Payment settings saved','ok');}catch(e){if(status)status.textContent=e.message;toast(e.message,'bad')}finally{savePay.disabled=false}};
+// Local file -> data URL into the matching payment setting input
+siteRoot.querySelectorAll('[data-pay-upload]').forEach(function(inp){
+  inp.onchange=async function(){
+    var file=inp.files&&inp.files[0]; if(!file)return;
+    if(file.size>3*1024*1024){toast('ছবি ৩MB এর বেশি','bad');return}
+    var key=inp.getAttribute('data-pay-upload');
+    var kindMap={bkashLogoUrl:'bkashLogo',nagadLogoUrl:'nagadLogo',tileSendUrl:'tileSend',tileRechargeUrl:'tileRecharge',tileCashoutUrl:'tileCashout',tilePaymentUrl:'tilePayment',addMoneyBannerUrl:'wallet'};
+    var kind=kindMap[key];
+    var reader=new FileReader();
+    reader.onload=async function(){
+      try{
+        if(kind){
+          var view=await api('/api/admin/payment-image',{kind:kind,dataUrl:reader.result});
+          state.cfg=view;
+          var ps=(view.paymentSettings||{});
+          var target=siteRoot.querySelector('[data-payment-setting="'+key+'"]');
+          if(target && ps[key]) target.value=ps[key];
+          toast('ছবি আপলোড হয়েছে','ok');
+        } else {
+          var target=siteRoot.querySelector('[data-payment-setting="'+key+'"]');
+          if(target){target.value=reader.result;toast('ছবি লোড — Save চাপুন','ok')}
+        }
+      }catch(e){toast(e.message,'bad')}
+    };
+    reader.readAsDataURL(file);
+  };
+});
+
   siteRoot.querySelectorAll('[data-edit]').forEach(function(b){
     b.onclick=function(){
       var k=b.dataset.edit;

@@ -210,6 +210,9 @@ function ensurePaymentStyles(){
 .ariyan-detail-logo-row.bkash .brand-chip span{color:#e2136e}
 .ariyan-detail-logo-row.nagad .brand-chip span{color:#f6921e}
 
+.ariyan-detail-site-logo{display:flex;justify-content:center;align-items:center;background:#fff;border:1px solid #e5eaf2;border-radius:14px;padding:18px 16px;margin:0 0 12px;min-height:96px}
+.ariyan-detail-site-logo img{max-height:80px;max-width:240px;width:auto;object-fit:contain;display:block;margin:0 auto}
+.ariyan-detail-logo-row .brand-chip-logo{padding:14px 28px;min-width:170px;justify-content:center;display:inline-flex;align-items:center}
 .ariyan-detail-shop{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e5eaf2;border-radius:14px;padding:12px 14px;margin:0 0 12px}
 .ariyan-detail-shop img{width:44px;height:44px;border-radius:10px;object-fit:contain;background:#f8fafc;border:1px solid #eef2f7}
 .ariyan-detail-shop b{display:block;font-size:15px;color:#0f172a}
@@ -247,6 +250,11 @@ function ensurePaymentStyles(){
 .ariyan-detail-card.nagad ~ form .ariyan-verify-btn,
 .ariyan-verify-btn.nagad{background:#c2410c}
 .ariyan-verify-btn:disabled{opacity:.65}
+.ariyan-detail-logo-row .brand-chip-logo{padding:14px 28px;min-width:160px;justify-content:center}
+.ariyan-detail-logo-row .brand-chip-logo img{height:34px;width:auto;object-fit:contain}
+.ariyan-detail-shop-logo-only{justify-content:center;padding:16px;min-height:88px}
+.ariyan-detail-shop-logo-only .site-main-logo{width:auto;height:64px;max-width:220px;object-fit:contain;border:0;background:transparent;border-radius:0}
+
 
 .ariyan-add-input-wrap{margin:0 0 12px}
 .ariyan-add-input-wrap label{display:block;font-size:12px;font-weight:800;color:#64748b;margin:0 0 6px;letter-spacing:.04em}
@@ -303,7 +311,7 @@ function orderMethodsPage(orderData){
   ensurePaymentStyles();
   var cfg=(paymentInfo&&paymentInfo.settings)||{};
   var logo='Main logo.jpg';
-  try{ if(document.querySelector('link[rel="icon"]')) logo=document.querySelector('link[rel="icon"]').href || logo; }catch(e){}
+  try{ if(document.querySelector('link[rel="icon"]')) logo=document.querySelector('link[rel="icon"]').getAttribute('href') || logo; }catch(e){}
   var html=
     '<div class="ariyan-order-payment">'+
       '<div class="ariyan-order-top"><span>⌂</span><span style="opacity:.5">×</span></div>'+
@@ -318,7 +326,7 @@ function orderMethodsPage(orderData){
   open('ARIYAN TOPUP - পেমেন্ট',html);
 }
 
-/* bKash / Nagad detail page – reference quality */
+/* bKash / Nagad detail page – logos + admin-editable tiles/rules */
 function detailPage(method, amount, orderData){
   ensurePaymentStyles();
   var isBk = method === 'bKash';
@@ -328,10 +336,27 @@ function detailPage(method, amount, orderData){
   var brand = isBk ? 'bKash' : 'নগদ';
   var theme = isBk ? 'bkash' : 'nagad';
   var amtStr = Number(amount || 0).toLocaleString('en-BD');
+  var cfg = (paymentInfo && paymentInfo.settings) || {};
   var siteLogo = 'Main logo.jpg';
-  try{ var ic=document.querySelector('link[rel="icon"]'); if(ic&&ic.href) siteLogo=ic.getAttribute('href')||siteLogo; }catch(e){}
+  try{ var ic=document.querySelector('link[rel="icon"]'); if(ic&&ic.getAttribute('href')) siteLogo=ic.getAttribute('href'); }catch(e){}
 
-  // Tile icons (inline SVG)
+  var brandLogoHtml;
+  if(isBk && cfg.bkashLogoUrl){
+    brandLogoHtml = '<img src="'+esc(cfg.bkashLogoUrl)+'" alt="bKash" style="height:38px;object-fit:contain">';
+  } else if(!isBk && cfg.nagadLogoUrl){
+    brandLogoHtml = '<img src="'+esc(cfg.nagadLogoUrl)+'" alt="Nagad" style="height:38px;object-fit:contain">';
+  } else if(isBk){
+    brandLogoHtml = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:22px;font-weight:800;color:#e2136e;letter-spacing:-.02em">bKash</span><svg width="36" height="36" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 40c10-3 16-14 20-26 3 10 10 18 20 22-12 3-18 12-20 26-3-12-10-20-20-22z" fill="#e2136e"/><path d="M32 14c3 8 10 14 18 17-9 2-14 9-16 18-2-8-7-14-16-17 7-1 11-8 14-18z" fill="#c2185b"/></svg></span>';
+  } else {
+    brandLogoHtml = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:22px;font-weight:800;color:#f6921e">নগদ</span><svg width="32" height="32" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 3c-2 15-18 17-18 34a18 18 0 0 0 36 0C50 22 36 18 32 3Z" fill="#e04428"/><path d="M32 22c-1 9-9 11-9 19a9 9 0 0 0 18 0c0-7-7-11-9-19Z" fill="#f5a623"/><circle cx="32" cy="42" r="4" fill="#fff"/></svg></span>';
+  }
+
+  function tileImg(url, fallbackSvg, label, ok){
+    var inner = url
+      ? '<img src="'+esc(url)+'" alt="'+esc(label)+'" style="width:28px;height:28px;object-fit:contain">'
+      : fallbackSvg;
+    return '<div class="ariyan-tile'+(ok?' ok':'')+'"><span class="tile-x">'+(ok?'✓':'×')+'</span><span class="tile-ico">'+inner+'</span><span class="tile-lab">'+esc(label)+'</span></div>';
+  }
   var icoSend = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 12h12M12 6l6 6-6 6" stroke="#e11d48" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var icoRecharge = '<svg viewBox="0 0 24 24" fill="none"><rect x="6" y="3" width="12" height="18" rx="2" stroke="#e11d48" stroke-width="2"/><path d="M10 17h4" stroke="#e11d48" stroke-width="2" stroke-linecap="round"/></svg>';
   var icoCash = '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="#e11d48" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#e11d48" stroke-width="2"/></svg>';
@@ -339,33 +364,52 @@ function detailPage(method, amount, orderData){
 
   var tiles =
     '<div class="ariyan-tiles">'+
-      '<div class="ariyan-tile"><span class="tile-x">×</span><span class="tile-ico">'+icoSend+'</span><span class="tile-lab">সেন্ড মানি</span></div>'+
-      '<div class="ariyan-tile"><span class="tile-x">×</span><span class="tile-ico">'+icoRecharge+'</span><span class="tile-lab">মোবাইল রিচার্জ</span></div>'+
-      '<div class="ariyan-tile"><span class="tile-x">×</span><span class="tile-ico">'+icoCash+'</span><span class="tile-lab">ক্যাশ আউট</span></div>'+
-      '<div class="ariyan-tile ok"><span class="tile-x">✓</span><span class="tile-ico">'+icoPay+'</span><span class="tile-lab">পেমেন্ট</span></div>'+
+      tileImg(cfg.tileSendUrl, icoSend, 'সেন্ড মানি', false)+
+      tileImg(cfg.tileRechargeUrl, icoRecharge, 'মোবাইল রিচার্জ', false)+
+      tileImg(cfg.tileCashoutUrl, icoCash, 'ক্যাশ আউট', false)+
+      tileImg(cfg.tilePaymentUrl, icoPay, 'পেমেন্ট', true)+
     '</div>'+
     '<div class="ariyan-tile-banner">পেমেন্ট (Payment) নির্বাচন করুন</div>';
 
+  var customRules = isBk ? (cfg.bkashInstructions || '') : (cfg.nagadInstructions || '');
   var dial = isBk ? '*247#' : '*167#';
-  var steps =
-    '<div class="step">• '+dial+' ডায়াল করে আপনার '+brand+' মোবাইল মেনুতে যান অথবা '+brand+' অ্যাপ খুলুন।</div>'+
-    '<div class="step">• <b>পেমেন্ট</b>-এ ক্লিক করুন।</div>'+
-    '<div class="step">• এই নম্বরে টাকা পাঠান: <div class="num-row"><strong id="amNumberText">'+esc(number)+'</strong><button type="button" id="amCopyNumber">কপি</button></div></div>'+
-    '<div class="step">• টাকার পরিমাণ: <span class="amt-hl">'+amtStr+'</span></div>'+
-    '<div class="step">• নিশ্চিত করে আপনার '+brand+' PIN লিখুন।</div>'+
-    '<div class="step">• টাকা পাঠান এবং ট্রানজেকশন আইডি কপি করুন।</div>'+
-    '<div class="step">• ট্রানজেকশন আইডি লিখে ভেরিফাই চাপুন।</div>';
+  var stepsHtml = '';
+  if(customRules && String(customRules).trim()){
+    String(customRules).split(/\n+/).forEach(function(line){
+      line = line.trim();
+      if(!line) return;
+      line = line.replace(/\{number\}/g, number).replace(/\{amount\}/g, amtStr).replace(/\{brand\}/g, brand);
+      stepsHtml += '<div class="step">• '+esc(line)+'</div>';
+    });
+    if(String(customRules).indexOf('{number}') === -1){
+      stepsHtml += '<div class="step">• এই নম্বরে টাকা পাঠান: <div class="num-row"><strong id="amNumberText">'+esc(number)+'</strong><button type="button" id="amCopyNumber">কপি</button></div></div>';
+    } else {
+      stepsHtml = stepsHtml.replace(esc(number), '<span class="num-row"><strong id="amNumberText">'+esc(number)+'</strong><button type="button" id="amCopyNumber">কপি</button></span>');
+    }
+    if(String(customRules).indexOf('{amount}') === -1){
+      stepsHtml += '<div class="step">• টাকার পরিমাণ: <span class="amt-hl">'+amtStr+'</span></div>';
+    }
+  } else {
+    stepsHtml =
+      '<div class="step">• '+dial+' ডায়াল করে আপনার '+brand+' মোবাইল মেনুতে যান অথবা '+brand+' অ্যাপ খুলুন।</div>'+
+      '<div class="step">• <b>পেমেন্ট</b>-এ ক্লিক করুন।</div>'+
+      '<div class="step">• এই নম্বরে টাকা পাঠান: <div class="num-row"><strong id="amNumberText">'+esc(number)+'</strong><button type="button" id="amCopyNumber">কপি</button></div></div>'+
+      '<div class="step">• টাকার পরিমাণ: <span class="amt-hl">'+amtStr+'</span></div>'+
+      '<div class="step">• নিশ্চিত করে আপনার '+brand+' PIN লিখুন।</div>'+
+      '<div class="step">• টাকা পাঠান এবং ট্রানজেকশন আইডি কপি করুন।</div>'+
+      '<div class="step">• ট্রানজেকশন আইডি লিখে ভেরিফাই চাপুন।</div>';
+  }
 
   var html =
     '<div class="ariyan-detail-wrap">'+
       '<div class="ariyan-detail-topbar"><button type="button" id="amPayBack" aria-label="Back">‹</button><button type="button" id="amPayClose" aria-label="Close">×</button></div>'+
-      '<div class="ariyan-detail-logo-row '+theme+'"><div class="brand-chip"><span>'+brand+'</span></div></div>'+
-      '<div class="ariyan-detail-shop"><img src="'+esc(siteLogo)+'" alt="ARIYAN TOPUP" onerror="this.src=\'Main logo.jpg\'"><div><b>ARIYAN TOPUP</b><small>'+(orderData?'Order Payment':'Wallet Payment')+'</small></div></div>'+
+      '<div class="ariyan-detail-logo-row '+theme+'"><div class="brand-chip brand-chip-logo">'+brandLogoHtml+'</div></div>'+
+      '<div class="ariyan-detail-site-logo"><img src="'+esc(siteLogo)+'" alt="" onerror="this.src=\'Main logo.jpg\'"></div>'+
       '<div class="ariyan-detail-amt">৳ '+amtStr+'</div>'+
       '<div class="ariyan-detail-card '+theme+'">'+
         tiles+
         '<h3>ট্রানজেকশন আইডি দিন</h3>'+
-        steps+
+        stepsHtml+
       '</div>'+
       '<form id="amDeposit">'+
         '<input type="hidden" name="method" value="'+esc(method)+'">'+

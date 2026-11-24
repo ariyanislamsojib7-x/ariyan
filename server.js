@@ -184,8 +184,17 @@ function sanitizePaymentSettings(input) {
   const x = input && typeof input === 'object' ? input : {};
   const out = {};
   ['bkashNumber','nagadNumber','walletBkashNumber','walletNagadNumber','instantBkashNumber','instantNagadNumber'].forEach(k => { const v=String(x[k]||'').replace(/[^0-9+]/g,'').slice(0,20); if(v) out[k]=v; });
-  ['walletLogoUrl','instantLogoUrl','bkashLogoUrl','nagadLogoUrl','addMoneyBannerUrl','facebookUrl','youtubeUrl','howToVideoUrl'].forEach(k => { const raw=String(x[k]||'').trim(); if(raw.startsWith('/uploads/')) return; const v=cleanUrl(raw); if(v) out[k]=v; });
+  ['walletLogoUrl','instantLogoUrl','bkashLogoUrl','nagadLogoUrl','addMoneyBannerUrl','facebookUrl','youtubeUrl','howToVideoUrl',
+   'tileSendUrl','tileRechargeUrl','tileCashoutUrl','tilePaymentUrl',
+   'bkashTileSendUrl','bkashTileRechargeUrl','bkashTileCashoutUrl','bkashTilePaymentUrl',
+   'nagadTileSendUrl','nagadTileRechargeUrl','nagadTileCashoutUrl','nagadTilePaymentUrl'
+  ].forEach(k => { const raw=String(x[k]||'').trim(); if(raw.startsWith('/uploads/')) { out[k]=raw.slice(0,300); return; } const v=cleanUrl(raw); if(v) out[k]=v; });
   ['walletLogoFile','instantLogoFile'].forEach(k => { const v=String(x[k]||''); if(SAFE_FILE.test(v)) out[k]=v; });
+  // Multi-line instruction rules (plain text, max 4000 chars)
+  ['bkashInstructions','nagadInstructions'].forEach(k => {
+    let t = String(x[k] || '').replace(/\r/g, '').slice(0, 4000).trim();
+    if (t) out[k] = t;
+  });
   return out;
 }
 function sanitizeAccountSupport(input) {
@@ -968,7 +977,7 @@ async function handleApi(req, res, pathname) {
       saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
-    if (req.method === 'GET' && pathname === '/api/payment-info') { const ps=Object.assign({},config.paymentSettings||{}); if(ps.walletLogoFile) ps.walletLogoUrl='/uploads/'+ps.walletLogoFile; if(ps.instantLogoFile) ps.instantLogoUrl='/uploads/'+ps.instantLogoFile; return sendJson(res, 200, { bkash: ps.walletBkashNumber || '', nagad: ps.walletNagadNumber || '', instantBkash: ps.instantBkashNumber || '', instantNagad: ps.instantNagadNumber || '', settings: Object.assign({bkashLogoUrl:'',nagadLogoUrl:'',walletLogoUrl:'',instantLogoUrl:'',addMoneyBannerUrl:'',facebookUrl:'',youtubeUrl:'',howToVideoUrl:''},ps), instructions: 'নম্বর ও পেমেন্টের ধরন নিশ্চিত করে টাকা পাঠান। Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।' }); }
+    if (req.method === 'GET' && pathname === '/api/payment-info') { const ps=Object.assign({},config.paymentSettings||{}); if(ps.walletLogoFile) ps.walletLogoUrl='/uploads/'+ps.walletLogoFile; if(ps.instantLogoFile) ps.instantLogoUrl='/uploads/'+ps.instantLogoFile; return sendJson(res, 200, { bkash: ps.walletBkashNumber || '', nagad: ps.walletNagadNumber || '', instantBkash: ps.instantBkashNumber || '', instantNagad: ps.instantNagadNumber || '', settings: Object.assign({bkashLogoUrl:'',nagadLogoUrl:'',walletLogoUrl:'',instantLogoUrl:'',addMoneyBannerUrl:'',facebookUrl:'',youtubeUrl:'',howToVideoUrl:'',tileSendUrl:'',tileRechargeUrl:'',tileCashoutUrl:'',tilePaymentUrl:'',bkashInstructions:'',nagadInstructions:''},ps), instructions: 'নম্বর ও পেমেন্টের ধরন নিশ্চিত করে টাকা পাঠান। Transaction ID জমা দিন। Admin যাচাই না করা পর্যন্ত ব্যালেন্স যোগ হবে না।' }); }
     if (req.method === 'POST' && pathname === '/api/auth/register') {
       const b = await readJson(req, 8192);
       const email = cleanEmail(b.email), name = String(b.name || '').trim().slice(0, 70), phone = String(b.phone || '').trim().slice(0, 24);
@@ -1112,14 +1121,24 @@ async function handleApi(req, res, pathname) {
 
     if (req.method === 'POST' && pathname === '/api/admin/payment-image') {
       const body = await readJson(req, Math.ceil(MAX_UPLOAD_BYTES * 1.4) + 1024);
-      const key = body.kind === 'wallet' ? 'walletLogoFile' : body.kind === 'instant' ? 'instantLogoFile' : '';
+      const kindMap = {
+        wallet: 'walletLogoFile', instant: 'instantLogoFile',
+        bkashLogo: 'bkashLogoUrl', nagadLogo: 'nagadLogoUrl',
+        tileSend: 'tileSendUrl', tileRecharge: 'tileRechargeUrl',
+        tileCashout: 'tileCashoutUrl', tilePayment: 'tilePaymentUrl'
+      };
+      const key = kindMap[body.kind];
       if (!key) return sendJson(res,400,{error:'ভুল ছবির ধরন'});
       const m=/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String(body.dataUrl||''));
       if(!m) return sendJson(res,400,{error:'শুধু PNG, JPG বা WEBP ছবি দিন'});
       const buf=Buffer.from(m[2],'base64'); if(buf.length>MAX_UPLOAD_BYTES) return sendJson(res,413,{error:'ছবি ৩MB এর বেশি বড়'});
       const ext=detectImage(buf); if(!ext) return sendJson(res,400,{error:'ছবিটা ঠিক নেই'});
-      const fname='payment-'+body.kind+'-'+Date.now()+'.'+ext, ps=Object.assign({},config.paymentSettings||{}), old=ps[key]; ps[key]=fname;
-      await commit(Object.assign({},config,{paymentSettings:ps}),'Update '+body.kind+' payment artwork',[{name:fname,buf:buf}],old?[old]:[]);
+      const fname='payment-'+String(body.kind).replace(/[^a-zA-Z0-9_-]/g,'')+'-'+Date.now()+'.'+ext;
+      const ps=Object.assign({},config.paymentSettings||{});
+      const old = ps[key] && String(ps[key]).startsWith('/uploads/') ? String(ps[key]).slice(9) : (ps[key+'File']||'');
+      if (key.endsWith('File')) { ps[key]=fname; }
+      else { ps[key]='/uploads/'+fname; }
+      await commit(Object.assign({},config,{paymentSettings:ps}),'Update '+body.kind+' payment artwork',[{name:fname,buf:buf}], old?[old]:[]);
       return sendJson(res,200,currentView());
     }
 
