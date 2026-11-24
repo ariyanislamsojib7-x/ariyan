@@ -182,7 +182,7 @@
     "bkashLogoUrl": "/uploads/payment-bkashLogo-1795521665511.jpg",
     "nagadLogoUrl": "/uploads/payment-nagadLogo-1795521673808.png",
     "bkashPaymentSelectText": "পেমেন্ট (Payment) নির্বাচন করুন",
-    "nagadPaymentSelectText": "পেমেন্ট (Payment) নির্বাচন করুন",
+    "nagadPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
     "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
     "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।",
     "walletLogoFile": "payment-wallet-1795522611414.png"
