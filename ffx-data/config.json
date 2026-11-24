@@ -184,7 +184,7 @@
     "bkashPaymentSelectText": "পেমেন্ট (Payment) নির্বাচন করুন",
     "nagadPaymentSelectText": "পেমেন্ট (Payment) নির্বাচন করুন",
     "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
-    "nagadPaymentClickText": "পেমেন্ট-এ ক্লিক করুন।",
+    "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।",
     "walletLogoFile": "payment-wallet-1795522611414.png"
   }
 }
