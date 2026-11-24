@@ -397,22 +397,29 @@ function detailPage(method, amount, orderData){
   var icoCash = '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="#e11d48" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#e11d48" stroke-width="2"/></svg>';
   var icoPay = '<svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12v12H6z" stroke="#16a34a" stroke-width="2"/><path d="M9 11h6M9 15h4" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/><path d="M9 3v4M15 3v4" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/></svg>';
 
-  // Always show 4 tiles + editable banner text (same on bKash & Nagad)
-  var selectBannerText = (cfg.paymentSelectText || 'পেমেন্ট (Payment) নির্বাচন করুন').trim() || 'পেমেন্ট (Payment) নির্বাচন করুন';
+  // One full tiles image per method (admin gallery upload) OR default 4 tiles; text banner always per-method
+  var tilesBannerUrl = isBk ? (cfg.bkashTilesBannerUrl || '') : (cfg.nagadTilesBannerUrl || '');
+  var selectBannerText = isBk
+    ? ((cfg.bkashPaymentSelectText || cfg.paymentSelectText || 'পেমেন্ট (Payment) নির্বাচন করুন').trim() || 'পেমেন্ট (Payment) নির্বাচন করুন')
+    : ((cfg.nagadPaymentSelectText || cfg.paymentSelectText || 'পেমেন্ট (Payment) নির্বাচন করুন').trim() || 'পেমেন্ট (Payment) নির্বাচন করুন');
+  var paymentClickText = isBk
+    ? ((cfg.bkashPaymentClickText || 'পেমেন্ট-এ ক্লিক করুন।').trim() || 'পেমেন্ট-এ ক্লিক করুন।')
+    : ((cfg.nagadPaymentClickText || 'পেমেন্ট-এ ক্লিক করুন।').trim() || 'পেমেন্ট-এ ক্লিক করুন।');
   var trxTitle = (cfg.trxIdTitle || 'ট্রানজেকশন আইডি দিন').trim() || 'ট্রানজেকশন আইডি দিন';
-  // Per-method tile image overrides if set, else shared
-  var tSend = isBk ? (cfg.bkashTileSendUrl || cfg.tileSendUrl || '') : (cfg.nagadTileSendUrl || cfg.tileSendUrl || '');
-  var tRech = isBk ? (cfg.bkashTileRechargeUrl || cfg.tileRechargeUrl || '') : (cfg.nagadTileRechargeUrl || cfg.tileRechargeUrl || '');
-  var tCash = isBk ? (cfg.bkashTileCashoutUrl || cfg.tileCashoutUrl || '') : (cfg.nagadTileCashoutUrl || cfg.tileCashoutUrl || '');
-  var tPay  = isBk ? (cfg.bkashTilePaymentUrl || cfg.tilePaymentUrl || '') : (cfg.nagadTilePaymentUrl || cfg.tilePaymentUrl || '');
-  var tiles =
-    '<div class="ariyan-tiles">'+
-      tileImg(tSend, icoSend, 'সেন্ড মানি', false)+
-      tileImg(tRech, icoRecharge, 'মোবাইল রিচার্জ', false)+
-      tileImg(tCash, icoCash, 'ক্যাশ আউট', false)+
-      tileImg(tPay, icoPay, 'পেমেন্ট', true)+
-    '</div>'+
-    '<div class="ariyan-tile-banner">'+esc(selectBannerText)+'</div>';
+  var tiles;
+  if(tilesBannerUrl){
+    tiles = '<div class="ariyan-tiles-banner-img"><img src="'+esc(tilesBannerUrl)+'" alt="Payment options"></div>'+
+            '<div class="ariyan-tile-banner">'+esc(selectBannerText)+'</div>';
+  } else {
+    tiles =
+      '<div class="ariyan-tiles">'+
+        tileImg('', icoSend, 'সেন্ড মানি', false)+
+        tileImg('', icoRecharge, 'মোবাইল রিচার্জ', false)+
+        tileImg('', icoCash, 'ক্যাশ আউট', false)+
+        tileImg('', icoPay, 'পেমেন্ট', true)+
+      '</div>'+
+      '<div class="ariyan-tile-banner">'+esc(selectBannerText)+'</div>';
+  }
 
   var customRules = isBk ? (cfg.bkashInstructions || '') : (cfg.nagadInstructions || '');
   var dial = isBk ? '*247#' : '*167#';
@@ -435,7 +442,7 @@ function detailPage(method, amount, orderData){
   } else {
     stepsHtml =
       '<div class="step">• '+dial+' ডায়াল করে আপনার '+brand+' মোবাইল মেনুতে যান অথবা '+brand+' অ্যাপ খুলুন।</div>'+
-      '<div class="step">• <b>পেমেন্ট</b>-এ ক্লিক করুন।</div>'+
+      '<div class="step">• '+esc(paymentClickText)+'</div>'+
       '<div class="step">• এই নম্বরে টাকা পাঠান: <div class="num-row"><strong id="amNumberText">'+esc(number)+'</strong><button type="button" id="amCopyNumber">কপি</button></div></div>'+
       '<div class="step">• টাকার পরিমাণ: <span class="amt-hl">'+amtStr+'</span></div>'+
       '<div class="step">• নিশ্চিত করে আপনার '+brand+' PIN লিখুন।</div>'+
