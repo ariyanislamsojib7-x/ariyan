@@ -604,18 +604,33 @@ function drawSite(){
 ['youtubeUrl','YouTube channel URL'],
 ['howToVideoUrl','How to Add Money YouTube video URL']
 ];
+var shortTexts=[
+['paymentSelectText','পেমেন্ট (Payment) নির্বাচন করুন','bKash ও নগদ পেজের হলুদ ব্যানার টেক্সট'],
+['trxIdTitle','ট্রানজেকশন আইডি দিন','ট্রানজেকশন আইডি হেডিং ও ইনপুট প্লেসহোল্ডার (দুই পেজেই)']
+];
 var textAreas=[
-['paymentSelectText','পেমেন্ট নির্বাচন ব্যানার টেক্সট (bKash ও নগদ দুই পেজেই)\nডিফল্ট: পেমেন্ট (Payment) নির্বাচন করুন'],
-['trxIdTitle','ট্রানজেকশন আইডি হেডিং / প্লেসহোল্ডার (দুই পেজেই)\nডিফল্ট: ট্রানজেকশন আইডি দিন'],
-['bkashInstructions','bKash রুলস / ইনস্ট্রাকশন (প্রতি লাইনে একটি নিয়ম)\nপ্লেসহোল্ডার: {number} {amount} {brand}\nউদাহরণ লাইন: পেমেন্ট-এ ক্লিক করুন'],
-['nagadInstructions','নগদ রুলস / ইনস্ট্রাকশন (প্রতি লাইনে একটি নিয়ম)\nপ্লেসহোল্ডার: {number} {amount} {brand}\nউদাহরণ লাইন: পেমেন্ট-এ ক্লিক করুন']
+['bkashInstructions','bKash রুলস / ইনস্ট্রাকশন (প্রতি লাইনে একটি নিয়ম)\nপ্লেসহোল্ডার: {number} {amount} {brand}\n“পেমেন্ট-এ ক্লিক করুন” লাইন এখানে এডিট করুন'],
+['nagadInstructions','নগদ রুলস / ইনস্ট্রাকশন (প্রতি লাইনে একটি নিয়ম)\nপ্লেসহোল্ডার: {number} {amount} {brand}\n“পেমেন্ট-এ ক্লিক করুন” লাইন এখানে এডিট করুন']
 ];
 function payField(f){
   var isImg=/LogoUrl|tile|BannerUrl/.test(f[0]);
   var extra=isImg?'<div style="display:flex;gap:8px;margin-top:6px;align-items:center"><input type="file" accept="image/png,image/jpeg,image/webp" data-pay-upload="'+f[0]+'" style="font-size:12px"><span class="muted" style="font-size:11px">অথবা নিচে URL দিন</span></div>':'';
   return '<label style="font-size:12px;font-weight:700;color:#475569;display:block;margin-top:6px">'+f[1]+extra+'<input data-payment-setting="'+f[0]+'" value="'+esc(ps[f[0]]||'')+'" placeholder="'+f[1].split('\n')[0]+'" style="display:block;width:100%;box-sizing:border-box;padding:10px;margin:5px 0 0;border:1px solid #cbd5e1;border-radius:8px"></label>';
 }
-return fields.map(payField).join('')+textAreas.map(function(f){return '<label style="font-size:12px;font-weight:700;color:#475569;margin-top:10px;display:block">'+f[1].replace(/\n/g,'<br>')+'<textarea data-payment-setting="'+f[0]+'" rows="7" placeholder="প্রতি লাইনে একটি নিয়ম...\nউদাহরণ:\n*247# ডায়াল করে {brand} অ্যাপ খুলুন\nপেমেন্ট-এ ক্লিক করুন\nএই নম্বরে টাকা পাঠান: {number}\nটাকার পরিমাণ: {amount}" style="display:block;width:100%;box-sizing:border-box;padding:10px;margin:5px 0 0;border:1px solid #cbd5e1;border-radius:8px;font:inherit;min-height:130px">'+esc(ps[f[0]]||'')+'</textarea></label>'}).join('')})()+'</div><button type="button" class="btn" id="savePaymentSettings" style="margin-top:12px">Save Payment Settings</button><span id="paymentSettingsStatus" class="muted" style="margin-left:8px"></span></div>'+
+function shortRow(f){
+  var val=ps[f[0]]||f[1];
+  return '<div class="ed" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;margin:8px 0;background:#f8fbff;border:1px solid #dbe2ef;border-radius:12px">'+
+    '<div style="min-width:0;flex:1"><small style="display:block;color:#64748b;font-size:11px;font-weight:700;margin-bottom:4px">'+esc(f[2])+'</small>'+
+    '<b style="font-size:14px;color:#0f172a;word-break:break-word">'+esc(val)+'</b>'+
+    '<input type="hidden" data-payment-setting="'+f[0]+'" value="'+esc(val)+'">'+
+    '</div>'+
+    '<button type="button" class="pen" data-pay-edit="'+f[0]+'" data-pay-label="'+esc(f[2])+'" data-pay-default="'+esc(f[1])+'" aria-label="Edit" style="position:relative;top:0;right:0;flex-shrink:0">'+icon('pen')+'</button>'+
+  '</div>';
+}
+return fields.map(payField).join('')+
+  '<div style="margin-top:14px;padding-top:10px;border-top:1px solid #e2e8f0"><b style="font-size:13px;color:#334155">পেমেন্ট পেজ টেক্সট (কলম দিয়ে এডিট)</b></div>'+
+  shortTexts.map(shortRow).join('')+
+  textAreas.map(function(f){return '<label style="font-size:12px;font-weight:700;color:#475569;margin-top:12px;display:block">'+f[1].replace(/\n/g,'<br>')+'<textarea data-payment-setting="'+f[0]+'" rows="6" placeholder="প্রতি লাইনে একটি নিয়ম...\nউদাহরণ:\n*247# ডায়াল করে {brand} অ্যাপ খুলুন\nপেমেন্ট-এ ক্লিক করুন\nএই নম্বরে টাকা পাঠান: {number}\nটাকার পরিমাণ: {amount}" style="display:block;width:100%;box-sizing:border-box;padding:10px;margin:5px 0 0;border:1px solid #cbd5e1;border-radius:8px;font:inherit;min-height:120px">'+esc(ps[f[0]]||'')+'</textarea></label>'}).join('')})()+'</div><button type="button" class="btn" id="savePaymentSettings" style="margin-top:12px">Save Payment Settings</button><span id="paymentSettingsStatus" class="muted" style="margin-left:8px"></span></div>'+
      '<div class="s-quick">'+q.slice(0,4).map(function(x,i){
         return '<div class="ed"><span class="s-q"><span class="s-ic">'+svgi(QICON[i],1)+'</span><b>'+esc(x.label)+'</b></span>'+pen('Edit '+QNAME[i],'q'+i)+'</div>';
      }).join('')+'</div>'+
@@ -676,6 +691,43 @@ siteRoot.querySelectorAll('[data-pay-upload]').forEach(function(inp){
     reader.readAsDataURL(file);
   };
 });
+
+  // Pen icons for short payment page texts
+  siteRoot.querySelectorAll('[data-pay-edit]').forEach(function(btn){
+    btn.onclick=function(){
+      var key=btn.getAttribute('data-pay-edit');
+      var label=btn.getAttribute('data-pay-label')||key;
+      var def=btn.getAttribute('data-pay-default')||'';
+      var hidden=siteRoot.querySelector('input[data-payment-setting="'+key+'"]');
+      var cur=(hidden&&hidden.value)||def;
+      openSheet('Edit: '+label,function(b){
+        b.innerHTML='';
+        var wrap=document.createElement('div');
+        wrap.innerHTML='<label class="lb" style="display:block;font-size:13px;font-weight:700;margin:0 0 8px">'+esc(label)+'</label>'+
+          '<input class="inp" id="payEditVal" maxlength="120" style="width:100%;box-sizing:border-box">'+
+          '<div class="btns" style="margin-top:14px;display:flex;gap:10px"><button type="button" class="btn sm" id="payEditSave">'+icon('save','width:16px;height:16px')+' Save</button>'+
+          '<button type="button" class="btn sm" id="payEditCancel" style="background:#e2e8f0;color:#334155;box-shadow:none">Cancel</button></div>';
+        b.appendChild(wrap);
+        var inp=b.querySelector('#payEditVal');
+        if(inp){inp.value=cur;setTimeout(function(){inp.focus();inp.select()},50)}
+        b.querySelector('#payEditCancel').onclick=closeSheet;
+        b.querySelector('#payEditSave').onclick=async function(){
+          var v=(inp.value||'').trim()||def;
+          if(hidden) hidden.value=v;
+          // also update the visible <b>
+          var bold=btn.parentElement.querySelector('b');
+          if(bold) bold.textContent=v;
+          // auto-save this one setting
+          try{
+            var settings={};siteRoot.querySelectorAll('[data-payment-setting]').forEach(function(el){settings[el.dataset.paymentSetting]=el.value.trim()});
+            await api('/api/admin/payment-settings',{settings:settings});
+            toast('Saved','ok');
+            closeSheet();
+          }catch(e){toast(e.message,'bad')}
+        };
+      });
+    };
+  });
 
   siteRoot.querySelectorAll('[data-edit]').forEach(function(b){
     b.onclick=function(){
