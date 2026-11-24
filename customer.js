@@ -210,14 +210,14 @@ function ensurePaymentStyles(){
 .ariyan-detail-logo-row.bkash .brand-chip span{color:#e2136e}
 .ariyan-detail-logo-row.nagad .brand-chip span{color:#f6921e}
 
-.ariyan-detail-site-logo{display:flex;justify-content:center;align-items:center;background:#fff;border:1px solid #e5eaf2;border-radius:14px;padding:18px 16px;margin:0 0 12px;min-height:96px}
-.ariyan-detail-site-logo img{max-height:88px;max-width:100%;width:auto;object-fit:contain;display:block;margin:0 auto}
+.ariyan-detail-site-logo{display:flex;justify-content:center;align-items:center;background:#fff;border:1px solid #e5eaf2;border-radius:14px;padding:10px 14px;margin:0 0 12px;min-height:64px}
+.ariyan-detail-site-logo img{max-height:52px;max-width:100%;width:auto;object-fit:contain;display:block;margin:0 auto}
 .ariyan-detail-logo-row{padding:0 0 4px}
-.ariyan-detail-logo-row .brand-chip{width:100%;max-width:100%;box-sizing:border-box;border-radius:14px;padding:18px 16px;min-height:96px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #e5eaf2}
-.ariyan-detail-logo-row .brand-chip-logo{padding:18px 16px;min-width:0;width:100%}
-.ariyan-detail-logo-row .brand-chip img{height:56px;max-width:90%;object-fit:contain}
-.ariyan-detail-logo-row .brand-chip svg{width:56px;height:56px}
-.ariyan-detail-logo-row .brand-chip span[style*="font-size"]{font-size:28px!important}
+.ariyan-detail-logo-row .brand-chip{width:100%;max-width:100%;box-sizing:border-box;border-radius:14px;padding:10px 14px;min-height:64px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #e5eaf2}
+.ariyan-detail-logo-row .brand-chip-logo{padding:10px 14px;min-width:0;width:100%}
+.ariyan-detail-logo-row .brand-chip img{height:36px;max-width:90%;object-fit:contain}
+.ariyan-detail-logo-row .brand-chip svg{width:36px;height:36px}
+.ariyan-detail-logo-row .brand-chip span[style*="font-size"]{font-size:22px!important}
 .ariyan-tiles-banner-img{width:100%;display:block;border-radius:12px;margin:0 0 12px;background:#fff}
 .ariyan-tiles-banner-img img{width:100%;height:auto;display:block;border-radius:12px;object-fit:contain}
 
@@ -232,17 +232,17 @@ function ensurePaymentStyles(){
 .ariyan-detail-card.bkash{background:linear-gradient(160deg,#e2136e 0%,#c2185b 55%,#ad1457 100%)}
 .ariyan-detail-card.nagad{background:linear-gradient(160deg,#f6921e 0%,#e85d04 55%,#d00000 100%)}
 
-.ariyan-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#ffffffee;border-radius:12px;padding:10px 8px;margin:0 0 12px}
-.ariyan-tile{position:relative;background:#fff;border-radius:10px;padding:8px 4px 6px;text-align:center;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid #f1f5f9}
-.ariyan-tile .tile-ico{width:28px;height:28px;display:grid;place-items:center}
-.ariyan-tile .tile-ico svg{width:26px;height:26px}
-.ariyan-tile .tile-lab{font-size:9px;font-weight:700;color:#334155;line-height:1.2}
+.ariyan-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#ffffffee;border-radius:12px;padding:12px 8px;margin:0 0 12px}
+.ariyan-tile{position:relative;background:#fff;border-radius:10px;padding:12px 4px 10px;text-align:center;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px solid #f1f5f9}
+.ariyan-tile .tile-ico{width:32px;height:32px;display:grid;place-items:center}
+.ariyan-tile .tile-ico svg{width:30px;height:30px}
+.ariyan-tile .tile-lab{font-size:10px;font-weight:700;color:#334155;line-height:1.2}
 .ariyan-tile .tile-x{position:absolute;top:2px;right:4px;font-size:16px;font-weight:900;color:#e11d48;line-height:1}
 .ariyan-tile.ok{border-color:#86efac;background:#f0fdf4}
 .ariyan-tile.ok .tile-x{color:#16a34a;font-size:14px}
 .ariyan-tile-banner{display:block;text-align:center;background:#fbbf24;color:#78350f;font-size:11px;font-weight:800;padding:6px 8px;border-radius:8px;margin:-6px 8px 12px;position:relative;z-index:1}
 
-.ariyan-detail-card h3{margin:0 0 12px;font-size:16px;font-weight:800;text-align:center}
+.ariyan-detail-card h3{margin:0 0 8px;font-size:16px;font-weight:800;text-align:center}
 .ariyan-detail-card .step{font-size:13px;line-height:1.65;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.18)}
 .ariyan-detail-card .step:last-child{border-bottom:0}
 .ariyan-detail-card .num-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0}
@@ -251,17 +251,19 @@ function ensurePaymentStyles(){
 .ariyan-detail-card .amt-hl{color:#fef08a;font-weight:800}
 
 .ariyan-trx-field{margin:0 0 12px}
-.ariyan-trx-field label{display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 6px}
-.ariyan-trx-field input{width:100%;padding:13px 14px;border:1px solid #cbd5e1;border-radius:12px;font:inherit;background:#fff;box-sizing:border-box}
+.ariyan-trx-field label{display:none}
+.ariyan-trx-field input{width:100%;padding:13px 14px;border:1px solid #cbd5e1;border-radius:12px;font:inherit;background:#fff;box-sizing:border-box;color:#0f172a}
+.ariyan-detail-card .ariyan-trx-field{margin:0 0 14px}
+.ariyan-detail-card .ariyan-trx-field input{border-color:rgba(255,255,255,.45);background:#fff}
 
 .ariyan-verify-btn{width:100%;border:0;border-radius:12px;padding:15px;font-size:17px;font-weight:900;color:#fff;cursor:pointer;background:#b91c1c}
 .ariyan-detail-card.nagad ~ form .ariyan-verify-btn,
 .ariyan-verify-btn.nagad{background:#c2410c}
 .ariyan-verify-btn:disabled{opacity:.65}
-.ariyan-detail-logo-row .brand-chip-logo{padding:14px 28px;min-width:160px;justify-content:center}
-.ariyan-detail-logo-row .brand-chip-logo img{height:34px;width:auto;object-fit:contain}
-.ariyan-detail-shop-logo-only{justify-content:center;padding:16px;min-height:88px}
-.ariyan-detail-shop-logo-only .site-main-logo{width:auto;height:64px;max-width:220px;object-fit:contain;border:0;background:transparent;border-radius:0}
+.ariyan-detail-logo-row .brand-chip-logo{padding:10px 14px;min-width:0;width:100%;justify-content:center}
+.ariyan-detail-logo-row .brand-chip-logo img{height:36px;width:auto;object-fit:contain}
+.ariyan-detail-shop-logo-only{justify-content:center;padding:10px 14px;min-height:64px}
+.ariyan-detail-shop-logo-only .site-main-logo{width:auto;height:52px;max-width:200px;object-fit:contain;border:0;background:transparent;border-radius:0}
 
 
 .ariyan-add-input-wrap{margin:0 0 12px}
@@ -350,18 +352,18 @@ function detailPage(method, amount, orderData){
 
   var brandLogoHtml;
   if(isBk && cfg.bkashLogoUrl){
-    brandLogoHtml = '<img src="'+esc(cfg.bkashLogoUrl)+'" alt="bKash" style="height:56px;max-width:100%;object-fit:contain">';
+    brandLogoHtml = '<img src="'+esc(cfg.bkashLogoUrl)+'" alt="bKash" style="height:36px;max-width:100%;object-fit:contain">';
   } else if(!isBk && cfg.nagadLogoUrl){
-    brandLogoHtml = '<img src="'+esc(cfg.nagadLogoUrl)+'" alt="Nagad" style="height:56px;max-width:100%;object-fit:contain">';
+    brandLogoHtml = '<img src="'+esc(cfg.nagadLogoUrl)+'" alt="Nagad" style="height:36px;max-width:100%;object-fit:contain">';
   } else if(isBk){
-    brandLogoHtml = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:22px;font-weight:800;color:#e2136e;letter-spacing:-.02em">bKash</span><svg width="36" height="36" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 40c10-3 16-14 20-26 3 10 10 18 20 22-12 3-18 12-20 26-3-12-10-20-20-22z" fill="#e2136e"/><path d="M32 14c3 8 10 14 18 17-9 2-14 9-16 18-2-8-7-14-16-17 7-1 11-8 14-18z" fill="#c2185b"/></svg></span>';
+    brandLogoHtml = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:20px;font-weight:800;color:#e2136e;letter-spacing:-.02em">bKash</span><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 40c10-3 16-14 20-26 3 10 10 18 20 22-12 3-18 12-20 26-3-12-10-20-20-22z" fill="#e2136e"/><path d="M32 14c3 8 10 14 18 17-9 2-14 9-16 18-2-8-7-14-16-17 7-1 11-8 14-18z" fill="#c2185b"/></svg></span>';
   } else {
-    brandLogoHtml = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:22px;font-weight:800;color:#f6921e">নগদ</span><svg width="32" height="32" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 3c-2 15-18 17-18 34a18 18 0 0 0 36 0C50 22 36 18 32 3Z" fill="#e04428"/><path d="M32 22c-1 9-9 11-9 19a9 9 0 0 0 18 0c0-7-7-11-9-19Z" fill="#f5a623"/><circle cx="32" cy="42" r="4" fill="#fff"/></svg></span>';
+    brandLogoHtml = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:20px;font-weight:800;color:#f6921e">নগদ</span><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 3c-2 15-18 17-18 34a18 18 0 0 0 36 0C50 22 36 18 32 3Z" fill="#e04428"/><path d="M32 22c-1 9-9 11-9 19a9 9 0 0 0 18 0c0-7-7-11-9-19Z" fill="#f5a623"/><circle cx="32" cy="42" r="4" fill="#fff"/></svg></span>';
   }
 
   function tileImg(url, fallbackSvg, label, ok){
     var inner = url
-      ? '<img src="'+esc(url)+'" alt="'+esc(label)+'" style="width:28px;height:28px;object-fit:contain">'
+      ? '<img src="'+esc(url)+'" alt="'+esc(label)+'" style="width:32px;height:32px;object-fit:contain">'
       : fallbackSvg;
     return '<div class="ariyan-tile'+(ok?' ok':'')+'"><span class="tile-x">'+(ok?'✓':'×')+'</span><span class="tile-ico">'+inner+'</span><span class="tile-lab">'+esc(label)+'</span></div>';
   }
@@ -421,15 +423,15 @@ function detailPage(method, amount, orderData){
       '<div class="ariyan-detail-logo-row '+theme+'"><div class="brand-chip brand-chip-logo">'+brandLogoHtml+'</div></div>'+
       '<div class="ariyan-detail-site-logo"><img src="'+esc(siteLogo)+'" alt="" onerror="this.src=\'Main logo.jpg\'"></div>'+
       '<div class="ariyan-detail-amt">৳ '+amtStr+'</div>'+
-      '<div class="ariyan-detail-card '+theme+'">'+
-        tiles+
-        '<h3>ট্রানজেকশন আইডি দিন</h3>'+
-        stepsHtml+
-      '</div>'+
       '<form id="amDeposit">'+
         '<input type="hidden" name="method" value="'+esc(method)+'">'+
         '<input type="hidden" name="amount" value="'+esc(amount)+'">'+
-        '<div class="ariyan-trx-field"><label for="amTrxId">ট্রানজেকশন আইডি দিন</label><input id="amTrxId" name="trxId" required minlength="6" maxlength="40" placeholder="ট্রানজেকশন আইডি দিন" autocomplete="off"></div>'+
+        '<div class="ariyan-detail-card '+theme+'">'+
+          tiles+
+          '<h3>ট্রানজেকশন আইডি দিন</h3>'+
+          '<div class="ariyan-trx-field"><label for="amTrxId">ট্রানজেকশন আইডি দিন</label><input id="amTrxId" name="trxId" required minlength="6" maxlength="40" placeholder="ট্রানজেকশন আইডি দিন" autocomplete="off"></div>'+
+          stepsHtml+
+        '</div>'+
         '<button class="ariyan-verify-btn'+(isBk?'':' nagad')+'" type="submit">ভেরিফাই</button>'+
         '<div id="amErr" class="am-muted" role="status" style="margin-top:10px;font-size:13px"></div>'+
       '</form>'+
