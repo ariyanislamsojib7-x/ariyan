@@ -977,26 +977,16 @@ async function handleApi(req, res, pathname) {
         if (!o.userId || String(o.status || '').toLowerCase() === 'rejected') return;
         spend.set(o.userId, (spend.get(o.userId) || 0) + Number(o.price || 0));
       });
-      const rankedUsers = Array.from(spend.entries()).map(([userId, total]) => {
+      const leaderboard = Array.from(spend.entries()).map(([userId, total]) => {
         const u = usersById.get(userId) || {};
         return {
-          userId,
           name: String(u.name || 'Player').slice(0, 60),
           avatar: String(u.avatar || '').slice(0, 1000),
           points: Math.round(total * 100) / 100,
           specialTitle: String(u.specialTitle || u.gangRole || u.roleTitle || (u.gangMaster === true ? 'Gang Master' : '') || '').replace(/[<>]/g, '').trim().slice(0, 40)
         };
-      }).sort((a,b) => b.points - a.points);
-      const leaderboard = rankedUsers.slice(0, 10).map(({userId, ...u}) => u);
-      const viewer = customerFromRequest(req);
-      let myRank = null;
-      if (viewer) {
-        let position = rankedUsers.findIndex(u => u.userId === viewer.id);
-        const total = spend.get(viewer.id) || 0;
-        if (position < 0) position = rankedUsers.length;
-        myRank = { name: String(viewer.name || 'Player').slice(0, 60), avatar: String(viewer.avatar || '').slice(0, 1000), points: Math.round(total * 100) / 100, rank: position + 1 };
-      }
-      return sendJson(res, 200, { recentOrders: latest, totalOrders: (customerDB.orders || []).length, leaderboard, myRank });
+      }).sort((a,b) => b.points - a.points).slice(0, 10);
+      return sendJson(res, 200, { recentOrders: latest, totalOrders: (customerDB.orders || []).length, leaderboard });
     }
 
     if (req.method === 'GET' && pathname === '/api/account-ui-texts') {
