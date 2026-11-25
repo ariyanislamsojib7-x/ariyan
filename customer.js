@@ -233,6 +233,8 @@ fullCss.textContent+=`
 `;
 document.head.appendChild(fullCss);
 var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='<div class="am-card" role="dialog" aria-modal="true"><div class="am-head"><h2 id="amTitle">ARiYAN</h2><button class="am-x" type="button" aria-label="Close">×</button></div><div class="am-auth-sitebar"><a href="/" class="am-site-logo"><img src="Main logo.jpg" alt="No 1 Topup Center"></a><button type="button" class="am-site-login">Login</button></div><div id="amBody"></div></div>';document.body.appendChild(modal);
+var authHistoryPushed=false;
+window.addEventListener('popstate',function(){if(authHistoryPushed){authHistoryPushed=false;close()}});
 var siteLoginBtn=$('.am-site-login',modal);if(siteLoginBtn)siteLoginBtn.onclick=function(){authView('login')};
 $('.am-x',modal).onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});
 // Payment-method buttons are bound directly by methodsPage() and orderMethodsPage().
@@ -252,11 +254,13 @@ function open(title,html,opts){
   }
 }
 function close(){
+  var hadAuthHistory=authHistoryPushed;authHistoryPushed=false;
   modal.classList.remove('show');
   modal.classList.remove('pay-full');
   modal.classList.remove('auth-full');
   modal.style.display='none';
   try{ document.body.style.overflow=''; document.body.classList.remove('modal-open'); }catch(e){}
+  if(hadAuthHistory){try{history.back()}catch(e){}}
 }
 function forceCloseLogin(){
   close();
@@ -274,6 +278,7 @@ function forceCloseLogin(){
    var btn=$('#amGoogleOAuthStart');if(btn)btn.onclick=function(){window.location.assign('/auth/google/start')};
  }
 function authView(mode){
+  if(!authHistoryPushed){try{history.pushState({ariyanAuthBack:true},'',location.href);authHistoryPushed=true}catch(e){}}
   var reg=mode==='register';
   var html=`<div class="am-auth-intro"><div><h3>${reg?'Register':'Login'}</h3><p>${reg?'Enter your information to create an account':'Login or register an account to continue'}</p></div></div>
   <form id="amAuth">${reg?`<label>${esc(at('acctNameLabel','Full Name'))}</label><input name="name" maxlength="70" required autocomplete="name" placeholder="${esc(at('acctNamePlaceholder','Name'))}"><label>${esc(at('acctPhoneLabel','Phone'))}</label><input name="phone" maxlength="24" required autocomplete="tel" placeholder="${esc(at('acctPhonePlaceholder','Phone'))}">`:''}
@@ -283,7 +288,7 @@ function authView(mode){
   <div class="am-divider"><span>${reg?'OR SIGN UP WITH CREDENTIALS':'OR SIGN IN WITH CREDENTIALS'}</span></div>
   <div class="am-google-wrap"><div id="amGoogleButton"></div></div>
   ${!reg?`<button type="button" class="am-link am-forgot-link" id="amForgot">${esc(at('acctForgotText','Forget Password?'))}</button>`:''}
-  <button class="am-link am-switch" id="amSwitch" style="margin-top:-14px;padding-top:2px">${reg?'Already member? Login Now':'New user to No 1 Topup Center? Register Now'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
+  <button class="am-link am-switch" id="amSwitch" style="margin-top:-14px;padding-top:2px">${reg?'Already member? <span style=\"color:var(--v)\">Login Now</span>':'New user AURA ARiYAN X Topup? <span style=\"color:var(--v)\">Register Now</span>'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
   <div class="am-auth-trust"><div><b>⚡</b><strong>${esc(at('acctFastTitle','Fast'))}</strong><small>${esc(at('acctFastSub','Instant access'))}</small></div><div><b>✓</b><strong>${esc(at('acctSecureTitle','Secure'))}</strong><small>${esc(at('acctSecureSub','Safe login'))}</small></div><div><b>♥</b><strong>${esc(at('acctTrustedTitle','Trusted'))}</strong><small>${esc(at('acctTrustedSub','Easy & reliable'))}</small></div></div>
   <div class="am-safe"><b>✓</b><div><strong>${esc(at('acctSafeTitle','Your data is safe'))}</strong><small>${esc(at('acctSafeSub','Secure authentication protects your account.'))}</small></div></div>`;
   open(reg?'Register':'Login',html,{full:true,auth:true});setupGoogleButton();
