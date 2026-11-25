@@ -208,6 +208,29 @@ fullCss.textContent+=`
 #ariyanModal.auth-full #amAuth:has(#amConfirm) .am-password-row label{font-size:clamp(13px,2.5vw,16px)!important}
 
 `;
+/* Final compact-auth refinement: slimmer cards, controls and lighter/smaller type */
+fullCss.textContent+=`
+#ariyanModal.auth-full #amBody{padding-left:8vw!important;padding-right:8vw!important}
+#ariyanModal.auth-full .am-auth-intro{padding:4.5vw 3.5vw 1.8vw!important}
+#ariyanModal.auth-full .am-auth-intro h3{font-size:clamp(22px,4.2vw,30px)!important;font-weight:750!important}
+#ariyanModal.auth-full .am-auth-intro p{font-size:clamp(13px,2.6vw,16px)!important;font-weight:400!important}
+#ariyanModal.auth-full #amAuth{padding:1vw 3.5vw 0!important}
+#ariyanModal.auth-full #amAuth label{font-size:clamp(13px,2.5vw,16px)!important;font-weight:600!important;margin:1.8vw 0 .7vw!important}
+#ariyanModal.auth-full #amAuth input{height:clamp(40px,7vw,50px)!important;border:1px solid #a9c2e3!important;border-radius:7px!important;font-size:clamp(13px,2.5vw,16px)!important;font-weight:400!important;padding:0 11px!important}
+#ariyanModal.auth-full #amAuth .am-btn{height:clamp(44px,7.4vw,54px)!important;font-size:clamp(14px,2.6vw,17px)!important;font-weight:400!important;border-radius:7px!important;margin-top:2.5vw!important}
+#ariyanModal.auth-full .am-divider{font-size:clamp(10px,2vw,12px)!important;margin:5vw 2.5vw 2.5vw!important;font-weight:600!important}
+#ariyanModal.auth-full .am-google-wrap{padding:0 2.5vw 2vw!important}
+#ariyanModal.auth-full #amGoogleButton{width:min(74%,300px)!important}
+#ariyanModal.auth-full .am-google-custom{min-height:44px!important;font-size:clamp(13px,2.5vw,16px)!important;font-weight:400!important;border-radius:7px!important;gap:10px!important;padding:8px 12px!important}
+#ariyanModal.auth-full .am-google-custom svg{width:22px!important;height:22px!important;flex-basis:22px!important}
+#ariyanModal.auth-full .am-forgot-link{font-size:clamp(14px,2.5vw,17px)!important;font-weight:600!important;padding:2vw 3vw!important}
+#ariyanModal.auth-full .am-switch{font-size:clamp(13px,2.4vw,16px)!important;font-weight:600!important;padding:2vw 3vw 3.2vw!important}
+#ariyanModal.auth-full #amAuth:has(#amConfirm) .am-password-row{gap:1.6vw!important}
+#ariyanModal.auth-full #amAuth:has(#amConfirm) .am-password-row label{font-size:clamp(12px,2.3vw,15px)!important;font-weight:600!important}
+#ariyanModal.auth-full .am-auth-trust{padding:1vw 3.5vw 3vw!important}
+#ariyanModal.auth-full .am-safe{padding:2.5vw 3.5vw!important}
+@media(min-width:600px){#ariyanModal.auth-full #amBody{padding-left:6vw!important;padding-right:6vw!important}}
+`;
 document.head.appendChild(fullCss);
 var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='<div class="am-card" role="dialog" aria-modal="true"><div class="am-head"><h2 id="amTitle">ARiYAN</h2><button class="am-x" type="button" aria-label="Close">×</button></div><div class="am-auth-sitebar"><a href="/" class="am-site-logo"><img src="Main logo.jpg" alt="No 1 Topup Center"></a><button type="button" class="am-site-login">Login</button></div><div id="amBody"></div></div>';document.body.appendChild(modal);
 var siteLoginBtn=$('.am-site-login',modal);if(siteLoginBtn)siteLoginBtn.onclick=function(){authView('login')};
@@ -261,7 +284,10 @@ async function setupGoogleButton(){
     if(!cfg.googleClientId){host.innerHTML='<div class="am-muted">Google Login চালু করতে Render-এ GOOGLE_CLIENT_ID সেট করা বাকি।</div>';return}
     await loadGoogleScript();
     if(!window.google||!window.google.accounts||!window.google.accounts.id)throw new Error('Google Login প্রস্তুত নয়');
-    window.google.accounts.id.initialize({client_id:cfg.googleClientId,use_fedcm_for_button:false,button_auto_select:false,callback:async function(response){
+    // Prevent automatic account-card / One Tap display. Only start the Google flow after the user taps our custom button.
+    try{window.google.accounts.id.disableAutoSelect();}catch(e){}
+    window.google.accounts.id.initialize({client_id:cfg.googleClientId,auto_select:false,use_fedcm_for_prompt:false,callback:async function(response){
+      if(!response||!response.credential){var er=$('#amErr');if(er)er.textContent='Google থেকে credential পাওয়া যায়নি। আবার চেষ্টা করুন।';return;}
       var hostNow=$('#amGoogleButton');if(hostNow)hostNow.style.opacity='.6';
       try{
         var result=await api('/api/auth/google',{credential:response.credential});
@@ -270,9 +296,22 @@ async function setupGoogleButton(){
       finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
     }});
     host.innerHTML='';
-    // Use Google's official clickable Sign-In button: prompt() is One Tap and may be suppressed on mobile.
-    var googleWidth=Math.round(Math.min(330,Math.max(220,host.getBoundingClientRect().width||300)));
-    window.google.accounts.id.renderButton(host,{theme:'filled_blue',size:'large',text:'signin_with',shape:'rectangular',width:googleWidth,logo_alignment:'left'});
+    var custom=document.createElement('button');custom.type='button';custom.className='am-google-custom';custom.setAttribute('aria-label','Login with Google');
+    custom.innerHTML='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6v5h6.5c3.8-3.5 6.1-8.6 6.1-14.7z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.5-5c-1.8 1.2-4.1 2-7 2-5.4 0-10-3.6-11.6-8.5H3.7v5.2C7.1 39.5 15 44 24 44z"/><path fill="#FBBC05" d="M12.4 27.7c-.4-1.2-.7-2.4-.7-3.7s.3-2.5.7-3.7v-5.2H3.7C2.2 18.2 1.4 21 1.4 24s.8 5.8 2.3 8.3z"/><path fill="#EA4335" d="M24 9.8c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 3.7 29.5 1.8 24 1.8 15 1.8 7.1 6.5 3.7 15.1l8.7 5.2C14 15.4 18.6 9.8 24 9.8z"/></svg><span>Login with Google</span>';
+    custom.addEventListener('click',function(){
+      var err=$('#amErr');if(err)err.textContent='';
+      try{
+        window.google.accounts.id.prompt(function(notification){
+          if(notification&&notification.isNotDisplayed&&notification.isNotDisplayed()){
+            var why=notification.getNotDisplayedReason&&notification.getNotDisplayedReason();
+            var e=$('#amErr');if(e)e.textContent='Google sign-in চালু হয়নি ('+(why||'blocked')+')। Browser pop-up / Google sign-in অনুমতি দিয়ে আবার চেষ্টা করুন।';
+          }else if(notification&&notification.isSkippedMoment&&notification.isSkippedMoment()){
+            var e=$('#amErr');if(e)e.textContent='Google sign-in বাতিল হয়েছে। আবার Login with Google চাপুন।';
+          }
+        });
+      }catch(e){var er=$('#amErr');if(er)er.textContent='Google sign-in শুরু করা যায়নি। আবার চেষ্টা করুন।';}
+    });
+    host.appendChild(custom);
   }catch(e){host.innerHTML='<div class="am-muted">'+esc(e.message)+'</div>'}
 }
 function authView(mode){
