@@ -1080,10 +1080,10 @@ async function handleApi(req, res, pathname) {
     if (req.method === 'POST' && pathname === '/api/auth/register') {
       const b = await readJson(req, 8192);
       const email = cleanEmail(b.email), name = String(b.name || '').trim().slice(0, 70), phone = String(b.phone || '').trim().slice(0, 24);
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJson(res, 400, { error: 'সঠিক ইমেইল দিন' });
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendJson(res, 400, { error: 'Please enter a valid email address.' });
       if (!validPass(b.password)) return sendJson(res, 400, { error: 'Password must be at least 8 characters.' });
       if (!phone || !/^[+0-9() .-]{7,24}$/.test(phone)) return sendJson(res, 400, { error: 'Enter a valid phone number.' });
-      if (customerDB.users.some(u => u.email === email)) return sendJson(res, 409, { error: 'এই ইমেইলে অ্যাকাউন্ট আছে' });
+      if (customerDB.users.some(u => u.email === email)) return sendJson(res, 409, { error: 'An account with this email already exists.' });
       const salt = crypto.randomBytes(16).toString('hex');
       const u = { id:newId('usr'), email, name:name || email.split('@')[0], phone, salt, password:passHash(b.password, salt), balance:0, createdAt:new Date().toISOString() };
       customerDB.users.push(u); saveCustomerDB();
@@ -1091,8 +1091,9 @@ async function handleApi(req, res, pathname) {
     }
     if (req.method === 'POST' && pathname === '/api/auth/login') {
       const b = await readJson(req, 8192), email = cleanEmail(b.email);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !validPass(b.password)) return sendJson(res, 401, { error:'Invalid email or password.' });
       const u = customerDB.users.find(x => x.email === email);
-      if (!u || !validPass(b.password) || !safeEq(passHash(b.password, u.salt), u.password)) return sendJson(res, 401, { error:'ইমেইল অথবা পাসওয়ার্ড সঠিক নয়' });
+      if (!u || !u.salt || !u.password || !safeEq(passHash(b.password, u.salt), u.password)) return sendJson(res, 401, { error:'Invalid email or password.' });
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
     if (pathname.startsWith('/api/customer/')) {
