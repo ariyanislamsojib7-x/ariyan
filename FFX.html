@@ -968,6 +968,57 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
   .ar-member-chip img{width:13px;height:18px}
 }
 
+
+/* Requested fine adjustments: remove decorative avatar frames for TOP 1/2/3 */
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-first,
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-second,
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-third{
+  width:clamp(66px,9vw,104px)!important;height:clamp(66px,9vw,104px)!important;
+  border:3px solid rgba(255,255,255,.95)!important;border-radius:50%!important;
+  overflow:hidden!important;background:#e8eef8!important;box-shadow:0 3px 12px rgba(20,35,65,.18)!important;
+}
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-first:after,
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-second:after,
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-third:after{content:none!important;display:none!important;background:none!important;}
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-first img,
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-second img,
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-third img{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  left:0!important;top:0!important;object-fit:cover!important;border-radius:50%!important;
+}
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-first .ar-avatar-fallback,
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-second .ar-avatar-fallback,
+#arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-third .ar-avatar-fallback{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  left:0!important;top:0!important;border-radius:50%!important;display:grid!important;place-items:center!important;
+}
+/* Smaller LIVE label and heartbeat; clearer blinking green status dot */
+#arLiveBoard .ar-live-inline{gap:7px!important;font-size:12px!important;}
+#arLiveBoard .ar-live-inline>b{min-height:23px!important;padding:0 9px!important;font-size:12px!important;}
+#arLiveBoard .ar-live-inline .ar-live-dot{
+  width:8px!important;height:8px!important;flex:0 0 8px!important;border-radius:50%!important;
+  background:#00c853!important;box-shadow:0 0 0 2px rgba(0,200,83,.18),0 0 8px rgba(0,200,83,.65)!important;
+  animation:arLiveDotBlinkClear 1.15s ease-in-out infinite!important;
+}
+#arLiveBoard .ar-live-pulse.ar-heartbeat-line{
+  width:105px!important;height:19px!important;min-width:64px!important;max-width:125px!important;
+  flex:0 1 105px!important;margin-left:1px!important;
+}
+#arLiveBoard .ar-heartbeat-track{stroke-width:2.2!important;filter:drop-shadow(0 0 2px rgba(20,190,75,.32))!important;}
+@keyframes arLiveDotBlinkClear{
+  0%,100%{opacity:.55;box-shadow:0 0 0 1px rgba(0,200,83,.16),0 0 3px rgba(0,200,83,.35)!important;}
+  50%{opacity:1;box-shadow:0 0 0 4px rgba(0,200,83,.22),0 0 11px rgba(0,200,83,.9)!important;}
+}
+@media(max-width:620px){
+  #arLiveBoard .ar-live-inline{gap:5px!important;font-size:11px!important;}
+  #arLiveBoard .ar-live-inline>b{min-height:20px!important;padding:0 7px!important;font-size:11px!important;}
+  #arLiveBoard .ar-live-inline .ar-live-dot{width:7px!important;height:7px!important;flex-basis:7px!important;}
+  #arLiveBoard .ar-live-pulse.ar-heartbeat-line{height:15px!important;min-width:45px!important;max-width:85px!important;flex-basis:65px!important;}
+  #arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-first,
+  #arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-second,
+  #arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-third{width:clamp(58px,16vw,82px)!important;height:clamp(58px,16vw,82px)!important;}
+}
+
 </style>
 
 
