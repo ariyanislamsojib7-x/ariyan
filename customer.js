@@ -169,9 +169,31 @@ fullCss.textContent+=`
 #ariyanModal.auth-full .am-auth-intro{border-radius:14px 14px 0 0}
 #ariyanModal.auth-full .am-switch{line-height:1.45}
 `;
-var siteLoginBtn=$('.am-site-login',modal);if(siteLoginBtn)siteLoginBtn.onclick=function(){authView('login')};
+
+fullCss.textContent+=`
+/* User requested: fixed/sticky site logo bar, thin form controls, reference typography and no password visibility toggles */
+#ariyanModal.auth-full .am-card{overflow:hidden!important}
+#ariyanModal.auth-full .am-auth-sitebar{position:sticky;top:0;z-index:100;box-shadow:0 1px 2px #00000005;min-height:68px;padding:10px 14px!important}
+#ariyanModal.auth-full .am-site-logo{height:54px!important;max-width:72%!important}
+#ariyanModal.auth-full .am-site-login{font-size:16px!important;font-weight:400!important;padding:8px 16px!important;border-radius:8px!important}
+#ariyanModal.auth-full #amBody{overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0}
+#ariyanModal.auth-full #amAuth label{font-family:Georgia,"Times New Roman",serif!important;font-weight:700!important}
+#ariyanModal.auth-full #amAuth input{height:clamp(46px,8.2vw,62px)!important;border:1.5px solid #a9c2e3!important;border-radius:9px!important;font-size:clamp(16px,3.4vw,22px)!important;padding:0 16px!important;box-shadow:0 1px 3px #0000000a!important}
+#ariyanModal.auth-full #amAuth .am-btn{height:clamp(50px,8.8vw,66px)!important;font-size:clamp(17px,3.5vw,23px)!important;border-radius:9px!important;font-weight:400!important}
+#ariyanModal.auth-full .am-password-row{gap:12px!important}
+#ariyanModal.auth-full .am-password-field label{font-size:clamp(15px,3vw,20px)!important}
+#ariyanModal.auth-full #amGoogleButton{width:min(72%,390px)!important;margin:0 auto!important}
+#ariyanModal.auth-full #amGoogleButton iframe{width:100%!important}
+#ariyanModal.auth-full .am-google-wrap{padding-bottom:14px!important}
+#ariyanModal.auth-full .am-divider{font-family:Georgia,"Times New Roman",serif!important}
+#ariyanModal.auth-full .am-forgot-link,#ariyanModal.auth-full .am-switch{font-family:Georgia,"Times New Roman",serif!important}
+#ariyanModal.auth-full .am-password button{display:none!important}
+
+
+`;
 document.head.appendChild(fullCss);
 var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='<div class="am-card" role="dialog" aria-modal="true"><div class="am-head"><h2 id="amTitle">ARiYAN</h2><button class="am-x" type="button" aria-label="Close">×</button></div><div class="am-auth-sitebar"><a href="/" class="am-site-logo"><img src="Main logo.jpg" alt="No 1 Topup Center"></a><button type="button" class="am-site-login">Login</button></div><div id="amBody"></div></div>';document.body.appendChild(modal);
+var siteLoginBtn=$('.am-site-login',modal);if(siteLoginBtn)siteLoginBtn.onclick=function(){authView('login')};
 $('.am-x',modal).onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});
 // Payment-method buttons are bound directly by methodsPage() and orderMethodsPage().
 function open(title,html,opts){
@@ -230,7 +252,7 @@ async function setupGoogleButton(){
       }catch(err){var er=$('#amErr');if(er)er.textContent=err.message}
       finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
     }});
-    window.google.accounts.id.renderButton(host,{type:'standard',theme:'filled_black',size:'large',shape:'pill',text:'continue_with',width:Math.max(200,Math.min(400,host.clientWidth||host.parentElement.clientWidth||390)),logo_alignment:'left'});
+    window.google.accounts.id.renderButton(host,{type:'standard',theme:'filled_blue',size:'large',shape:'rectangular',text:'signin_with',width:Math.max(200,Math.min(400,host.clientWidth||host.parentElement.clientWidth||390)),logo_alignment:'left'});
   }catch(e){host.innerHTML='<div class="am-muted">'+esc(e.message)+'</div>'}
 }
 function authView(mode){
@@ -238,7 +260,7 @@ function authView(mode){
   var html=`<div class="am-auth-intro"><div><h3>${reg?'Register':'Login'}</h3><p>${reg?'Enter your information to create an account':'Login or register an account to continue'}</p></div></div>
   <form id="amAuth">${reg?`<label>${esc(at('acctNameLabel','Full Name'))}</label><input name="name" maxlength="70" required autocomplete="name" placeholder="${esc(at('acctNamePlaceholder','Name'))}"><label>${esc(at('acctPhoneLabel','Phone'))}</label><input name="phone" maxlength="24" required autocomplete="tel" placeholder="${esc(at('acctPhonePlaceholder','Phone'))}">`:''}
   <label>${esc(at('acctEmailLabel','Email'))}</label><input name="email" type="email" required autocomplete="email" placeholder="${esc(at('acctEmailPlaceholder','Email'))}">
-  ${reg?`<div class="am-password-row"><div class="am-password-field"><label>${esc(at('acctPasswordLabel','Password'))}</label><div class="am-password"><input id="amPassword" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="Password"><button type="button" id="amPwEye">Show</button></div></div><div class="am-password-field"><label>${esc(at('acctConfirmLabel','Confirm Password'))}</label><div class="am-password"><input id="amConfirm" name="confirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="Confirm Password"><button type="button" id="amConfirmEye">Show</button></div></div></div>`:`<label>${esc(at('acctPasswordLabel','Password'))}</label><div class="am-password"><input id="amPassword" name="password" type="password" required minlength="8" maxlength="128" autocomplete="current-password" placeholder="Password"><button type="button" id="amPwEye">Show</button></div>`}
+  ${reg?`<div class="am-password-row"><div class="am-password-field"><label>${esc(at('acctPasswordLabel','Password'))}</label><div class="am-password"><input id="amPassword" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="Password"></div></div><div class="am-password-field"><label>${esc(at('acctConfirmLabel','Confirm Password'))}</label><div class="am-password"><input id="amConfirm" name="confirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="Confirm Password"></div></div></div>`:`<label>${esc(at('acctPasswordLabel','Password'))}</label><div class="am-password"><input id="amPassword" name="password" type="password" required minlength="8" maxlength="128" autocomplete="current-password" placeholder="Password"></div>`}
   <button class="am-btn" type="submit">${reg?'Register':'Login'}</button></form>
   <div class="am-divider"><span>${reg?'OR SIGN UP WITH CREDENTIALS':'OR SIGN IN WITH CREDENTIALS'}</span></div>
   <div class="am-google-wrap"><div id="amGoogleButton"></div></div>
@@ -247,8 +269,6 @@ function authView(mode){
   <div class="am-auth-trust"><div><b>⚡</b><strong>${esc(at('acctFastTitle','Fast'))}</strong><small>${esc(at('acctFastSub','Instant access'))}</small></div><div><b>✓</b><strong>${esc(at('acctSecureTitle','Secure'))}</strong><small>${esc(at('acctSecureSub','Safe login'))}</small></div><div><b>♥</b><strong>${esc(at('acctTrustedTitle','Trusted'))}</strong><small>${esc(at('acctTrustedSub','Easy & reliable'))}</small></div></div>
   <div class="am-safe"><b>✓</b><div><strong>${esc(at('acctSafeTitle','Your data is safe'))}</strong><small>${esc(at('acctSafeSub','Secure authentication protects your account.'))}</small></div></div>`;
   open(reg?'Register':'Login',html,{full:true,auth:true});setupGoogleButton();
-  function eye(id,btn){var inp=$(id);if(inp){inp.type=inp.type==='password'?'text':'password';btn.textContent=inp.type==='password'?'Show':'Hide'}}
-  var pe=$('#amPwEye');if(pe)pe.onclick=function(){eye('#amPassword',pe)};var ce=$('#amConfirmEye');if(ce)ce.onclick=function(){eye('#amConfirm',ce)};
   var forgot=$('#amForgot');if(forgot)forgot.onclick=function(){open('Password Recovery','<div class="am-note">Password reset is not configured yet. Please contact support to recover your account.</div><button class="am-btn" id="amBackLogin">Back to Login</button>');$('#amBackLogin').onclick=function(){authView('login')}};
   $('#amSwitch').onclick=function(){authView(reg?'login':'register')};
   $('#amAuth').onsubmit=async function(e){e.preventDefault();var f=new FormData(this),password=f.get('password');if(reg&&password!==f.get('confirm')){$('#amErr').textContent='Passwords do not match.';return}var b={email:f.get('email'),password:password,name:f.get('name')||'',phone:f.get('phone')||''},btn=$('button[type=submit]',this);btn.disabled=true;try{var r=await api(reg?'/api/auth/register':'/api/auth/login',b);saveSession(r.token,r.user);toast(reg?'Account created successfully':'Signed in successfully');try{await refreshMe()}catch(e){}openMyAccountPage()}catch(ex){$('#amErr').textContent=ex.message}finally{btn.disabled=false}};
