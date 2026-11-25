@@ -970,6 +970,112 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     <a class="card" href="#uid-checker" data-open="uid-checker"><div class="thumb ph"><img src="uid checker.jpg" alt="UID Checker" loading="lazy" decoding="async"></div><p>UID Checker</p></a>
   </div>
 
+
+  <!-- ARiYAN Live Recent Orders + Leaderboard (added without changing existing sections) -->
+  <section class="ar-live-board" id="arLiveBoard" aria-label="Live orders and leaderboard">
+    <div class="ar-live-head">
+      <div>
+        <span class="ar-kicker">ARiYAN COMMUNITY</span>
+        <h2>Recent Orders</h2>
+        <p>সর্বশেষ ১০টি অর্ডার লাইভ আপডেট হচ্ছে</p>
+      </div>
+      <div class="ar-live-count"><span class="ar-live-dot"></span><b id="arOrderCount">0</b><small>ORDERS</small></div>
+    </div>
+    <div class="ar-order-list" id="arRecentList">
+      <div class="ar-loading">অর্ডারের তথ্য লোড হচ্ছে...</div>
+    </div>
+    <div class="ar-board-head">
+      <div><span class="ar-kicker">TOP SPENDERS</span><h2>Leaderboard</h2><p>সর্বোচ্চ অর্ডার খরচ অনুযায়ী র‍্যাংক</p></div>
+      <span class="ar-board-icon">♛</span>
+    </div>
+    <div id="arLeaderboard" class="ar-leader-list"><div class="ar-loading">লিডারবোর্ড লোড হচ্ছে...</div></div>
+    <div class="ar-board-foot">লাইভ ডেটা • প্রতি ১৫ সেকেন্ডে আপডেট</div>
+  </section>
+  <style>
+    .ar-live-board{margin:22px 0 24px;padding:16px;background:var(--card,#fff);border:1px solid var(--bd,#dbe4f0);border-radius:22px;box-shadow:0 12px 30px -24px rgba(30,64,175,.45);color:var(--tx,#172033)}
+    .ar-live-head,.ar-board-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 2px 14px}
+    .ar-kicker{font-size:10px;letter-spacing:1.8px;font-weight:900;color:var(--v,#2563eb)}
+    .ar-live-head h2,.ar-board-head h2{font-size:20px;font-weight:850;margin:3px 0}
+    .ar-live-head p,.ar-board-head p{font-size:12px;color:var(--mu,#64748b);margin:0}
+    .ar-live-count{min-width:72px;padding:9px 11px;border-radius:15px;background:#eff6ff;border:1px solid #bfdbfe;text-align:center;color:#1d4ed8}
+    .ar-live-count b{font-size:21px;display:block;line-height:1.1}.ar-live-count small{font-size:9px;font-weight:900;letter-spacing:1px}
+    .ar-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 4px #dcfce7;margin:0 4px 2px 0;animation:arPulse 1.5s infinite}
+    @keyframes arPulse{50%{opacity:.4;box-shadow:0 0 0 7px rgba(220,252,231,.3)}}
+    .ar-order-list{border:1px solid var(--bd,#dbe4f0);border-radius:16px;overflow:hidden}
+    .ar-order{display:flex;align-items:center;gap:10px;padding:11px 10px;border-bottom:1px solid #edf1f7;min-width:0}
+    .ar-order:last-child{border-bottom:0}
+    .ar-avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:#e8efff;color:#2455bd;font-weight:850;font-size:15px;overflow:hidden;border:2px solid #d7e4ff}
+    .ar-avatar img{width:100%;height:100%;object-fit:cover}
+    .ar-order-info{flex:1;min-width:0}.ar-order-info b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ar-order-info small{display:block;color:var(--mu,#64748b);font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ar-order-meta{text-align:right;flex-shrink:0}.ar-order-meta b{font-size:12px;display:block;color:var(--v,#2563eb)}
+    .ar-order-meta small{font-size:10px;color:#16a34a;font-weight:800}
+    .ar-board-head{margin-top:20px;padding-top:17px;border-top:1px solid var(--bd,#dbe4f0)}
+    .ar-board-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#eff6ff;border:1px solid #bfdbfe;color:#2455bd;font-size:25px}
+    .ar-leader-list{display:flex;flex-direction:column;gap:8px}
+    .ar-leader{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--bd,#dbe4f0);border-radius:15px;background:#fff;min-width:0}
+    .ar-leader-rank{width:29px;height:29px;flex-shrink:0;border-radius:9px;background:#eef2f8;color:#34445e;display:grid;place-items:center;font-size:12px;font-weight:900}
+    .ar-leader .ar-avatar{width:39px;height:39px}
+    .ar-leader-name{flex:1;min-width:0;font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ar-points{font-size:11px;font-weight:900;color:var(--v,#2563eb);white-space:nowrap}
+    .ar-leader.vip{padding:17px 12px 15px;display:flex;flex-direction:column;gap:7px;text-align:center;border:1.5px solid #8fb4ff;background:linear-gradient(145deg,#f7faff,#eaf2ff);box-shadow:0 10px 24px -18px rgba(37,99,235,.75);position:relative}
+    .ar-leader.vip:before{content:"TOP 1 • VIP";position:absolute;top:10px;right:10px;border-radius:99px;padding:4px 8px;background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:900;letter-spacing:.5px}
+    .ar-leader.vip .ar-leader-rank{position:absolute;top:10px;left:10px;background:#2455bd;color:white;width:32px;height:32px}
+    .ar-leader.vip .ar-avatar{width:88px;height:88px;border:4px solid #fff;outline:3px solid #4f83dc;box-shadow:0 6px 18px rgba(37,99,235,.22);font-size:25px}
+    .ar-leader.vip .ar-leader-name{font-size:17px;max-width:100%}
+    .ar-leader.vip .ar-points{font-size:14px;padding:7px 15px;border:1px solid #b9d0ff;border-radius:99px;background:#fff}
+    /* Rank 2: secondary podium level, using the site's blue palette */
+    .ar-leader.second{padding:13px 11px;border:1.5px solid #c7d7ef;background:linear-gradient(135deg,#f7faff,#edf3fb);box-shadow:0 6px 16px -14px rgba(37,99,235,.45)}
+    .ar-leader.second .ar-leader-rank{width:32px;height:32px;background:#dce7f7;color:#35527c;border:1px solid #b9cbe5}
+    .ar-leader.second .ar-avatar{width:50px;height:50px;border:3px solid #fff;outline:2px solid #c5d6ef}
+    .ar-leader.second .ar-leader-name{font-size:14px}
+    .ar-leader.second .ar-points{padding:5px 9px;border-radius:99px;background:#fff;border:1px solid #d4e1f2}
+    /* Rank 3: a modest step below rank 2 */
+    .ar-leader.third{padding:11px 10px;border:1px solid #d7e0ed;background:linear-gradient(135deg,#fbfcff,#f3f6fb)}
+    .ar-leader.third .ar-leader-rank{background:#e8edf5;color:#53647d;border:1px solid #d3dce9}
+    .ar-leader.third .ar-avatar{width:45px;height:45px;border:2px solid #fff;outline:1px solid #d7e0ed}
+    .ar-leader.third .ar-points{padding:4px 8px;border-radius:99px;background:#fff;border:1px solid #e0e7f1}
+    .ar-loading,.ar-empty{padding:18px;text-align:center;color:var(--mu,#64748b);font-size:12px}
+    .ar-board-foot{text-align:center;color:var(--mu,#64748b);font-size:10px;margin-top:12px}
+    @media(min-width:650px){.ar-live-board{padding:20px}.ar-order{padding:12px 14px}.ar-leader.vip .ar-avatar{width:100px;height:100px}}
+  </style>
+  <script>
+  (function(){
+    'use strict';
+    var list=document.getElementById('arRecentList'), board=document.getElementById('arLeaderboard');
+    if(!list||!board)return;
+    function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+    function avatar(name,url,cls){
+      var letter=esc((String(name||'P').trim().charAt(0)||'P').toUpperCase());
+      return '<div class="ar-avatar '+(cls||'')+'">'+(url?'<img src="'+esc(url)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':letter)+'</div>';
+    }
+    function status(v){var s=String(v||'pending').toLowerCase();return /deliver|complete|success/.test(s)?'Complete':(/process/.test(s)?'Processing':(/reject|cancel|fail/.test(s)?'Cancelled':'Pending'));}
+    function render(data){
+      var orders=Array.isArray(data.recentOrders)?data.recentOrders.slice(0,10):[];
+      document.getElementById('arOrderCount').textContent=Number(data.totalOrders||0).toLocaleString('en-US');
+      list.innerHTML=orders.length?orders.map(function(o){
+        return '<div class="ar-order">'+avatar(o.name,o.avatar)+'<div class="ar-order-info"><b>'+esc(o.name||'Player')+'</b><small>'+esc(o.packageName||'Top Up')+'</small></div><div class="ar-order-meta"><b>৳'+Number(o.price||0).toLocaleString('en-US')+'</b><small>'+status(o.status)+'</small></div></div>';
+      }).join(''):'<div class="ar-empty">এখনো কোনো অর্ডার পাওয়া যায়নি</div>';
+      var leaders=Array.isArray(data.leaderboard)?data.leaderboard.slice(0,10):[];
+      board.innerHTML=leaders.length?leaders.map(function(u,i){
+        var tier=i===0?' vip':(i===1?' second':(i===2?' third':''));
+        return '<div class="ar-leader'+tier+'"><span class="ar-leader-rank">'+(i+1)+'</span>'+avatar(u.name,u.avatar)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">৳'+Number(u.points||0).toLocaleString('en-US')+'</div></div>';
+      }).join(''):'<div class="ar-empty">এখনো লিডারবোর্ডের তথ্য নেই</div>';
+    }
+    var busy=false;
+    function load(){
+      if(busy||document.visibilityState==='hidden')return;
+      busy=true;
+      fetch('/api/public/home-stats',{method:'GET',cache:'no-store',headers:{'Accept':'application/json'}})
+        .then(function(r){if(!r.ok)throw new Error('feed');return r.json();})
+        .then(render).catch(function(){if(!list.dataset.loaded)list.innerHTML='<div class="ar-empty">লাইভ তথ্য এখন পাওয়া যাচ্ছে না</div>';})
+        .finally(function(){busy=false;list.dataset.loaded='1';});
+    }
+    load();setInterval(load,15000);
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)load();});
+  })();
+  </script>
+
 </main>
 
 <main class="wrap" id="ffView" hidden>

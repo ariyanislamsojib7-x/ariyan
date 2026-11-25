@@ -954,6 +954,40 @@ function removeUpload(name) {
 
 async function handleApi(req, res, pathname) {
   try {
+
+    // Public, privacy-safe homepage feed: latest 10 orders and lifetime-spend leaderboard.
+    if (req.method === 'GET' && pathname === '/api/public/home-stats') {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+      const usersById = new Map((customerDB.users || []).map(u => [u.id, u]));
+      const latest = (customerDB.orders || []).slice().sort((a,b) =>
+        Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0)
+      ).slice(0, 10).map(o => {
+        const u = usersById.get(o.userId) || {};
+        return {
+          name: String(u.name || 'Player').slice(0, 60),
+          avatar: String(u.avatar || '').slice(0, 1000),
+          packageName: String(o.packageName || o.product || 'Top Up').slice(0, 100),
+          price: Number(o.price || 0),
+          status: String(o.status || 'pending').slice(0, 30),
+          createdAt: o.createdAt || ''
+        };
+      });
+      const spend = new Map();
+      (customerDB.orders || []).forEach(o => {
+        if (!o.userId || String(o.status || '').toLowerCase() === 'rejected') return;
+        spend.set(o.userId, (spend.get(o.userId) || 0) + Number(o.price || 0));
+      });
+      const leaderboard = Array.from(spend.entries()).map(([userId, total]) => {
+        const u = usersById.get(userId) || {};
+        return {
+          name: String(u.name || 'Player').slice(0, 60),
+          avatar: String(u.avatar || '').slice(0, 1000),
+          points: Math.round(total * 100) / 100
+        };
+      }).sort((a,b) => b.points - a.points).slice(0, 10);
+      return sendJson(res, 200, { recentOrders: latest, totalOrders: (customerDB.orders || []).length, leaderboard });
+    }
+
     if (req.method === 'GET' && pathname === '/api/account-ui-texts') {
       const T = config.texts || {}; const out = {};
       TEXTS.filter(function(x){ return x.id.indexOf('acct') === 0; }).forEach(function(x){ out[x.id] = T[x.id] || x.def; });
