@@ -132,13 +132,13 @@ fullCss.textContent+=`
 #ariyanModal.auth-full .am-head{display:none}
 #ariyanModal.auth-full #amBody{padding:5.2vw 4.8vw 6vw;min-height:100%;box-sizing:border-box;background:#f1f4ff}
 #ariyanModal.auth-full .am-auth-intro{display:block;background:#fff;border:1px solid #cbd9eb;border-bottom:0;border-radius:18px 18px 0 0;margin:0;padding:7vw 4vw 2vw}
-#ariyanModal.auth-full .am-auth-intro h3{font-size:clamp(30px,5.6vw,46px);font-weight:850;line-height:1.12;color:#050505;margin:0 0 8px}
-#ariyanModal.auth-full .am-auth-intro p{font-size:clamp(16px,3.3vw,25px);color:#111;margin:0;line-height:1.35}
+#ariyanModal.auth-full .am-auth-intro h3{font-size:clamp(27px,5.1vw,42px);font-weight:850;line-height:1.12;color:#050505;margin:0 0 8px}
+#ariyanModal.auth-full .am-auth-intro p{font-size:clamp(15px,3.0vw,22px);color:#111;margin:0;line-height:1.35}
 #ariyanModal.auth-full #amAuth{background:#fff;border:1px solid #cbd9eb;border-top:0;border-bottom:0;padding:2vw 4vw 0;margin:0}
-#ariyanModal.auth-full #amAuth label{display:block;font-family:Georgia,serif;font-size:clamp(17px,3.5vw,25px);color:#101010;font-weight:700;margin:2.5vw 0 1vw}
-#ariyanModal.auth-full #amAuth input{width:100%;height:clamp(54px,9.5vw,74px);padding:0 3vw;border:2px solid #adc5e5;border-radius:12px;font-size:clamp(17px,3.7vw,26px);box-shadow:0 2px 5px #00000008;box-sizing:border-box}
+#ariyanModal.auth-full #amAuth label{display:block;font-family:Georgia,serif;font-size:clamp(15px,3.2vw,22px);color:#101010;font-weight:700;margin:2.5vw 0 1vw}
+#ariyanModal.auth-full #amAuth input{width:100%;height:clamp(54px,9.5vw,74px);padding:0 3vw;border:2px solid #adc5e5;border-radius:12px;font-size:clamp(15px,3.2vw,22px);box-shadow:0 2px 5px #00000008;box-sizing:border-box}
 #ariyanModal.auth-full #amAuth .am-password input{padding-right:60px}
-#ariyanModal.auth-full #amAuth .am-btn{height:clamp(56px,10vw,78px);border-radius:12px;background:#2e63c6;font-size:clamp(18px,3.8vw,27px);font-weight:500;margin-top:4vw;width:100%}
+#ariyanModal.auth-full #amAuth .am-btn{height:clamp(56px,10vw,78px);border-radius:12px;background:#2e63c6;font-size:clamp(16px,3.3vw,23px);font-weight:500;margin-top:4vw;width:100%}
 #ariyanModal.auth-full .am-divider{margin:8vw 4vw 5vw;color:#8b929e;font-size:clamp(12px,2.5vw,18px);font-weight:700}
 #ariyanModal.auth-full .am-google-wrap{margin:0;padding:0 4vw 3vw;background:#fff;border-left:1px solid #cbd9eb;border-right:1px solid #cbd9eb}
 #ariyanModal.auth-full #amGoogleButton{width:min(100%,390px);margin:0 auto}
@@ -183,7 +183,9 @@ fullCss.textContent+=`
 #ariyanModal.auth-full .am-password-row{gap:12px!important}
 #ariyanModal.auth-full .am-password-field label{font-size:clamp(15px,3vw,20px)!important}
 #ariyanModal.auth-full #amGoogleButton{width:min(72%,390px)!important;margin:0 auto!important}
-#ariyanModal.auth-full #amGoogleButton iframe{width:100%!important}
+#ariyanModal.auth-full .am-google-custom{width:100%;min-height:54px;border:1px solid #9bb6de;border-radius:8px;background:#2e63c6;color:white;display:flex;align-items:center;justify-content:center;gap:14px;font:400 clamp(15px,3.1vw,21px) Arial,sans-serif;box-shadow:0 1px 3px #0002;cursor:pointer;padding:10px 16px}
+#ariyanModal.auth-full .am-google-custom svg{width:25px;height:25px;flex:0 0 25px}
+#ariyanModal.auth-full .am-google-custom:active{filter:brightness(.94)}
 #ariyanModal.auth-full .am-google-wrap{padding-bottom:14px!important}
 #ariyanModal.auth-full .am-divider{font-family:Georgia,"Times New Roman",serif!important}
 #ariyanModal.auth-full .am-forgot-link,#ariyanModal.auth-full .am-switch{font-family:Georgia,"Times New Roman",serif!important}
@@ -252,7 +254,8 @@ async function setupGoogleButton(){
       }catch(err){var er=$('#amErr');if(er)er.textContent=err.message}
       finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
     }});
-    window.google.accounts.id.renderButton(host,{type:'standard',theme:'filled_blue',size:'large',shape:'rectangular',text:'signin_with',width:Math.max(200,Math.min(400,host.clientWidth||host.parentElement.clientWidth||390)),logo_alignment:'left'});
+    host.innerHTML='<button type=\"button\" class=\"am-google-custom\" aria-label=\"Login with Google\"><svg viewBox=\"0 0 48 48\" aria-hidden=\"true\"><path fill=\"#4285F4\" d=\"M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-2 4.6-4.2 6v5h6.8c4-3.7 6-9 6-14.7z\"/><path fill=\"#34A853\" d=\"M24 44c5.7 0 10.5-1.9 14-5l-6.8-5c-1.9 1.3-4.3 2-7.2 2-5.5 0-10.2-3.7-11.9-8.7H5v5.2C8.5 39 15.7 44 24 44z\"/><path fill=\"#FBBC05\" d=\"M12.1 27.3a12.7 12.7 0 0 1 0-6.6v-5.2H5a20 20 0 0 0 0 17l7.1-5.2z\"/><path fill=\"#EA4335\" d=\"M24 12.1c3.1 0 5.9 1.1 8.1 3.2l6-6C34.5 5.5 29.7 3.5 24 3.5 15.7 3.5 8.5 8.5 5 15.5l7.1 5.2C13.8 15.8 18.5 12.1 24 12.1z\"/></svg><span>Login with Google</span></button>';
+    var customBtn=host.querySelector('.am-google-custom');customBtn.onclick=function(){try{window.google.accounts.id.prompt()}catch(err){var er=$('#amErr');if(er)er.textContent='Google Login চালু করা যায়নি। আবার চেষ্টা করুন।'}};
   }catch(e){host.innerHTML='<div class="am-muted">'+esc(e.message)+'</div>'}
 }
 function authView(mode){
