@@ -890,7 +890,29 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .ac-connect .ac-legal{color:#dbeafe!important;opacity:.9}
 @media(max-width:380px){.ac-connect{padding:21px 14px 19px!important}.ac-social{gap:9px!important}.ac-social a{width:44px!important;height:44px!important;flex-basis:44px!important}}
 
-</style>
+
+
+/* Final leaderboard frame cleanup: remove the inherited square avatar border */
+.ar-live-board .ar-leader.podium .ar-avatar.ar-frame-first,
+.ar-live-board .ar-leader.podium .ar-avatar.ar-frame-second,
+.ar-live-board .ar-leader.podium .ar-avatar.ar-frame-third{
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  overflow:visible !important;
+}
+/* The PNG frame already contains its own crown; disable the old CSS crown */
+.ar-live-board .ar-leader.podium .ar-avatar.ar-frame-first:before,
+.ar-live-board .ar-leader.podium .ar-avatar.ar-frame-second:before,
+.ar-live-board .ar-leader.podium .ar-avatar.ar-frame-third:before{
+  content:none !important;
+  display:none !important;
+}
+
+  </style>
 </head>
 <body>
 
