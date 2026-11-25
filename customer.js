@@ -267,14 +267,11 @@ function forceCloseLogin(){
   try{ document.body.style.overflow=''; document.body.classList.remove('modal-open'); }catch(e){}
 }
 
- async function setupGoogleButton(){
+ function setupGoogleButton(){
    var host=$('#amGoogleButton');if(!host)return;
-   try{
-     var cfg=await api('/api/auth/config');
-     if(!cfg.googleClientId){host.innerHTML='<div class="am-muted">Google Login চালু করতে Render-এ GOOGLE_CLIENT_ID সেট করা বাকি।</div>';return}
-     host.innerHTML='<button type="button" class="am-google-custom" id="amGoogleOAuthStart"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-2 4.6-4.2 6v5h6.8c4-3.7 6-9 6-14.7z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.8-5c-1.8 1.2-4 1.9-6.7 1.9-5.2 0-9.6-3.5-11.2-8.2H4.8v5.2C8.2 39.1 15.5 44 24 44z"/><path fill="#FBBC05" d="M12.8 27.9a12 12 0 0 1 0-7.8v-5.2H4.8a20 20 0 0 0 0 18.2z"/><path fill="#EA4335" d="M24 12.1c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.9 29.5 4 24 4 15.5 4 8.2 8.9 4.8 14.9l8 5.2C14.4 15.6 18.8 12.1 24 12.1z"/></svg><span>Login with Google</span></button>';
-     var btn=$('#amGoogleOAuthStart');if(btn)btn.onclick=function(){window.location.assign('/auth/google/start')};
-   }catch(e){host.innerHTML='<div class="am-muted">Google Login লোড করা যায়নি। আবার চেষ্টা করুন।</div>'}
+   // Render the custom Google OAuth button immediately; do not wait for the config API.
+   host.innerHTML='<button type="button" class="am-google-custom" id="amGoogleOAuthStart"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-2 4.6-4.2 6v5h6.8c4-3.7 6-9 6-14.7z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.8-5c-1.8 1.2-4 1.9-6.7 1.9-5.2 0-9.6-3.5-11.2-8.2H4.8v5.2C8.2 39.1 15.5 44 24 44z"/><path fill="#FBBC05" d="M12.8 27.9a12 12 0 0 1 0-7.8v-5.2H4.8a20 20 0 0 0 0 18.2z"/><path fill="#EA4335" d="M24 12.1c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.9 29.5 4 24 4 15.5 4 8.2 8.9 4.8 14.9l8 5.2C14.4 15.6 18.8 12.1 24 12.1z"/></svg><span>Login with Google</span></button>';
+   var btn=$('#amGoogleOAuthStart');if(btn)btn.onclick=function(){window.location.assign('/auth/google/start')};
  }
 function authView(mode){
   var reg=mode==='register';
@@ -286,7 +283,7 @@ function authView(mode){
   <div class="am-divider"><span>${reg?'OR SIGN UP WITH CREDENTIALS':'OR SIGN IN WITH CREDENTIALS'}</span></div>
   <div class="am-google-wrap"><div id="amGoogleButton"></div></div>
   ${!reg?`<button type="button" class="am-link am-forgot-link" id="amForgot">${esc(at('acctForgotText','Forget Password?'))}</button>`:''}
-  <button class="am-link am-switch" id="amSwitch">${reg?'Already member? Login Now':'New user to No 1 Topup Center? Register Now'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
+  <button class="am-link am-switch" id="amSwitch" style="margin-top:-5px;padding-top:7px">${reg?'Already member? Login Now':'New user to No 1 Topup Center? Register Now'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
   <div class="am-auth-trust"><div><b>⚡</b><strong>${esc(at('acctFastTitle','Fast'))}</strong><small>${esc(at('acctFastSub','Instant access'))}</small></div><div><b>✓</b><strong>${esc(at('acctSecureTitle','Secure'))}</strong><small>${esc(at('acctSecureSub','Safe login'))}</small></div><div><b>♥</b><strong>${esc(at('acctTrustedTitle','Trusted'))}</strong><small>${esc(at('acctTrustedSub','Easy & reliable'))}</small></div></div>
   <div class="am-safe"><b>✓</b><div><strong>${esc(at('acctSafeTitle','Your data is safe'))}</strong><small>${esc(at('acctSafeSub','Secure authentication protects your account.'))}</small></div></div>`;
   open(reg?'Register':'Login',html,{full:true,auth:true});setupGoogleButton();
