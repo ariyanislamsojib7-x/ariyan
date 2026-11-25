@@ -17,7 +17,9 @@ Render Environment Variables:
 - BKASH_NUMBER = আপনার bKash receive number (ঐচ্ছিক; customer payment info endpoint-এ দেখায়)
 - NAGAD_NUMBER = আপনার Nagad receive number (ঐচ্ছিক)
 - DATA_DIR = Render Persistent Disk mount path, যেমন /var/data
-- GOOGLE_CLIENT_ID = Google Cloud Console থেকে তৈরি OAuth 2.0 Web Client ID (Google Login চালু করতে আবশ্যক)
+- GOOGLE_CLIENT_ID = Google Cloud Console OAuth 2.0 Web Client ID
+- GOOGLE_CLIENT_SECRET = একই OAuth Web Client-এর Client Secret (নতুন Redirect login flow-এর জন্য আবশ্যক)
+- GOOGLE_REDIRECT_URI = https://আপনার-Render-ডোমেইন/auth/google/callback (Google Cloud Console-এ Authorized redirect URI-তে হুবহু যোগ করতে হবে; সেট না করলে সার্ভার current host থেকে তৈরি করবে)
 
 IMPORTANT - Render storage:
 Render instance-এর local filesystem deploy/restart-এ হারিয়ে যেতে পারে। Render Dashboard-এ Persistent Disk যোগ করে Mount Path `/var/data` দিন এবং `DATA_DIR=/var/data` সেট করুন। এই Persistent Disk না থাকলে customer database হারাতে পারে। Scale to multiple instances করলে JSON-file storage ব্যবহার করবেন না; managed database দরকার।

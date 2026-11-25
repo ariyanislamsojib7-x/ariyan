@@ -858,6 +858,56 @@ function decodeJwtPayload(idToken) {
     return JSON.parse(json || '{}');
   } catch (e) { return {}; }
 }
+const googleOAuthStates = new Map();
+function googleOAuthRedirectUri(req) {
+  const configured = String(process.env.GOOGLE_REDIRECT_URI || '').trim();
+  if (configured) return configured;
+  const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+  return proto + '://' + host + '/auth/google/callback';
+}
+function googleExchangeCode(code, redirectUri) {
+  return new Promise(function(resolve,reject){
+    const clientId=String(process.env.GOOGLE_CLIENT_ID||'').trim();
+    const clientSecret=String(process.env.GOOGLE_CLIENT_SECRET||'').trim();
+    if(!clientId||!clientSecret)return reject(new Error('Render-এ GOOGLE_CLIENT_ID ও GOOGLE_CLIENT_SECRET সেট করতে হবে'));
+    const body=new URLSearchParams({code,client_id:clientId,client_secret:clientSecret,redirect_uri:redirectUri,grant_type:'authorization_code'}).toString();
+    const req=https.request({hostname:'oauth2.googleapis.com',path:'/token',method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','Content-Length':Buffer.byteLength(body)}},function(r){let data='';r.setEncoding('utf8');r.on('data',c=>data+=c);r.on('end',function(){let parsed={};try{parsed=JSON.parse(data||'{}')}catch(_){}if(r.statusCode!==200||!parsed.id_token)return reject(new Error(parsed.error_description||parsed.error||'Google OAuth code exchange failed'));resolve(parsed.id_token)})});
+    req.on('error',reject);req.write(body);req.end();
+  });
+}
+function googleLoginHtml(token,user){
+  const safeToken=JSON.stringify(token).replace(/</g,'\\u003c');
+  const safeUser=JSON.stringify(user).replace(/</g,'\\u003c');
+  return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Google Login</title></head><body style="font-family:Arial,sans-serif;background:#f0f3ff;text-align:center;padding:40px;color:#24324a">Google Login সফল হয়েছে, ফিরিয়ে নেওয়া হচ্ছে…<script>try{localStorage.setItem("ariyan_customer_token",'+safeToken+');localStorage.setItem("ariyan_customer_user",'+safeUser+')}catch(e){}location.replace("/")</script></body></html>';
+}
+async function handleGoogleOAuth(req,res,pathname){
+  const clientId=String(process.env.GOOGLE_CLIENT_ID||'').trim();
+  if(!clientId){res.writeHead(503,{'Content-Type':'text/plain; charset=utf-8'});return res.end('Google Login কনফিগার করা নেই।')}
+  const redirectUri=googleOAuthRedirectUri(req);
+  if(req.method==='GET'&&pathname==='/auth/google/start'){
+    const state=crypto.randomBytes(24).toString('hex');googleOAuthStates.set(state,Date.now()+10*60*1000);
+    const url=new URL('https://accounts.google.com/o/oauth2/v2/auth');
+    url.searchParams.set('client_id',clientId);url.searchParams.set('redirect_uri',redirectUri);url.searchParams.set('response_type','code');url.searchParams.set('scope','openid email profile');url.searchParams.set('state',state);url.searchParams.set('prompt','select_account');
+    res.writeHead(302,{'Location':url.toString(),'Cache-Control':'no-store'});return res.end();
+  }
+  if(req.method==='GET'&&pathname==='/auth/google/callback'){
+    const u=new URL(req.url,'https://local.invalid');const state=u.searchParams.get('state')||'',code=u.searchParams.get('code')||'',err=u.searchParams.get('error');
+    const exp=googleOAuthStates.get(state);googleOAuthStates.delete(state);
+    if(!state||!exp||exp<Date.now()||err||!code){res.writeHead(400,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end('<meta charset="utf-8"><p>Google Login বাতিল হয়েছে বা state যাচাই ব্যর্থ হয়েছে। আবার চেষ্টা করুন।</p><a href="/">ফিরে যান</a>')}
+    try{
+      const idToken=await googleExchangeCode(code,redirectUri);const claims=await googleTokenInfo(idToken);
+      const email=cleanEmail(claims.email),verified=claims.email_verified===true||claims.email_verified==='true',issuerOk=claims.iss==='accounts.google.com'||claims.iss==='https://accounts.google.com';
+      if(claims.aud!==clientId||!verified||!issuerOk||!email)throw new Error('Google অ্যাকাউন্ট যাচাই করা যায়নি');
+      let user=customerDB.users.find(x=>x.email===email);
+      if(!user){user={id:newId('usr'),email,name:String(claims.name||email.split('@')[0]).trim().slice(0,70),googleSub:String(claims.sub||''),avatar:String(claims.picture||'').slice(0,1000),salt:'',password:'',balance:0,createdAt:new Date().toISOString()};customerDB.users.push(user)}
+      else{user.googleSub=String(claims.sub||user.googleSub||'');if(claims.picture)user.avatar=String(claims.picture).slice(0,1000);if(claims.name)user.name=String(claims.name).trim().slice(0,70)}
+      saveCustomerDB();const token=customerToken(user.id),pub=publicUser(user);res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'"});return res.end(googleLoginHtml(token,pub));
+    }catch(e){res.writeHead(400,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end('<meta charset="utf-8"><p>Google Login ব্যর্থ হয়েছে: '+String(e.message||'').replace(/[<>]/g,'')+'</p><a href="/auth/google/start">আবার চেষ্টা করুন</a>')}
+  }
+  res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'});res.end('Not found');
+}
+
 function googleTokenInfo(idToken) {
   return new Promise(function (resolve, reject) {
     const local = decodeJwtPayload(idToken);
@@ -1365,6 +1415,10 @@ function handle(req, res) {
   } catch (e) {
     res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('400 Bad Request');
+  }
+
+  if (pathname === '/auth/google/start' || pathname === '/auth/google/callback') {
+    return handleGoogleOAuth(req, res, pathname);
   }
 
   if (pathname.startsWith('/api/')) {
