@@ -187,10 +187,10 @@
     "nagadLogoUrl": "/uploads/payment-nagadLogo-1795607147350.png",
     "bkashTilesBannerUrl": "/uploads/payment-bkashTilesBanner-1795607174795.jpg",
     "nagadTilesBannerUrl": "/uploads/payment-nagadTilesBanner-1795607185932.jpg",
-    "walletLogoFile": "payment-wallet-1795607200198.jpg",
     "bkashPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
     "nagadPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
     "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
-    "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।"
+    "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।",
+    "walletLogoFile": "payment-wallet-1795584142337.jpg"
   }
 }
