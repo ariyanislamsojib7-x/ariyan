@@ -96,6 +96,34 @@ fullCss.textContent='#ariyanModal.pay-full{padding:0;align-items:stretch;justify
 '#ariyanModal.pay-full .ariyan-detail-site-logo,'+
 '#ariyanModal.pay-full .ariyan-detail-amt{margin-left:0;margin-right:0}'+
 '#ariyanModal.pay-full .ariyan-detail-card{margin-left:0;margin-right:0}';
+
+fullCss.textContent+=`
+#ariyanModal.auth-full{padding:0;background:#f0f4ff;align-items:stretch;justify-content:stretch}
+#ariyanModal.auth-full .am-card{width:100%;max-width:none;height:100%;max-height:100%;border-radius:0;padding:0;background:#f0f4ff;box-shadow:none;overflow:auto}
+#ariyanModal.auth-full .am-head{display:none}
+#ariyanModal.auth-full #amBody{padding:20px 14px 28px;min-height:100%;box-sizing:border-box;background:#f0f4ff}
+#ariyanModal.auth-full #amBody>*{box-sizing:border-box}
+#ariyanModal.auth-full .am-auth-intro{display:block;background:#fff;border:1px solid #d2dfef;border-radius:16px 16px 0 0;margin:0;padding:24px 18px 12px}
+#ariyanModal.auth-full .am-auth-intro h3{font-size:32px;font-weight:850;line-height:1.15;color:#050505;margin:0 0 8px}
+#ariyanModal.auth-full .am-auth-intro p{font-size:18px;color:#111;margin:0;line-height:1.35}
+#ariyanModal.auth-full #amAuth{background:#fff;border:1px solid #d2dfef;border-top:0;border-bottom:0;padding:12px 18px 0;margin:0}
+#ariyanModal.auth-full #amAuth label{font-family:Georgia,serif;font-size:18px;color:#111;font-weight:700;margin:12px 0 7px}
+#ariyanModal.auth-full #amAuth input{height:54px;padding:0 14px;border:2px solid #adc5e5;border-radius:12px;font-size:18px;box-shadow:0 2px 5px #00000008}
+#ariyanModal.auth-full #amAuth .am-password input{padding-right:60px}
+#ariyanModal.auth-full #amAuth .am-btn{height:56px;border-radius:12px;background:#2e63c6;font-size:18px;font-weight:500;margin-top:18px}
+#ariyanModal.auth-full .am-divider{margin:28px 18px 18px;color:#8b929e;font-size:13px}
+#ariyanModal.auth-full .am-google-wrap{margin:0 auto;padding:0 18px 14px;background:#fff;border-left:1px solid #d2dfef;border-right:1px solid #d2dfef}
+#ariyanModal.auth-full #amGoogleButton{width:min(100%,390px);margin:0 auto}
+#ariyanModal.auth-full #amGoogleButton>div{width:100%!important}
+#ariyanModal.auth-full .am-forgot-link{background:#fff;border-left:1px solid #d2dfef;border-right:1px solid #d2dfef;padding:12px 18px;text-align:center;font-family:Georgia,serif;font-size:18px}
+#ariyanModal.auth-full .am-switch{background:#fff;border:1px solid #d2dfef;border-top:0;border-radius:0 0 16px 16px;margin:0;padding:14px 18px 24px;font-family:Georgia,serif;font-size:16px}
+#ariyanModal.auth-full .am-auth-trust{background:#fff;border:1px solid #d2dfef;border-top:0;margin:0;padding:4px 18px 18px}
+#ariyanModal.auth-full .am-safe{background:#fff;border:1px solid #d2dfef;margin:0 0 18px;border-radius:0 0 16px 16px;padding:12px 18px}
+#ariyanModal.auth-full .am-safe strong{color:#2563eb}
+#ariyanModal.auth-full .am-muted#amErr{background:#fff;padding:0 18px}
+#ariyanModal.auth-full #amAuth input::placeholder{color:#9299a1}
+@media(min-width:600px){#ariyanModal.auth-full #amBody{padding:26px 6vw}#ariyanModal.auth-full .am-auth-intro,#ariyanModal.auth-full #amAuth,#ariyanModal.auth-full .am-google-wrap,#ariyanModal.auth-full .am-forgot-link,#ariyanModal.auth-full .am-switch,#ariyanModal.auth-full .am-auth-trust,#ariyanModal.auth-full .am-safe{padding-left:28px;padding-right:28px}}
+`;
 document.head.appendChild(fullCss);
 var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='<div class="am-card" role="dialog" aria-modal="true"><div class="am-head"><h2 id="amTitle">ARiYAN</h2><button class="am-x" type="button" aria-label="Close">×</button></div><div id="amBody"></div></div>';document.body.appendChild(modal);
 $('.am-x',modal).onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});
@@ -108,14 +136,17 @@ function open(title,html,opts){
   modal.classList.add('show');
   if(opts.full){
     modal.classList.add('pay-full');
+    if(opts.auth)modal.classList.add('auth-full');else modal.classList.remove('auth-full');
     try{ document.body.style.overflow='hidden'; document.body.classList.add('modal-open'); }catch(e){}
   } else {
     modal.classList.remove('pay-full');
+    modal.classList.remove('auth-full');
   }
 }
 function close(){
   modal.classList.remove('show');
   modal.classList.remove('pay-full');
+  modal.classList.remove('auth-full');
   modal.style.display='none';
   try{ document.body.style.overflow=''; document.body.classList.remove('modal-open'); }catch(e){}
 }
@@ -158,19 +189,19 @@ async function setupGoogleButton(){
 }
 function authView(mode){
   var reg=mode==='register';
-  var html=`<div class="am-auth-intro"><div class="am-auth-icon">${reg?'✚':'♙'}</div><div><h3>${reg?esc(at('acctRegisterTitle','Create an account')):'Login'}</h3><p>${esc(at(reg?'acctRegisterSub':'acctLoginSub',reg?'Enter your details to get started':'Access your account securely'))}</p></div></div>
-  <div class="am-google-wrap"><div id="amGoogleButton"></div><div class="am-google-caption">${esc(at('acctGoogleText','Continue with Google'))} · ${esc(at('acctGoogleSub','Quick and secure sign in'))}</div></div>
-  <div class="am-divider"><span>${esc(at(reg?'acctRegisterDivider':'acctEmailDivider',reg?'OR REGISTER WITH DETAILS':'OR CONTINUE WITH EMAIL'))}</span></div>
+  var html=`<div class="am-auth-intro"><div><h3>${reg?'Register':'Login'}</h3><p>${reg?'Enter your information to create an account':'Login or register an account to continue'}</p></div></div>
   <form id="amAuth">${reg?`<label>${esc(at('acctNameLabel','Full name'))}</label><input name="name" maxlength="70" required autocomplete="name" placeholder="${esc(at('acctNamePlaceholder','Enter your full name'))}"><label>${esc(at('acctPhoneLabel','Phone number'))}</label><input name="phone" maxlength="24" required autocomplete="tel" placeholder="${esc(at('acctPhonePlaceholder','Enter phone number'))}">`:''}
   <label>${esc(at('acctEmailLabel','Email address'))}</label><input name="email" type="email" required autocomplete="email" placeholder="${esc(at('acctEmailPlaceholder','Enter your email'))}">
   <label>${esc(at('acctPasswordLabel','Password'))}</label><div class="am-password"><input id="amPassword" name="password" type="password" required minlength="8" maxlength="128" autocomplete="${reg?'new-password':'current-password'}" placeholder="${esc(at(reg?'acctPasswordPlaceholder':'acctLoginPasswordPlaceholder',reg?'Create password':'Enter your password'))}"><button type="button" id="amPwEye">Show</button></div>
   ${reg?`<label>${esc(at('acctConfirmLabel','Confirm password'))}</label><div class="am-password"><input id="amConfirm" name="confirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="${esc(at('acctConfirmPlaceholder','Repeat password'))}"><button type="button" id="amConfirmEye">Show</button></div>`:''}
-  ${!reg?`<button type="button" class="am-link am-forgot-link" id="amForgot">${esc(at('acctForgotText','Forgot Password?'))}</button>`:''}
   <button class="am-btn" type="submit">${reg?esc(at('acctRegisterButton','Create Account')):'Login'}</button></form>
-  <button class="am-link am-switch" id="amSwitch">${reg?esc(at('acctAlreadyText','Already have an account? Sign in')):'Create New Account'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
+  <div class="am-divider"><span>${reg?'OR SIGN UP WITH CREDENTIALS':'OR SIGN IN WITH CREDENTIALS'}</span></div>
+  <div class="am-google-wrap"><div id="amGoogleButton"></div></div>
+  ${!reg?`<button type="button" class="am-link am-forgot-link" id="amForgot">${esc(at('acctForgotText','Forget Password?'))}</button>`:''}
+  <button class="am-link am-switch" id="amSwitch">${reg?'Already member? Login Now':'New user? Register Now'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
   <div class="am-auth-trust"><div><b>⚡</b><strong>${esc(at('acctFastTitle','Fast'))}</strong><small>${esc(at('acctFastSub','Instant access'))}</small></div><div><b>✓</b><strong>${esc(at('acctSecureTitle','Secure'))}</strong><small>${esc(at('acctSecureSub','Safe login'))}</small></div><div><b>♥</b><strong>${esc(at('acctTrustedTitle','Trusted'))}</strong><small>${esc(at('acctTrustedSub','Easy & reliable'))}</small></div></div>
   <div class="am-safe"><b>✓</b><div><strong>${esc(at('acctSafeTitle','Your data is safe'))}</strong><small>${esc(at('acctSafeSub','Secure authentication protects your account.'))}</small></div></div>`;
-  open(reg?'Create Account':'Sign In',html);setupGoogleButton();
+  open(reg?'Register':'Login',html,{full:true,auth:true});setupGoogleButton();
   function eye(id,btn){var inp=$(id);if(inp){inp.type=inp.type==='password'?'text':'password';btn.textContent=inp.type==='password'?'Show':'Hide'}}
   var pe=$('#amPwEye');if(pe)pe.onclick=function(){eye('#amPassword',pe)};var ce=$('#amConfirmEye');if(ce)ce.onclick=function(){eye('#amConfirm',ce)};
   var forgot=$('#amForgot');if(forgot)forgot.onclick=function(){open('Password Recovery','<div class="am-note">Password reset is not configured yet. Please contact support to recover your account.</div><button class="am-btn" id="amBackLogin">Back to Login</button>');$('#amBackLogin').onclick=function(){authView('login')}};
