@@ -912,7 +912,63 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
   display:none !important;
 }
 
-  </style>
+  
+/* Membership PNG beside leaderboard names */
+.ar-name-line{
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+  gap:5px;min-width:0;max-width:94%;margin:0 auto;
+}
+.ar-name-line .ar-leader-name{
+  flex:0 1 auto;min-width:0;max-width:100%;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;text-align:inherit;
+}
+.ar-member-chip{
+  display:inline-flex;align-items:center;gap:3px;flex:0 0 auto;
+  color:#58657a;font-size:10px;font-weight:850;line-height:1;
+  white-space:nowrap;
+}
+.ar-member-chip img{
+  width:14px;height:19px;object-fit:contain;display:block;
+  filter:drop-shadow(0 1px 1px rgba(15,23,42,.14));
+}
+.ar-special-chip{
+  display:inline-flex;align-items:center;gap:3px;flex:0 0 auto;
+  padding:3px 6px;border-radius:99px;background:#f5f0ff;
+  border:1px solid #dfd0ff;color:#6841a5;font-size:9px;font-weight:900;
+  white-space:nowrap;
+}
+.ar-special-chip img{width:13px;height:13px;object-fit:contain}
+.ar-live-board .ar-leader.normal .ar-name-line{
+  justify-content:flex-start;margin:0;max-width:none;flex:1;
+}
+.ar-live-board .ar-leader.normal .ar-name-line .ar-leader-name{
+  text-align:left;font-size:13px;flex:0 1 auto;
+}
+.ar-live-board .ar-leader.podium .ar-name-line{
+  justify-content:center;max-width:96%;gap:6px;
+}
+.ar-live-board .ar-leader.podium .ar-member-chip{font-size:10px}
+.ar-live-board .ar-leader.podium .ar-member-chip img{width:15px;height:20px}
+.ar-live-board .ar-leader.podium .ar-special-chip{font-size:9px}
+
+/* Ornamental 1 / 2 / 3 rank shields, drawn as inline SVG */
+.ar-live-board .ar-leader.podium .ar-leader-rank{
+  width:58px;height:68px;top:14px;left:12px;padding:0;
+  display:grid;place-items:center;background:transparent;border:0;
+  border-radius:0;clip-path:none;box-shadow:none;overflow:visible;
+}
+.ar-rank-medal{width:100%;height:100%;display:block;overflow:visible;
+  filter:drop-shadow(0 3px 3px rgba(65,45,12,.22))}
+.ar-live-board .ar-leader.podium .ar-leader-rank:after{content:none!important}
+@media(max-width:380px){
+  .ar-live-board .ar-leader.podium .ar-leader-rank{
+    width:51px;height:61px;top:15px;left:10px;
+  }
+  .ar-member-chip{font-size:9px}
+  .ar-member-chip img{width:13px;height:18px}
+}
+
+</style>
 </head>
 <body>
 
@@ -1325,6 +1381,46 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     }
     function status(v){var s=String(v||'pending').toLowerCase();return /deliver|complete|success/.test(s)?'Complete':(/process/.test(s)?'Processing':(/reject|cancel|fail/.test(s)?'Cancelled':'Pending'));}
     function rankTier(points){var n=Number(points||0);if(n>=100000)return 'Grand Master';if(n>=50000)return 'Master';if(n>=25000)return 'Heroic';if(n>=10000)return 'Diamond';if(n>=5000)return 'Platinum';if(n>=1000)return 'Gold';if(n>=101)return 'Silver';return 'Bronze';}
+
+    function membershipMeta(points){
+      var tier=rankTier(points);
+      var files={
+        'Bronze':'bronze.png','Silver':'silver.png','Gold':'gold.png',
+        'Platinum':'platinum.png','Diamond':'diamond.png',
+        'Heroic':'heroic.png','Master':'master.png','Grand Master':'grand-master.png'
+      };
+      return {label:tier,file:files[tier]||'bronze.png'};
+    }
+    function memberLine(u){
+      var m=membershipMeta(u.points);
+      var special=String(u.specialTitle||'').trim();
+      var specialHtml=special
+        ? '<span class="ar-special-chip" title="'+esc(special)+'">'+esc(special)+'</span>'
+        : '';
+      return '<div class="ar-name-line"><span class="ar-leader-name">'+esc(u.name||'Player')+
+        '</span><span class="ar-member-chip"><img src="'+m.file+'" alt="" loading="lazy">'+
+        '<span>'+esc(m.label)+'</span></span>'+specialHtml+'</div>';
+    }
+    function rankMedal(n){
+      var palettes={
+        1:{a:'#ffe88a',b:'#b87808',c:'#fff4bf',d:'#704300'},
+        2:{a:'#f5f9ff',b:'#7186a5',c:'#dbe8f8',d:'#40536e'},
+        3:{a:'#ffd9ad',b:'#98552d',c:'#fff0d9',d:'#65391f'}
+      };
+      var p=palettes[n]||palettes[1], id='arMedal'+n;
+      return '<span class="ar-leader-rank" aria-label="Rank '+n+'"><svg class="ar-rank-medal" viewBox="0 0 72 82" role="img" aria-hidden="true">'+
+        '<defs><linearGradient id="'+id+'g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+p.a+'"/><stop offset=".52" stop-color="'+p.b+'"/><stop offset="1" stop-color="'+p.a+'"/></linearGradient>'+
+        '<linearGradient id="'+id+'s" x1="0" y1="0" x2="0" y2="1"><stop stop-color="'+p.c+'"/><stop offset=".48" stop-color="'+p.b+'"/><stop offset="1" stop-color="'+p.d+'"/></linearGradient></defs>'+
+        '<path d="M17 19C8 25 7 40 14 49M55 19c9 6 10 21 3 30M13 28l-6-4m7 13-7 1m52-10 6-4m-7 13 7 1M17 43l-7 6m45-6 7 6" fill="none" stroke="url(#'+id+'g)" stroke-width="3.2" stroke-linecap="round"/>'+
+        '<path d="M22 8l6 7-5 5-8-8zm28 0-6 7 5 5 8-8z" fill="url(#'+id+'g)" stroke="'+p.d+'" stroke-width="1"/>'+
+        '<path d="M36 8l5 7-5 5-5-5z" fill="'+p.a+'" stroke="'+p.d+'" stroke-width="1"/>'+
+        '<path d="M14 22Q36 12 58 22L55 59 36 76 17 59Z" fill="url(#'+id+'s)" stroke="'+p.a+'" stroke-width="2.5"/>'+
+        '<path d="M19 26Q36 19 53 26L50 56 36 69 22 56Z" fill="none" stroke="'+p.c+'" stroke-width="1.2" opacity=".9"/>'+
+        '<text x="36" y="53" text-anchor="middle" font-family="Georgia,serif" font-size="31" font-weight="900" fill="#fff8dc" stroke="'+p.d+'" stroke-width="1.2" paint-order="stroke" style="filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))">'+n+'</text>'+
+        '<path d="M28 61l8 7 8-7" fill="none" stroke="'+p.a+'" stroke-width="2" stroke-linecap="round"/>'+
+        '</svg></span>';
+    }
+
     function render(data){
       var orders=Array.isArray(data.recentOrders)?data.recentOrders.slice(0,10):[];
       document.getElementById('arOrderCount').textContent=Number(data.totalOrders||0).toLocaleString('en-US');
@@ -1335,11 +1431,11 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
       if(!leaders.length){board.innerHTML='<div class="ar-empty">No leaderboard data available yet.</div>';return;}
       var podium=leaders.slice(0,3).map(function(u,i){
         var tier=i===0?'first':(i===1?'second':'third');
-        return '<div class="ar-leader podium '+tier+'"><span class="ar-leader-rank">'+(i+1)+'</span>'+avatar(u.name,u.avatar,'ar-frame-'+tier)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-tier-label">'+esc(rankTier(u.points))+'</div><div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+        return '<div class="ar-leader podium '+tier+'">'+rankMedal(i+1)+avatar(u.name,u.avatar,'ar-frame-'+tier)+memberLine(u)+'<div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
       }).join('');
       var rest=leaders.slice(3).map(function(u,i){
         var rank=i+4;
-        return '<div class="ar-leader normal" data-leader-rank="'+rank+'"><span class="ar-leader-rank">'+rank+'</span>'+avatar(u.name,u.avatar)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+        return '<div class="ar-leader normal" data-leader-rank="'+rank+'"><span class="ar-leader-rank">'+rank+'</span>'+avatar(u.name,u.avatar)+memberLine(u)+'<div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
       }).join('');
       board.innerHTML=podium+rest+(leaders.length>7?'<button type="button" class="ar-show-more" id="arShowMore">Show More</button>':'');
       board.querySelectorAll('[data-leader-rank]').forEach(function(el){if(!showAll&&Number(el.getAttribute('data-leader-rank'))>7)el.hidden=true;});
