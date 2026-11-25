@@ -190,7 +190,22 @@ fullCss.textContent+=`
 #ariyanModal.auth-full .am-divider{font-family:Georgia,"Times New Roman",serif!important}
 #ariyanModal.auth-full .am-forgot-link,#ariyanModal.auth-full .am-switch{font-family:Georgia,"Times New Roman",serif!important}
 #ariyanModal.auth-full .am-password button{display:none!important}
-
+/* Compact controls: thinner cards/fields and smaller typography, mobile-first. */
+#ariyanModal.auth-full #amBody{padding-left:6vw!important;padding-right:6vw!important}
+#ariyanModal.auth-full .am-auth-intro{padding:5.5vw 4vw 2vw!important}
+#ariyanModal.auth-full .am-auth-intro h3{font-size:clamp(24px,4.6vw,34px)!important}
+#ariyanModal.auth-full .am-auth-intro p{font-size:clamp(14px,2.8vw,18px)!important}
+#ariyanModal.auth-full #amAuth{padding:1vw 4vw 0!important}
+#ariyanModal.auth-full #amAuth label{font-size:clamp(14px,2.8vw,18px)!important;margin:2vw 0 .8vw!important}
+#ariyanModal.auth-full #amAuth input{height:clamp(44px,7.5vw,56px)!important;border-width:1.5px!important;border-radius:8px!important;font-size:clamp(14px,2.8vw,18px)!important;padding-left:12px!important}
+#ariyanModal.auth-full #amAuth .am-btn{height:clamp(48px,8vw,58px)!important;font-size:clamp(15px,2.9vw,19px)!important;border-radius:8px!important;margin-top:3vw!important}
+#ariyanModal.auth-full .am-divider{font-size:clamp(11px,2.2vw,14px)!important;margin:6vw 3vw 3vw!important}
+#ariyanModal.auth-full .am-google-wrap{padding:0 3vw 2.5vw!important}
+#ariyanModal.auth-full #amGoogleButton{width:min(78%,330px)!important;margin:0 auto!important;min-height:40px!important;display:flex!important;justify-content:center!important}
+#ariyanModal.auth-full #amGoogleButton iframe{width:100%!important;max-width:100%!important}
+#ariyanModal.auth-full .am-forgot-link{font-size:clamp(15px,2.9vw,19px)!important;padding:2.5vw 3vw!important}
+#ariyanModal.auth-full .am-switch{font-size:clamp(14px,2.7vw,18px)!important;padding:2.5vw 3vw 4vw!important}
+#ariyanModal.auth-full #amAuth:has(#amConfirm) .am-password-row label{font-size:clamp(13px,2.5vw,16px)!important}
 
 `;
 document.head.appendChild(fullCss);
@@ -254,8 +269,10 @@ async function setupGoogleButton(){
       }catch(err){var er=$('#amErr');if(er)er.textContent=err.message}
       finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
     }});
-    host.innerHTML='<button type=\"button\" class=\"am-google-custom\" aria-label=\"Login with Google\"><svg viewBox=\"0 0 48 48\" aria-hidden=\"true\"><path fill=\"#4285F4\" d=\"M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-2 4.6-4.2 6v5h6.8c4-3.7 6-9 6-14.7z\"/><path fill=\"#34A853\" d=\"M24 44c5.7 0 10.5-1.9 14-5l-6.8-5c-1.9 1.3-4.3 2-7.2 2-5.5 0-10.2-3.7-11.9-8.7H5v5.2C8.5 39 15.7 44 24 44z\"/><path fill=\"#FBBC05\" d=\"M12.1 27.3a12.7 12.7 0 0 1 0-6.6v-5.2H5a20 20 0 0 0 0 17l7.1-5.2z\"/><path fill=\"#EA4335\" d=\"M24 12.1c3.1 0 5.9 1.1 8.1 3.2l6-6C34.5 5.5 29.7 3.5 24 3.5 15.7 3.5 8.5 8.5 5 15.5l7.1 5.2C13.8 15.8 18.5 12.1 24 12.1z\"/></svg><span>Login with Google</span></button>';
-    var customBtn=host.querySelector('.am-google-custom');customBtn.onclick=function(){try{window.google.accounts.id.prompt()}catch(err){var er=$('#amErr');if(er)er.textContent='Google Login চালু করা যায়নি। আবার চেষ্টা করুন।'}};
+    host.innerHTML='';
+    // Use Google's official clickable Sign-In button: prompt() is One Tap and may be suppressed on mobile.
+    var googleWidth=Math.round(Math.min(330,Math.max(220,host.getBoundingClientRect().width||300)));
+    window.google.accounts.id.renderButton(host,{theme:'filled_blue',size:'large',text:'signin_with',shape:'rectangular',width:googleWidth,logo_alignment:'left'});
   }catch(e){host.innerHTML='<div class="am-muted">'+esc(e.message)+'</div>'}
 }
 function authView(mode){
