@@ -1150,6 +1150,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
       <a class="ar-view-full" href="#arLeaderboard" id="arViewFull"><span class="ar-view-trophy" aria-hidden="true">🏆</span><b>View Full Leaderboard</b><span class="ar-view-arrow" aria-hidden="true">→</span></a>
     </div>
     <div id="arLeaderboard" class="ar-leader-list"><div class="ar-loading">Loading leaderboard...</div></div>
+    <div id="arMyRank" class="ar-my-rank" hidden></div>
     <div class="ar-board-foot">LIVE DATA • UPDATES EVERY 15 SECONDS</div>
     <div class="ar-board-animate" aria-label="Leaderboard highlights"><span class="ar-board-animate-star">✦</span><span class="ar-board-animate-track"><b>TOP PLAYERS</b><i>✦</i><b>CLIMB THE RANKS</b><i>✦</i><b>BE THE CHAMPION</b><i>✦</i></span><span class="ar-board-animate-star">✦</span></div>
   </section>
@@ -1516,6 +1517,8 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
         return '<div class="ar-order">'+avatar(o.name,o.avatar)+'<div class="ar-order-info"><b>'+esc(o.name||'Player')+'</b><small>'+esc(o.packageName||'Top Up')+' <span class="ar-order-sep">—</span> ৳'+Number(o.price||0).toLocaleString('en-US')+'</small></div><div class="ar-order-meta"><span class="ar-order-done"><b>✓</b> '+(/complete/i.test(status(o.status))?'Done':esc(status(o.status)))+'</span></div></div>';
       }).join(''):'<div class="ar-empty">এখনো কোনো অর্ডার পাওয়া যায়নি</div>';
       var leaders=Array.isArray(data.leaderboard)?data.leaderboard.slice(0,10):[];
+      var mine=document.getElementById('arMyRank');
+      if(mine){var me=data.myRank;if(me&&me.name){mine.hidden=false;mine.innerHTML='<div class="ar-my-avatar">'+(me.avatar?'<img src="'+esc(me.avatar)+'" alt="">':esc((me.name||'U').charAt(0).toUpperCase()))+'</div><div class="ar-my-info"><b>'+esc(me.name)+'</b><small>Rank #'+Number(me.rank||0)+' • Leaderboard Member</small></div><div class="ar-my-points"><span class="ar-points-star">★</span><strong>'+Number(me.points||0).toLocaleString('en-US')+'</strong><small>POINTS</small></div>';}else{mine.hidden=true;mine.innerHTML='';}}
       if(!leaders.length){board.innerHTML='<div class="ar-empty">No leaderboard data available yet.</div>';return;}
       var podium=leaders.slice(0,3).map(function(u,i){
         var tier=i===0?'first':(i===1?'second':'third');
@@ -1536,7 +1539,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     function load(){
       if(busy||document.visibilityState==='hidden')return;
       busy=true;
-      fetch('/api/public/home-stats',{method:'GET',cache:'no-store',headers:{'Accept':'application/json'}})
+      fetch('/api/public/home-stats',{method:'GET',cache:'no-store',headers:{'Accept':'application/json','Authorization':localStorage.getItem('customer_token')?'Bearer '+localStorage.getItem('customer_token'):''}})
         .then(function(r){if(!r.ok)throw new Error('feed');return r.json();})
         .then(render).catch(function(){if(!list.dataset.loaded)list.innerHTML='<div class="ar-empty">লাইভ তথ্য এখন পাওয়া যাচ্ছে না</div>';})
         .finally(function(){busy=false;list.dataset.loaded='1';});
@@ -4202,6 +4205,23 @@ setInterval(fetchFreshAccountConfig, 15000);
 #arLiveBoard #arLeaderboard .ar-leader.normal .ar-points{display:flex!important;align-items:center!important;gap:4px!important;color:#18213c!important;background:#fff!important;border:1px solid #f2df8d!important;border-radius:999px!important;padding:6px 9px!important;white-space:nowrap!important;font-size:clamp(11px,1.5vw,15px)!important;font-weight:950!important}
 #arLiveBoard #arLeaderboard .ar-leader.normal .ar-points-label{display:inline!important;font-size:.7em!important}
 #arLiveBoard #arLeaderboard .ar-show-more{grid-column:1/-1!important;justify-self:center!important;margin:8px auto 0!important;border:0!important;border-radius:999px!important;background:linear-gradient(135deg,#f7a916,#df7900)!important;color:#fff!important;box-shadow:0 5px 13px #dc8b1d44!important;padding:12px 34px!important;font-weight:900!important;font-size:15px!important;min-width:145px!important}
+#arLiveBoard{border:1px solid #f0d77e!important;border-radius:28px!important;box-shadow:0 12px 30px rgba(203,158,42,.13)!important;background:linear-gradient(145deg,#fffef8,#fff9e8)!important;padding:10px!important}
+#arLiveBoard .ar-board-head{border-radius:20px!important;margin:4px 4px 0!important;border-bottom:0!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+#arLiveBoard .ar-board-heading{justify-content:center!important;align-items:center!important;gap:12px!important}
+#arLiveBoard .ar-board-heading>div{text-align:center!important}
+#arLiveBoard .ar-board-icon{width:58px!important;height:58px!important;border-radius:50%!important;font-size:32px!important}
+#arLiveBoard .ar-board-foot{display:none!important}
+#arLiveBoard .ar-my-rank{display:flex!important;align-items:center!important;gap:12px!important;margin:14px 4px 8px!important;padding:12px 13px!important;border:2px dashed #e8b900!important;border-radius:22px!important;background:linear-gradient(110deg,#fff9d9,#fffef5)!important;color:#18213c!important;box-shadow:0 4px 12px #d6a52b18!important}
+#arLiveBoard .ar-my-rank[hidden]{display:none!important}
+#arLiveBoard .ar-my-avatar{width:58px!important;height:58px!important;flex:0 0 58px!important;display:grid!important;place-items:center!important;overflow:hidden!important;border-radius:50%!important;background:#765044!important;color:#fff!important;font-size:25px!important;font-weight:900!important}
+#arLiveBoard .ar-my-avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
+#arLiveBoard .ar-my-info{min-width:0!important;flex:1!important}
+#arLiveBoard .ar-my-info b{display:block!important;font-size:17px!important;font-weight:950!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#arLiveBoard .ar-my-info small{display:block!important;margin-top:3px!important;color:#71809c!important;font-size:12px!important;font-weight:750!important}
+#arLiveBoard .ar-my-points{display:flex!important;align-items:center!important;gap:5px!important;padding:8px 10px!important;border:1px solid #eacb54!important;border-radius:999px!important;background:#fff!important;white-space:nowrap!important;color:#18213c!important;font-weight:950!important}
+#arLiveBoard .ar-my-points .ar-points-star{color:#f2ad00!important;font-size:21px!important}
+#arLiveBoard .ar-my-points small{font-size:9px!important}
+@media(max-width:560px){#arLiveBoard{padding:7px!important}#arLiveBoard .ar-board-head{padding:15px 7px!important}#arLiveBoard .ar-board-heading{gap:7px!important}#arLiveBoard .ar-board-icon{width:42px!important;height:42px!important;font-size:24px!important}#arLiveBoard .ar-my-rank{gap:8px!important;padding:9px!important}#arLiveBoard .ar-my-avatar{width:46px!important;height:46px!important;flex-basis:46px!important}#arLiveBoard .ar-my-info b{font-size:13px!important}#arLiveBoard .ar-my-info small{font-size:10px!important}#arLiveBoard .ar-my-points{gap:3px!important;padding:6px 7px!important;font-size:11px!important}#arLiveBoard .ar-my-points .ar-points-star{font-size:16px!important}#arLiveBoard .ar-my-points small{font-size:8px!important}}
 #arLiveBoard #arLeaderboard .ar-leader.normal[hidden]{display:none!important}
 @media(max-width:560px){#arLiveBoard #arLeaderboard.ar-leader-list{gap:8px!important;padding:14px 7px!important}#arLiveBoard #arLeaderboard .ar-leader.podium{min-height:205px!important;padding:43px 5px 10px!important;gap:7px!important;border-radius:17px!important}#arLiveBoard #arLeaderboard .ar-leader.podium.first{min-height:225px!important}#arLiveBoard #arLeaderboard .ar-leader.podium .ar-leader-rank{width:48px!important;height:48px!important;font-size:26px!important;top:-18px!important}#arLiveBoard #arLeaderboard .ar-leader.podium .ar-avatar{width:58px!important;height:58px!important;min-width:58px!important}#arLiveBoard #arLeaderboard .ar-leader.podium .ar-points{font-size:11px!important;padding:6px 2px!important;gap:3px!important}#arLiveBoard #arLeaderboard .ar-leader.podium .ar-points-label{font-size:8px!important}#arLiveBoard #arLeaderboard .ar-leader.normal{grid-template-columns:31px 40px minmax(0,1fr) auto!important;gap:7px!important;padding:8px!important}#arLiveBoard #arLeaderboard .ar-leader.normal .ar-avatar{width:38px!important;height:38px!important}#arLiveBoard #arLeaderboard .ar-leader.normal .ar-points{font-size:11px!important;padding:5px 6px!important}#arLiveBoard #arLeaderboard .ar-leader.normal .ar-points-label{display:none!important}}
 </style>
