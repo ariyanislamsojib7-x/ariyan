@@ -965,21 +965,27 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     <a class="card" href="#indonesia-server" data-open="indonesia-server"><div class="thumb ph"><img src="INDONESIA SERVER.jpg" alt="Indonesia Server" loading="lazy" decoding="async"></div><p>Indonesia Server</p></a>
   </div>
 
-  <div class="sec"><h2><em>UID CHECKER</em></h2></div>
-  <div class="grid">
-    <a class="card" href="#uid-checker" data-open="uid-checker"><div class="thumb ph"><img src="uid checker.jpg" alt="UID Checker" loading="lazy" decoding="async"></div><p>UID Checker</p></a>
-  </div>
 
+
+
+  <div class="ar-trust-strip" aria-label="দ্রুত নিরাপদ নির্ভরযোগ্য">
+    <span><svg class="i"><use href="#bolt"/></svg>দ্রুত</span>
+    <i></i>
+    <span><svg class="i"><use href="#shield"/></svg>নিরাপদ</span>
+    <i></i>
+    <span><svg class="i"><use href="#chk"/></svg>নির্ভরযোগ্য</span>
+  </div>
 
   <!-- ARiYAN Live Recent Orders + Leaderboard (added without changing existing sections) -->
   <section class="ar-live-board" id="arLiveBoard" aria-label="Live orders and leaderboard">
     <div class="ar-live-head">
-      <div>
-        <span class="ar-kicker">ARiYAN COMMUNITY</span>
-        <h2>Recent Orders</h2>
-        <p>সর্বশেষ ১০টি অর্ডার লাইভ আপডেট হচ্ছে</p>
+      <div class="ar-live-title">
+        <span class="ar-order-icon">♧</span>
+        <div>
+          <h2>Recent Orders</h2>
+          <div class="ar-live-inline"><span class="ar-live-dot"></span><b>Live</b><span class="ar-live-pulse">⌁</span><strong id="arOrderCount">0</strong><small>ORDERS</small></div>
+        </div>
       </div>
-      <div class="ar-live-count"><span class="ar-live-dot"></span><b id="arOrderCount">0</b><small>ORDERS</small></div>
     </div>
     <div class="ar-order-list" id="arRecentList">
       <div class="ar-loading">অর্ডারের তথ্য লোড হচ্ছে...</div>
@@ -991,6 +997,16 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     <div id="arLeaderboard" class="ar-leader-list"><div class="ar-loading">লিডারবোর্ড লোড হচ্ছে...</div></div>
     <div class="ar-board-foot">লাইভ ডেটা • প্রতি ১৫ সেকেন্ডে আপডেট</div>
   </section>
+
+  <section class="ar-uid-mini" aria-label="UID Checker">
+    <a href="#uid-checker" data-open="uid-checker">
+      <span class="ar-uid-mini-icon"><svg class="i"><use href="#bolt"/></svg></span>
+      <span class="ar-uid-mini-text">UID CHECKER</span>
+      <span class="ar-uid-mini-sub">গেম আইডি চেক করুন</span>
+      <span class="ar-uid-mini-arrow">›</span>
+    </a>
+  </section>
+
   <style>
     .ar-live-board{margin:22px 0 24px;padding:16px;background:var(--card,#fff);border:1px solid var(--bd,#dbe4f0);border-radius:22px;box-shadow:0 12px 30px -24px rgba(30,64,175,.45);color:var(--tx,#172033)}
     .ar-live-head,.ar-board-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 2px 14px}
@@ -1038,6 +1054,45 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     .ar-loading,.ar-empty{padding:18px;text-align:center;color:var(--mu,#64748b);font-size:12px}
     .ar-board-foot{text-align:center;color:var(--mu,#64748b);font-size:10px;margin-top:12px}
     @media(min-width:650px){.ar-live-board{padding:20px}.ar-order{padding:12px 14px}.ar-leader.vip .ar-avatar{width:100px;height:100px}}
+
+    /* Homepage trust strip and screenshot-matched Recent Orders */
+    .ar-trust-strip{max-width:430px;margin:15px auto 14px;padding:8px 12px;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid #dbe5f5;border-radius:999px;background:rgba(255,255,255,.88);color:#31558e;box-shadow:0 4px 14px rgba(37,99,235,.06);font-size:12px;font-weight:800}
+    .ar-trust-strip span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+    .ar-trust-strip .i{width:14px;height:14px;color:#2563eb}
+    .ar-trust-strip i{height:14px;width:1px;background:#dbe5f5}
+    .ar-live-board{padding:0;overflow:hidden;border-radius:20px;background:#fff;border:1px solid #e6ebf5}
+    .ar-live-head{padding:17px 16px 14px;background:linear-gradient(110deg,#fff4f6 0%,#fff 100%);border-bottom:1px solid #f0edf0;justify-content:flex-start}
+    .ar-live-title{display:flex;align-items:center;gap:13px}
+    .ar-order-icon{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;background:#fff1f4;border:1px solid #ffe0e7;color:#e83b69;font-size:27px;flex-shrink:0}
+    .ar-live-head h2{font-size:20px;margin:0 0 6px;color:#172033}
+    .ar-live-inline{display:flex;align-items:center;gap:7px;color:#16a34a;font-size:13px;font-weight:800}
+    .ar-live-inline .ar-live-dot{margin:0 2px 0 0;width:9px;height:9px}
+    .ar-live-inline strong{font-size:12px;color:#16834b;background:#e8f9ef;padding:2px 7px;border-radius:99px}
+    .ar-live-inline small{font-size:9px;letter-spacing:.6px;color:#16834b}
+    .ar-live-pulse{font-size:23px;line-height:12px;color:#16a34a;margin-left:5px}
+    .ar-order-list{border:0;border-radius:0}
+    .ar-order{padding:12px 14px;gap:11px;border-bottom:1px solid #edf0f4;min-height:70px}
+    .ar-order .ar-avatar{width:48px;height:48px;border:2px solid #e5eaf0;background:#f1f5f9;color:#53647d}
+    .ar-order-info b{font-size:14px;color:#172033}
+    .ar-order-info small{font-size:12px;color:#596575;margin-top:5px}
+    .ar-order-sep{padding:0 5px;color:#7c8797;font-weight:800}
+    .ar-order-meta{margin-left:auto}
+    .ar-order-done{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:99px;background:#e2f9eb;color:#16934c;font-size:12px;font-weight:800;white-space:nowrap}
+    .ar-order-done b{width:16px;height:16px;border-radius:50%;display:inline-grid;place-items:center;background:#20a45a;color:#fff;font-size:10px}
+    .ar-board-head{margin:0;padding:17px 16px 14px;border-top:1px solid #e9edf4;border-bottom:1px solid #edf0f4;background:#f8faff}
+    .ar-board-head .ar-kicker{color:#2563eb}
+    .ar-board-head h2{color:#172033}
+    .ar-board-icon{background:#eef4ff;border-color:#d9e5fb}
+    .ar-leader-list{padding:12px}
+    .ar-board-foot{padding:0 12px 14px}
+    .ar-uid-mini{max-width:360px;margin:16px auto 22px;padding:0 14px}
+    .ar-uid-mini a{min-height:43px;padding:7px 12px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #d8e2f1;border-radius:12px;background:#fff;color:#31558e;text-decoration:none;box-shadow:0 3px 10px rgba(37,99,235,.05)}
+    .ar-uid-mini-icon{display:grid;place-items:center;color:#2563eb}
+    .ar-uid-mini-icon .i{width:17px;height:17px}
+    .ar-uid-mini-text{font-size:12px;font-weight:900;letter-spacing:.5px}
+    .ar-uid-mini-sub{font-size:11px;color:#718096}
+    .ar-uid-mini-arrow{font-size:21px;line-height:1;color:#2563eb;margin-left:auto}
+    @media(max-width:380px){.ar-order{padding:10px}.ar-order .ar-avatar{width:42px;height:42px}.ar-order-done{padding:7px 9px;font-size:11px}.ar-trust-strip{gap:8px;font-size:11px}}
   </style>
   <script>
   (function(){
@@ -1054,7 +1109,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
       var orders=Array.isArray(data.recentOrders)?data.recentOrders.slice(0,10):[];
       document.getElementById('arOrderCount').textContent=Number(data.totalOrders||0).toLocaleString('en-US');
       list.innerHTML=orders.length?orders.map(function(o){
-        return '<div class="ar-order">'+avatar(o.name,o.avatar)+'<div class="ar-order-info"><b>'+esc(o.name||'Player')+'</b><small>'+esc(o.packageName||'Top Up')+'</small></div><div class="ar-order-meta"><b>৳'+Number(o.price||0).toLocaleString('en-US')+'</b><small>'+status(o.status)+'</small></div></div>';
+        return '<div class="ar-order">'+avatar(o.name,o.avatar)+'<div class="ar-order-info"><b>'+esc(o.name||'Player')+'</b><small>'+esc(o.packageName||'Top Up')+' <span class="ar-order-sep">—</span> ৳'+Number(o.price||0).toLocaleString('en-US')+'</small></div><div class="ar-order-meta"><span class="ar-order-done"><b>✓</b> '+(/complete/i.test(status(o.status))?'Done':esc(status(o.status)))+'</span></div></div>';
       }).join(''):'<div class="ar-empty">এখনো কোনো অর্ডার পাওয়া যায়নি</div>';
       var leaders=Array.isArray(data.leaderboard)?data.leaderboard.slice(0,10):[];
       board.innerHTML=leaders.length?leaders.map(function(u,i){
@@ -1764,13 +1819,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 
 <footer id="siteFooter">
   <div class="wrap">
-    <div class="about">
-      <div class="chips">
-        <span><svg class="i"><use href="#bolt"/></svg>দ্রুত</span>
-        <span><svg class="i"><use href="#shield"/></svg>নিরাপদ</span>
-        <span><svg class="i"><use href="#chk"/></svg>নির্ভরযোগ্য</span>
-      </div>
-    </div>
+
     <div class="notes">
       <div class="note"><span class="ni"><svg class="i"><use href="#info"/></svg></span><div><b>নোটিশ:</b><p>যেকোনো অর্ডার-সংক্রান্ত সমস্যার জন্য <a href="#" data-link="whatsapp-helpline" style="color:inherit;font-weight:700;text-decoration:none">WhatsApp</a>-এ অর্ডারের স্ক্রিনশট এবং পেমেন্টের ট্রানজেকশন আইডি লিখে মেসেজ দিন।</p></div></div>
       <div class="note warn2"><span class="ni"><svg class="i"><use href="#warn"/></svg></span><div><b>বিশেষ সতর্কতা:</b><p>১৮ বছরের নিচে অভিভাবকের অনুমতি ছাড়া অর্ডার করা সম্পূর্ণ নিষিদ্ধ।</p></div></div>
