@@ -996,7 +996,6 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     </div>
     <div id="arLeaderboard" class="ar-leader-list"><div class="ar-loading">Loading leaderboard...</div></div>
     <div class="ar-board-foot">LIVE DATA • UPDATES EVERY 15 SECONDS</div>
-    <div class="ar-board-animate" aria-label="Leaderboard highlights"><span class="ar-board-animate-star">✦</span><span class="ar-board-animate-track"><b>TOP PLAYERS</b><i>✦</i><b>CLIMB THE RANKS</b><i>✦</i><b>BE THE CHAMPION</b><i>✦</i></span><span class="ar-board-animate-star">✦</span></div>
   </section>
 
   <section class="ar-uid-mini" aria-label="UID Checker">
@@ -1146,70 +1145,6 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     .ar-leader.podium.first .ar-leader-rank:after{content:"✦";position:absolute;top:-9px;right:-7px;color:#f3cf55;font-size:13px;text-shadow:0 1px 2px #8a5b10}
     .ar-leader.podium.second .ar-leader-rank:after{content:"✧";position:absolute;top:-8px;right:-6px;color:#91a8c7;font-size:13px}
     .ar-leader.podium.third .ar-leader-rank:after{content:"✧";position:absolute;top:-7px;right:-6px;color:#c58d67;font-size:12px}
-
-    /* Bright, polished leaderboard theme — scoped to the leaderboard only */
-    .ar-live-board .ar-board-head{
-      background:radial-gradient(ellipse at 92% 0%,rgba(89,151,255,.20),transparent 42%),linear-gradient(115deg,#f2f8ff 0%,#fff 48%,#edf5ff 100%);
-      border-top:1px solid #d9e8ff;border-bottom:1px solid #d6e6ff;
-    }
-    .ar-live-board .ar-board-head .ar-kicker{color:#2875e8;text-shadow:0 0 12px rgba(45,125,238,.18)}
-    .ar-live-board .ar-board-head h2{background:linear-gradient(90deg,#183c85 0%,#2679e8 48%,#7046cf 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .ar-live-board .ar-board-icon{color:#fff;border:1px solid rgba(255,255,255,.9);background:linear-gradient(145deg,#70b7ff,#2867d9 58%,#6047c9);box-shadow:0 7px 18px rgba(43,105,213,.24),inset 0 1px 0 rgba(255,255,255,.65);animation:arBoardIconGlow 3s ease-in-out infinite}
-    .ar-live-board .ar-leader-list{background:linear-gradient(180deg,#f5f9ff 0%,#fff 48%,#f7faff 100%)}
-    .ar-live-board .ar-leader.podium.first{background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.96),transparent 55%),linear-gradient(145deg,#fff9d9 0%,#fff0a8 48%,#ffe6a0 100%);border-color:#e9bd32;box-shadow:0 12px 28px -15px rgba(190,139,14,.55),inset 0 1px 0 rgba(255,255,255,.95)}
-    .ar-live-board .ar-leader.podium.second{background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.98),transparent 58%),linear-gradient(145deg,#f5fbff 0%,#dcecff 100%);border-color:#a9c9f5;box-shadow:0 9px 22px -15px rgba(49,111,191,.48),inset 0 1px 0 #fff}
-    .ar-live-board .ar-leader.podium.third{background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.98),transparent 58%),linear-gradient(145deg,#fff8ef 0%,#ffe7cf 100%);border-color:#eac49e;box-shadow:0 8px 19px -15px rgba(171,111,62,.4),inset 0 1px 0 #fff}
-    .ar-live-board .ar-leader.normal{border-color:#dce8f8;background:linear-gradient(100deg,#fff 0%,#f8fbff 100%);box-shadow:0 3px 10px rgba(38,89,160,.045)}
-    .ar-live-board .ar-leader.normal .ar-points{border-color:#d5e5fb;background:linear-gradient(180deg,#fff,#f2f7ff);color:#2458a8}
-    .ar-live-board .ar-show-more{background:linear-gradient(100deg,#2877e8 0%,#4269df 48%,#7450cf 100%);box-shadow:0 8px 20px rgba(48,103,210,.25),inset 0 1px 0 rgba(255,255,255,.35);position:relative;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease}
-    .ar-live-board .ar-show-more:before{content:"";position:absolute;top:-60%;left:-45%;width:35%;height:220%;transform:rotate(22deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent);animation:arButtonShine 3.8s ease-in-out infinite}
-    .ar-live-board .ar-show-more:active{transform:scale(.97)}
-    .ar-live-board .ar-board-foot{padding:12px 12px 8px;color:#52709e;font-weight:800;letter-spacing:.7px}
-    .ar-board-animate{min-height:38px;margin:0 12px 14px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;gap:9px;overflow:hidden;border:1px solid #cfe1ff;border-radius:12px;background:linear-gradient(100deg,#eaf4ff 0%,#f7f2ff 48%,#e8f5ff 100%);color:#245db5;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 5px 14px rgba(45,102,190,.08)}
-    .ar-board-animate-star{flex:0 0 auto;color:#e0a91d;font-size:16px;text-shadow:0 0 9px rgba(244,190,52,.5);animation:arStarPop 1.8s ease-in-out infinite}
-    .ar-board-animate-track{display:flex;align-items:center;justify-content:space-around;gap:12px;min-width:0;flex:1;white-space:nowrap;animation:arBoardTicker 13s ease-in-out infinite}
-    .ar-board-animate-track b{font-size:9px;letter-spacing:1px;font-weight:950}.ar-board-animate-track i{font-style:normal;color:#8b67db;font-size:12px}
-    @keyframes arBoardIconGlow{0%,100%{box-shadow:0 7px 18px rgba(43,105,213,.2),0 0 0 0 rgba(71,139,242,0)}50%{box-shadow:0 8px 23px rgba(43,105,213,.3),0 0 0 5px rgba(71,139,242,.09)}}
-    @keyframes arButtonShine{0%,58%{left:-45%}82%,100%{left:125%}}
-    @keyframes arStarPop{0%,100%{transform:scale(.85) rotate(-8deg);opacity:.7}50%{transform:scale(1.18) rotate(8deg);opacity:1}}
-    @keyframes arBoardTicker{0%,100%{transform:translateX(5px)}50%{transform:translateX(-5px)}}
-    @media(prefers-reduced-motion:reduce){.ar-live-board .ar-board-icon,.ar-live-board .ar-show-more:before,.ar-board-animate-star,.ar-board-animate-track{animation:none!important}}
-
-    /* Exact Rank 1/2/3 ornamental profile frames based on the user's reference image */
-    .ar-leader.podium .ar-avatar.ar-frame-first,
-    .ar-leader.podium .ar-avatar.ar-frame-second,
-    .ar-leader.podium .ar-avatar.ar-frame-third{
-      position:relative;display:grid;place-items:center;overflow:visible;
-      flex:0 0 auto;border:0;outline:0;border-radius:0;background:transparent;
-      margin:2px auto 5px;isolation:isolate;
-    }
-    .ar-leader.podium .ar-avatar.ar-frame-first{width:120px;height:120px}
-    .ar-leader.podium .ar-avatar.ar-frame-second{width:106px;height:106px}
-    .ar-leader.podium .ar-avatar.ar-frame-third{width:96px;height:96px}
-    .ar-leader.podium .ar-avatar.ar-frame-first img,
-    .ar-leader.podium .ar-avatar.ar-frame-second img,
-    .ar-leader.podium .ar-avatar.ar-frame-third img{
-      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-      width:54%;height:54%;border-radius:50%;object-fit:cover;z-index:1;
-      border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 9px rgba(18,35,70,.22);
-    }
-    .ar-leader.podium .ar-avatar.ar-frame-first:after,
-    .ar-leader.podium .ar-avatar.ar-frame-second:after,
-    .ar-leader.podium .ar-avatar.ar-frame-third:after{
-      content:"";position:absolute;inset:-3%;z-index:2;pointer-events:none;
-      background-position:center;background-repeat:no-repeat;background-size:contain;
-    }
-    .ar-leader.podium .ar-avatar.ar-frame-first:after{background-image:url("rank1-vip-frame.png")}
-    .ar-leader.podium .ar-avatar.ar-frame-second:after{background-image:url("rank2-premium-frame.png")}
-    .ar-leader.podium .ar-avatar.ar-frame-third:after{background-image:url("rank3-bronze-frame.png")}
-    .ar-leader.podium .ar-avatar.ar-frame-first:not(:has(img)),
-    .ar-leader.podium .ar-avatar.ar-frame-second:not(:has(img)),
-    .ar-leader.podium .ar-avatar.ar-frame-third:not(:has(img)){color:#172033;font-size:23px}
-    @media(max-width:380px){
-      .ar-leader.podium .ar-avatar.ar-frame-first{width:108px;height:108px}
-      .ar-leader.podium .ar-avatar.ar-frame-second{width:98px;height:98px}
-      .ar-leader.podium .ar-avatar.ar-frame-third{width:90px;height:90px}
-    }
   </style>
   <script>
   (function(){
@@ -1232,7 +1167,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
       if(!leaders.length){board.innerHTML='<div class="ar-empty">No leaderboard data available yet.</div>';return;}
       var podium=leaders.slice(0,3).map(function(u,i){
         var tier=i===0?'first':(i===1?'second':'third');
-        return '<div class="ar-leader podium '+tier+'"><span class="ar-leader-rank">'+(i+1)+'</span>'+avatar(u.name,u.avatar,'ar-frame-'+tier)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+        return '<div class="ar-leader podium '+tier+'"><span class="ar-leader-rank">'+(i+1)+'</span>'+avatar(u.name,u.avatar)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
       }).join('');
       var rest=leaders.slice(3).map(function(u,i){
         var rank=i+4;
