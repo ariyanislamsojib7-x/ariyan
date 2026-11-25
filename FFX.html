@@ -1464,6 +1464,14 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 }
 @media(max-width:360px){.ar-live-board .ar-leader.podium{grid-template-columns:45px 70px minmax(0,1fr);column-gap:5px;padding-left:7px;padding-right:7px}.ar-live-board .ar-leader.podium.first .ar-avatar.ar-frame-first{width:82px;height:82px}.ar-live-board .ar-leader.podium.second .ar-avatar.ar-frame-second{width:76px;height:76px}.ar-live-board .ar-leader.podium.third .ar-avatar.ar-frame-third{width:72px;height:72px}}
 
+/* Clean top-three leaderboard: no VIP frames, crowns or ornamental medals. */
+.ar-live-board .ar-leader.podium .ar-avatar,.ar-live-board .ar-leader.podium.first .ar-avatar,.ar-live-board .ar-leader.podium.second .ar-avatar,.ar-live-board .ar-leader.podium.third .ar-avatar{width:clamp(64px,10vw,92px)!important;height:clamp(64px,10vw,92px)!important;border:3px solid #fff!important;outline:0!important;box-shadow:0 2px 9px rgba(20,35,60,.13)!important;padding:0!important;background:#e9eef6!important;overflow:hidden!important}
+.ar-live-board .ar-leader.podium .ar-avatar img{inset:0!important;width:100%!important;height:100%!important;border:0!important;border-radius:50%!important;object-fit:cover!important}
+.ar-live-board .ar-leader.podium .ar-leader-rank{clip-path:none!important;position:relative!important;inset:auto!important;width:100%!important;height:auto!important;min-height:72px!important;display:grid!important;place-items:center!important;border:0!important;border-radius:12px!important;font-size:clamp(38px,5vw,62px)!important;font-weight:1000!important;line-height:1!important;background:transparent!important;box-shadow:none!important}
+.ar-live-board .ar-leader.podium.first .ar-leader-rank{color:#b87908!important;text-shadow:0 2px 0 #fff0bd}.ar-live-board .ar-leader.podium.second .ar-leader-rank{color:#52749f!important;text-shadow:0 2px 0 #eaf2ff}.ar-live-board .ar-leader.podium.third .ar-leader-rank{color:#a65e2e!important;text-shadow:0 2px 0 #ffefdf}
+.ar-live-board .ar-leader.podium:before{font-size:13px!important;padding:6px 18px 6px 23px!important}.ar-live-board .ar-leader.normal[hidden]{display:none!important}.ar-live-board .ar-show-more{min-width:150px;letter-spacing:.2px}
+#arLiveBoard .ar-heartbeat-track{stroke-width:4!important;filter:drop-shadow(0 0 2px rgba(20,190,75,.38))!important}
+@media(max-width:600px){.ar-live-board .ar-leader.podium .ar-leader-rank{min-height:58px!important;font-size:38px!important}.ar-live-board .ar-leader.podium .ar-avatar,.ar-live-board .ar-leader.podium.first .ar-avatar,.ar-live-board .ar-leader.podium.second .ar-avatar,.ar-live-board .ar-leader.podium.third .ar-avatar{width:66px!important;height:66px!important}}
   </style>
   <script>
   (function(){
@@ -1498,23 +1506,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
         '<span>'+esc(m.label)+'</span></span>'+specialHtml+'</div>';
     }
     function rankMedal(n){
-      var palettes={
-        1:{a:'#ffe88a',b:'#b87808',c:'#fff4bf',d:'#704300'},
-        2:{a:'#f5f9ff',b:'#7186a5',c:'#dbe8f8',d:'#40536e'},
-        3:{a:'#ffd9ad',b:'#98552d',c:'#fff0d9',d:'#65391f'}
-      };
-      var p=palettes[n]||palettes[1], id='arMedal'+n;
-      return '<span class="ar-leader-rank" aria-label="Rank '+n+'"><svg class="ar-rank-medal" viewBox="0 0 72 82" role="img" aria-hidden="true">'+
-        '<defs><linearGradient id="'+id+'g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+p.a+'"/><stop offset=".52" stop-color="'+p.b+'"/><stop offset="1" stop-color="'+p.a+'"/></linearGradient>'+
-        '<linearGradient id="'+id+'s" x1="0" y1="0" x2="0" y2="1"><stop stop-color="'+p.c+'"/><stop offset=".48" stop-color="'+p.b+'"/><stop offset="1" stop-color="'+p.d+'"/></linearGradient></defs>'+
-        '<path d="M17 19C8 25 7 40 14 49M55 19c9 6 10 21 3 30M13 28l-6-4m7 13-7 1m52-10 6-4m-7 13 7 1M17 43l-7 6m45-6 7 6" fill="none" stroke="url(#'+id+'g)" stroke-width="3.2" stroke-linecap="round"/>'+
-        '<path d="M22 8l6 7-5 5-8-8zm28 0-6 7 5 5 8-8z" fill="url(#'+id+'g)" stroke="'+p.d+'" stroke-width="1"/>'+
-        '<path d="M36 8l5 7-5 5-5-5z" fill="'+p.a+'" stroke="'+p.d+'" stroke-width="1"/>'+
-        '<path d="M14 22Q36 12 58 22L55 59 36 76 17 59Z" fill="url(#'+id+'s)" stroke="'+p.a+'" stroke-width="2.5"/>'+
-        '<path d="M19 26Q36 19 53 26L50 56 36 69 22 56Z" fill="none" stroke="'+p.c+'" stroke-width="1.2" opacity=".9"/>'+
-        '<text x="36" y="53" text-anchor="middle" font-family="Georgia,serif" font-size="31" font-weight="900" fill="#fff8dc" stroke="'+p.d+'" stroke-width="1.2" paint-order="stroke" style="filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))">'+n+'</text>'+
-        '<path d="M28 61l8 7 8-7" fill="none" stroke="'+p.a+'" stroke-width="2" stroke-linecap="round"/>'+
-        '</svg></span>';
+      return '<span class="ar-leader-rank" aria-label="Rank '+n+'">'+n+'</span>';
     }
 
     function render(data){
@@ -1527,16 +1519,16 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
       if(!leaders.length){board.innerHTML='<div class="ar-empty">No leaderboard data available yet.</div>';return;}
       var podium=leaders.slice(0,3).map(function(u,i){
         var tier=i===0?'first':(i===1?'second':'third');
-        return '<div class="ar-leader podium '+tier+'">'+rankMedal(i+1)+avatar(u.name,u.avatar,'ar-frame-'+tier)+memberLine(u)+'<div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+        return '<div class="ar-leader podium '+tier+'">'+rankMedal(i+1)+avatar(u.name,u.avatar)+memberLine(u)+'<div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
       }).join('');
       var rest=leaders.slice(3).map(function(u,i){
         var rank=i+4;
         return '<div class="ar-leader normal" data-leader-rank="'+rank+'"><span class="ar-leader-rank">'+rank+'</span>'+avatar(u.name,u.avatar)+memberLine(u)+'<div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
       }).join('');
-      board.innerHTML=podium+rest+(leaders.length>7?'<button type="button" class="ar-show-more" id="arShowMore">Show More</button>':'');
-      board.querySelectorAll('[data-leader-rank]').forEach(function(el){if(!showAll&&Number(el.getAttribute('data-leader-rank'))>7)el.hidden=true;});
+      board.innerHTML=podium+rest+(leaders.length>3?'<button type="button" class="ar-show-more" id="arShowMore">Show More</button>':'');
+      board.querySelectorAll('[data-leader-rank]').forEach(function(el){el.hidden=!showAll;});
       var more=board.querySelector('#arShowMore');
-      if(more){more.textContent=showAll?'Show Less':'Show More';more.addEventListener('click',function(){showAll=!showAll;board.querySelectorAll('[data-leader-rank]').forEach(function(el){if(Number(el.getAttribute('data-leader-rank'))>7)el.hidden=!showAll;});more.textContent=showAll?'Show Less':'Show More';});}
+      if(more){more.textContent=showAll?'Show Less':'Show More';more.addEventListener('click',function(){showAll=!showAll;board.querySelectorAll('[data-leader-rank]').forEach(function(el){el.hidden=!showAll;});more.textContent=showAll?'Show Less':'Show More';});}
     }
     var busy=false, showAll=false;
     var viewFull=document.getElementById('arViewFull');
