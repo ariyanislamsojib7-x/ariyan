@@ -978,13 +978,33 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 
   <!-- ARiYAN Live Recent Orders + Leaderboard (added without changing existing sections) -->
   <section class="ar-live-board" id="arLiveBoard" aria-label="Live orders and leaderboard">
-    <div class="ar-live-head">
+    <div class="ar-live-head ar-live-head-premium">
       <div class="ar-live-title">
-        <span class="ar-order-icon">♧</span>
-        <div>
+        <span class="ar-order-icon" aria-hidden="true">
+          <svg viewBox="0 0 100 100" role="img" aria-label="Verified orders bag">
+            <defs>
+              <linearGradient id="arBagPink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a52"/><stop offset=".35" stop-color="#ff287b"/><stop offset="1" stop-color="#d90058"/></linearGradient>
+              <linearGradient id="arBagBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8deaff"/><stop offset="1" stop-color="#2586ff"/></linearGradient>
+            </defs>
+            <ellipse cx="51" cy="58" rx="43" ry="17" fill="none" stroke="url(#arBagBlue)" stroke-width="4" transform="rotate(-13 51 58)" opacity=".95"/>
+            <path d="M35 34v-8c0-11 7-19 16-19s16 8 16 19v8" fill="none" stroke="#f18a22" stroke-width="7" stroke-linecap="round"/>
+            <path d="M23 31h54l5 49c.7 7-4 12-11 12H29c-7 0-12-5-11-12z" fill="url(#arBagPink)" stroke="#ffb0d0" stroke-width="3"/>
+            <path d="m37 59 9 9 19-21" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 28l2 6 6 2-6 2-2 6-2-6-6-2 6-2zM87 79l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#ff3c78"/>
+          </svg>
+        </span>
+        <div class="ar-live-copy">
           <h2>Recent Orders</h2>
-          <div class="ar-live-inline"><span class="ar-live-dot"></span><b>Live</b><span class="ar-live-pulse">⌁</span><strong id="arOrderCount">0</strong><small>ORDERS</small></div>
+          <div class="ar-live-inline"><span class="ar-live-dot"></span><b>Live</b>
+            <svg class="ar-live-pulse ar-heartbeat-line" viewBox="0 0 360 48" preserveAspectRatio="none" aria-label="Live heartbeat">
+              <path class="ar-heartbeat-track" d="M2 25 H72 L88 25 L101 9 L115 39 L132 3 L149 44 L166 25 H358"/>
+            </svg>
+          </div>
         </div>
+      </div>
+      <div class="ar-live-count ar-live-count-premium" aria-label="Total orders">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="3.5" width="20" height="25" rx="4"/><path d="M11 10h10M11 16h10M11 22h7"/></svg>
+        <strong id="arOrderCount">0</strong><small>ORDERS</small>
       </div>
     </div>
     <div class="ar-order-list" id="arRecentList">
@@ -3567,5 +3587,74 @@ setInterval(fetchFreshAccountConfig, 15000);
 })();
 </script>
 <script src="customer.js?v=10"></script>
+
+<style id="ar-recent-orders-exact-reference">
+/* Recent Orders: faithfully follow the user's supplied reference; no card movement. */
+#arLiveBoard > .ar-live-head-premium{
+  box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  min-height:150px;padding:24px 28px;margin:0;position:relative;isolation:isolate;
+  overflow:hidden;border:1px solid rgba(221,205,255,.78);border-radius:28px;
+  background:linear-gradient(105deg,#fffafd 0%,#fff 48%,#fbfdff 100%);
+  box-shadow:0 0 0 1px rgba(255,255,255,.9) inset,
+    0 9px 28px rgba(93,151,255,.10),0 0 24px rgba(239,137,221,.16);
+  animation:arRecentAura 9s ease-in-out infinite alternate;
+  transform:none!important;
+}
+#arLiveBoard > .ar-live-head-premium:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:linear-gradient(115deg,rgba(255,190,231,.10),transparent 34%,rgba(166,207,255,.11) 72%,rgba(211,185,255,.10));}
+#arLiveBoard .ar-live-title{display:flex;align-items:center;gap:22px;min-width:0;flex:1;}
+#arLiveBoard .ar-order-icon{width:118px;height:112px;flex:0 0 118px;display:grid;place-items:center;
+  padding-right:18px;box-sizing:border-box;border:0;border-right:3px solid #78b9ff;border-radius:0;
+  background:transparent;color:inherit;font-size:0;box-shadow:none;}
+#arLiveBoard .ar-order-icon svg{width:100px;height:100px;overflow:visible;filter:drop-shadow(0 5px 9px rgba(239,47,139,.20));}
+#arLiveBoard .ar-live-copy{min-width:0;}
+#arLiveBoard .ar-live-head h2{font-size:clamp(25px,4vw,44px);line-height:1.08;font-weight:900;letter-spacing:-1.1px;margin:0 0 18px;color:#101a35;}
+#arLiveBoard .ar-live-inline{display:flex;align-items:center;gap:12px;min-width:0;color:#13ad49;font-size:clamp(18px,2.7vw,28px);font-weight:850;}
+#arLiveBoard .ar-live-inline .ar-live-dot{width:17px;height:17px;flex:0 0 17px;margin:0;background:#12b94b;box-shadow:none;animation:none;}
+#arLiveBoard .ar-live-inline>b{display:inline-flex;align-items:center;min-height:48px;padding:0 23px;border-radius:999px;background:#e2f9e9;color:#0eaf43;font-size:inherit;line-height:1;}
+#arLiveBoard .ar-live-pulse.ar-heartbeat-line{display:block;width:min( min(34vw,360px), 360px );height:48px;flex:1 1 170px;min-width:110px;max-width:360px;margin:0 0 0 2px;overflow:visible;color:#12b849;}
+#arLiveBoard .ar-heartbeat-track{fill:none;stroke:#12b849;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:500;stroke-dashoffset:500;filter:drop-shadow(0 0 3px rgba(20,190,75,.28));
+  animation:arHeartbeatDraw 3.2s linear infinite;}
+#arLiveBoard .ar-live-count-premium{display:flex;align-items:center;justify-content:center;gap:10px;
+  min-width:0;padding:13px 20px;border:1px solid #c9e0ff;border-radius:28px;
+  background:linear-gradient(180deg,#f5faff,#eaf3ff);color:#0861d8;
+  box-shadow:0 4px 14px rgba(38,119,230,.12),inset 0 1px 0 #fff;text-align:left;white-space:nowrap;}
+#arLiveBoard .ar-live-count-premium svg{width:36px;height:36px;flex:0 0 36px;fill:none;stroke:#0870e8;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;}
+#arLiveBoard .ar-live-count-premium strong{display:inline!important;font-size:clamp(18px,2.5vw,28px);line-height:1;color:#075fd0;font-weight:900;}
+#arLiveBoard .ar-live-count-premium small{font-size:clamp(12px,1.5vw,18px);font-weight:900;letter-spacing:0;color:#075fd0;}
+@keyframes arHeartbeatDraw{0%{stroke-dashoffset:500;opacity:.78}88%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:1}}
+@keyframes arRecentAura{0%{box-shadow:0 0 0 1px rgba(255,255,255,.9) inset,0 9px 26px rgba(93,151,255,.10),0 0 20px rgba(239,137,221,.13);border-color:rgba(235,204,245,.78)}50%{box-shadow:0 0 0 1px rgba(255,255,255,.9) inset,0 9px 28px rgba(93,151,255,.14),0 0 26px rgba(239,137,221,.19);border-color:rgba(206,216,255,.88)}100%{box-shadow:0 0 0 1px rgba(255,255,255,.9) inset,0 9px 27px rgba(93,151,255,.12),0 0 24px rgba(198,180,255,.18);border-color:rgba(221,205,255,.82)}}
+@media(max-width:620px){
+  #arLiveBoard > .ar-live-head-premium{min-height:112px;padding:14px 12px;gap:8px;border-radius:23px;}
+  #arLiveBoard .ar-live-title{gap:10px;}
+  #arLiveBoard .ar-order-icon{width:66px;height:72px;flex-basis:66px;padding-right:9px;border-right-width:2px;}
+  #arLiveBoard .ar-order-icon svg{width:58px;height:58px;}
+  #arLiveBoard .ar-live-head h2{font-size:clamp(19px,5vw,25px);letter-spacing:-.5px;margin-bottom:9px;}
+  #arLiveBoard .ar-live-inline{gap:6px;font-size:17px;}
+  #arLiveBoard .ar-live-inline .ar-live-dot{width:10px;height:10px;flex-basis:10px;}
+  #arLiveBoard .ar-live-inline>b{min-height:34px;padding:0 12px;}
+  #arLiveBoard .ar-live-pulse.ar-heartbeat-line{height:34px;min-width:62px;max-width:130px;flex-basis:62px;}
+  #arLiveBoard .ar-live-count-premium{gap:5px;padding:9px 8px;border-radius:18px;}
+  #arLiveBoard .ar-live-count-premium svg{width:22px;height:22px;flex-basis:22px;stroke-width:3.5;}
+  #arLiveBoard .ar-live-count-premium strong{font-size:16px;}
+  #arLiveBoard .ar-live-count-premium small{font-size:9px;}
+}
+@media(max-width:380px){
+  #arLiveBoard > .ar-live-head-premium{padding:12px 8px;gap:5px;}
+  #arLiveBoard .ar-order-icon{width:56px;flex-basis:56px;padding-right:6px;}
+  #arLiveBoard .ar-order-icon svg{width:49px;height:49px;}
+  #arLiveBoard .ar-live-head h2{font-size:18px;}
+  #arLiveBoard .ar-live-inline{font-size:15px;gap:5px;}
+  #arLiveBoard .ar-live-inline>b{padding:0 9px;}
+  #arLiveBoard .ar-live-pulse.ar-heartbeat-line{min-width:48px;flex-basis:48px;}
+  #arLiveBoard .ar-live-count-premium{padding:8px 6px;gap:4px;}
+  #arLiveBoard .ar-live-count-premium svg{width:19px;height:19px;flex-basis:19px;}
+  #arLiveBoard .ar-live-count-premium strong{font-size:14px;}
+  #arLiveBoard .ar-live-count-premium small{font-size:8px;}
+}
+@media(prefers-reduced-motion:reduce){#arLiveBoard > .ar-live-head-premium,#arLiveBoard .ar-heartbeat-track{animation:none!important;stroke-dashoffset:0!important;}}
+</style>
+
 </body>
 </html>
