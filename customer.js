@@ -296,22 +296,21 @@ async function setupGoogleButton(){
       finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
     }});
     host.innerHTML='';
-    var custom=document.createElement('button');custom.type='button';custom.className='am-google-custom';custom.setAttribute('aria-label','Login with Google');
-    custom.innerHTML='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6v5h6.5c3.8-3.5 6.1-8.6 6.1-14.7z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.5-5c-1.8 1.2-4.1 2-7 2-5.4 0-10-3.6-11.6-8.5H3.7v5.2C7.1 39.5 15 44 24 44z"/><path fill="#FBBC05" d="M12.4 27.7c-.4-1.2-.7-2.4-.7-3.7s.3-2.5.7-3.7v-5.2H3.7C2.2 18.2 1.4 21 1.4 24s.8 5.8 2.3 8.3z"/><path fill="#EA4335" d="M24 9.8c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 3.7 29.5 1.8 24 1.8 15 1.8 7.1 6.5 3.7 15.1l8.7 5.2C14 15.4 18.6 9.8 24 9.8z"/></svg><span>Login with Google</span>';
-    custom.addEventListener('click',function(){
-      var err=$('#amErr');if(err)err.textContent='';
-      try{
-        window.google.accounts.id.prompt(function(notification){
-          if(notification&&notification.isNotDisplayed&&notification.isNotDisplayed()){
-            var why=notification.getNotDisplayedReason&&notification.getNotDisplayedReason();
-            var e=$('#amErr');if(e)e.textContent='Google sign-in চালু হয়নি ('+(why||'blocked')+')। Browser pop-up / Google sign-in অনুমতি দিয়ে আবার চেষ্টা করুন।';
-          }else if(notification&&notification.isSkippedMoment&&notification.isSkippedMoment()){
-            var e=$('#amErr');if(e)e.textContent='Google sign-in বাতিল হয়েছে। আবার Login with Google চাপুন।';
-          }
-        });
-      }catch(e){var er=$('#amErr');if(er)er.textContent='Google sign-in শুরু করা যায়নি। আবার চেষ্টা করুন।';}
+    // Use Google's official clickable Sign-In button (popup callback), not One Tap prompt().
+    // This avoids suppressed_by_user notifications and the auto account-card replacing our button.
+    host.style.width='min(74%,300px)';
+    host.style.margin='0 auto';
+    host.style.display='flex';
+    host.style.justifyContent='center';
+    window.google.accounts.id.renderButton(host,{
+      type:'standard',
+      theme:'filled_blue',
+      size:'large',
+      text:'signin_with',
+      shape:'rectangular',
+      logo_alignment:'left',
+      width:Math.max(220,Math.min(300,host.clientWidth||300))
     });
-    host.appendChild(custom);
   }catch(e){host.innerHTML='<div class="am-muted">'+esc(e.message)+'</div>'}
 }
 function authView(mode){
