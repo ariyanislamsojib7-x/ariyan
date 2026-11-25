@@ -283,7 +283,7 @@ function authView(mode){
   <div class="am-divider"><span>${reg?'OR SIGN UP WITH CREDENTIALS':'OR SIGN IN WITH CREDENTIALS'}</span></div>
   <div class="am-google-wrap"><div id="amGoogleButton"></div></div>
   ${!reg?`<button type="button" class="am-link am-forgot-link" id="amForgot">${esc(at('acctForgotText','Forget Password?'))}</button>`:''}
-  <button class="am-link am-switch" id="amSwitch" style="margin-top:-5px;padding-top:7px">${reg?'Already member? Login Now':'New user to No 1 Topup Center? Register Now'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
+  <button class="am-link am-switch" id="amSwitch" style="margin-top:-14px;padding-top:2px">${reg?'Already member? Login Now':'New user to No 1 Topup Center? Register Now'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
   <div class="am-auth-trust"><div><b>⚡</b><strong>${esc(at('acctFastTitle','Fast'))}</strong><small>${esc(at('acctFastSub','Instant access'))}</small></div><div><b>✓</b><strong>${esc(at('acctSecureTitle','Secure'))}</strong><small>${esc(at('acctSecureSub','Safe login'))}</small></div><div><b>♥</b><strong>${esc(at('acctTrustedTitle','Trusted'))}</strong><small>${esc(at('acctTrustedSub','Easy & reliable'))}</small></div></div>
   <div class="am-safe"><b>✓</b><div><strong>${esc(at('acctSafeTitle','Your data is safe'))}</strong><small>${esc(at('acctSafeSub','Secure authentication protects your account.'))}</small></div></div>`;
   open(reg?'Register':'Login',html,{full:true,auth:true});setupGoogleButton();
