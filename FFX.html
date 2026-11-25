@@ -1174,6 +1174,42 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     @keyframes arStarPop{0%,100%{transform:scale(.85) rotate(-8deg);opacity:.7}50%{transform:scale(1.18) rotate(8deg);opacity:1}}
     @keyframes arBoardTicker{0%,100%{transform:translateX(5px)}50%{transform:translateX(-5px)}}
     @media(prefers-reduced-motion:reduce){.ar-live-board .ar-board-icon,.ar-live-board .ar-show-more:before,.ar-board-animate-star,.ar-board-animate-track{animation:none!important}}
+
+    /* Exact Rank 1/2/3 ornamental profile frames based on the user's reference image */
+    .ar-leader.podium .ar-avatar.ar-frame-first,
+    .ar-leader.podium .ar-avatar.ar-frame-second,
+    .ar-leader.podium .ar-avatar.ar-frame-third{
+      position:relative;display:grid;place-items:center;overflow:visible;
+      flex:0 0 auto;border:0;outline:0;border-radius:0;background:transparent;
+      margin:2px auto 5px;isolation:isolate;
+    }
+    .ar-leader.podium .ar-avatar.ar-frame-first{width:120px;height:120px}
+    .ar-leader.podium .ar-avatar.ar-frame-second{width:106px;height:106px}
+    .ar-leader.podium .ar-avatar.ar-frame-third{width:96px;height:96px}
+    .ar-leader.podium .ar-avatar.ar-frame-first img,
+    .ar-leader.podium .ar-avatar.ar-frame-second img,
+    .ar-leader.podium .ar-avatar.ar-frame-third img{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      width:54%;height:54%;border-radius:50%;object-fit:cover;z-index:1;
+      border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 9px rgba(18,35,70,.22);
+    }
+    .ar-leader.podium .ar-avatar.ar-frame-first:after,
+    .ar-leader.podium .ar-avatar.ar-frame-second:after,
+    .ar-leader.podium .ar-avatar.ar-frame-third:after{
+      content:"";position:absolute;inset:-3%;z-index:2;pointer-events:none;
+      background-position:center;background-repeat:no-repeat;background-size:contain;
+    }
+    .ar-leader.podium .ar-avatar.ar-frame-first:after{background-image:url("rank1-vip-frame.png")}
+    .ar-leader.podium .ar-avatar.ar-frame-second:after{background-image:url("rank2-premium-frame.png")}
+    .ar-leader.podium .ar-avatar.ar-frame-third:after{background-image:url("rank3-bronze-frame.png")}
+    .ar-leader.podium .ar-avatar.ar-frame-first:not(:has(img)),
+    .ar-leader.podium .ar-avatar.ar-frame-second:not(:has(img)),
+    .ar-leader.podium .ar-avatar.ar-frame-third:not(:has(img)){color:#172033;font-size:23px}
+    @media(max-width:380px){
+      .ar-leader.podium .ar-avatar.ar-frame-first{width:108px;height:108px}
+      .ar-leader.podium .ar-avatar.ar-frame-second{width:98px;height:98px}
+      .ar-leader.podium .ar-avatar.ar-frame-third{width:90px;height:90px}
+    }
   </style>
   <script>
   (function(){
@@ -1196,7 +1232,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
       if(!leaders.length){board.innerHTML='<div class="ar-empty">No leaderboard data available yet.</div>';return;}
       var podium=leaders.slice(0,3).map(function(u,i){
         var tier=i===0?'first':(i===1?'second':'third');
-        return '<div class="ar-leader podium '+tier+'"><span class="ar-leader-rank">'+(i+1)+'</span>'+avatar(u.name,u.avatar)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+        return '<div class="ar-leader podium '+tier+'"><span class="ar-leader-rank">'+(i+1)+'</span>'+avatar(u.name,u.avatar,'ar-frame-'+tier)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
       }).join('');
       var rest=leaders.slice(3).map(function(u,i){
         var rank=i+4;
