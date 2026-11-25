@@ -1519,11 +1519,11 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
       if(!leaders.length){board.innerHTML='<div class="ar-empty">No leaderboard data available yet.</div>';return;}
       var podium=leaders.slice(0,3).map(function(u,i){
         var tier=i===0?'first':(i===1?'second':'third');
-        return '<div class="ar-leader podium '+tier+'">'+rankMedal(i+1)+avatar(u.name,u.avatar)+memberLine(u)+'<div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+        return '<div class="ar-leader podium '+tier+'">'+rankMedal(i+1)+avatar(u.name,u.avatar)+memberLine(u)+'<div class="ar-points"><span class="ar-points-star" aria-hidden="true">★</span><strong>'+Number(u.points||0).toLocaleString('en-US')+'</strong><span class="ar-points-label">POINTS</span></div></div>';
       }).join('');
       var rest=leaders.slice(3).map(function(u,i){
         var rank=i+4;
-        return '<div class="ar-leader normal" data-leader-rank="'+rank+'"><span class="ar-leader-rank">'+rank+'</span>'+avatar(u.name,u.avatar)+memberLine(u)+'<div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+        return '<div class="ar-leader normal" data-leader-rank="'+rank+'"><span class="ar-leader-rank">'+rank+'</span>'+avatar(u.name,u.avatar)+memberLine(u)+'<div class="ar-points"><span class="ar-points-star" aria-hidden="true">★</span><strong>'+Number(u.points||0).toLocaleString('en-US')+'</strong><span class="ar-points-label">POINTS</span></div></div>';
       }).join('');
       board.innerHTML=podium+rest+(leaders.length>3?'<button type="button" class="ar-show-more" id="arShowMore">Show More</button>':'');
       board.querySelectorAll('[data-leader-rank]').forEach(function(el){el.hidden=!showAll;});
@@ -4119,6 +4119,45 @@ setInterval(fetchFreshAccountConfig, 15000);
   #arLiveBoard .ar-live-count-premium strong{font-size:clamp(14px,3.6vw,18px)!important;}
   #arLiveBoard .ar-live-count-premium small{font-size:clamp(9px,2.5vw,11px)!important;}
 }
+
+/* ARIYAN neon leaderboard refresh: leaderboard only; Recent Orders/heartbeat untouched */
+.ar-live-board .ar-board-head{background:linear-gradient(110deg,#050a32,#11105a 55%,#28005d)!important;border:1px solid #6d28d9!important;border-radius:16px!important;padding:14px!important;box-shadow:0 0 22px #6d28d955,inset 0 0 18px #24106b!important;color:#fff!important}
+.ar-live-board .ar-board-head .ar-kicker{color:#c084fc!important;letter-spacing:3px!important;text-shadow:0 0 12px #a855f7!important}
+.ar-live-board .ar-board-head h2{color:#fff!important;background:none!important;-webkit-text-fill-color:#fff!important;text-shadow:0 0 14px #a855f7!important}
+.ar-live-board .ar-board-head p{color:#cbd5ff!important}
+.ar-live-board .ar-board-icon{background:linear-gradient(145deg,#facc15,#f97316)!important;color:#24104f!important;border:2px solid #fff!important;box-shadow:0 0 18px #facc15!important}
+.ar-live-board #arLeaderboard.ar-leader-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:end!important;gap:12px!important;padding:20px 12px 14px!important;background:radial-gradient(ellipse at 50% 0%,#25206f 0%,#090e3b 48%,#030824 100%)!important;border:1px solid #6426d9!important;border-radius:18px!important;box-shadow:inset 0 0 28px #312e8155,0 0 20px #6d28d944!important}
+.ar-live-board #arLeaderboard .ar-leader.podium{position:relative!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;gap:9px!important;min-width:0!important;min-height:250px!important;padding:54px 10px 16px!important;border:1px solid #7c3aed!important;border-radius:16px 16px 9px 9px!important;background:linear-gradient(180deg,#14164c,#070b2d 80%)!important;color:#fff!important;box-shadow:0 0 18px #7c3aed55,inset 0 1px 0 #ffffff33!important;overflow:visible!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.first{order:2!important;min-height:290px!important;border:2px solid #facc15!important;background:linear-gradient(180deg,#47320a,#16113b 72%)!important;box-shadow:0 0 25px #facc1580,inset 0 1px 0 #fff8!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.second{order:1!important;border-color:#93c5fd!important;background:linear-gradient(180deg,#183d78,#080d32 76%)!important;box-shadow:0 0 20px #60a5fa66!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.third{order:3!important;border-color:#fb923c!important;background:linear-gradient(180deg,#78350f,#180d2e 76%)!important;box-shadow:0 0 20px #f9731666!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank{position:absolute!important;top:10px!important;left:50%!important;transform:translateX(-50%)!important;display:flex!important;align-items:center!important;justify-content:center!important;width:62px!important;height:62px!important;border-radius:50%!important;font-size:38px!important;font-weight:1000!important;color:#1e1b4b!important;background:linear-gradient(145deg,#fff7c2,#facc15)!important;border:3px solid #fff!important;box-shadow:0 0 18px #facc15aa!important;text-shadow:none!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.second .ar-leader-rank{background:linear-gradient(145deg,#fff,#94a3b8)!important;color:#172554!important;box-shadow:0 0 16px #bfdbfe!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.third .ar-leader-rank{background:linear-gradient(145deg,#ffedd5,#c26b2b)!important;color:#431407!important;box-shadow:0 0 16px #fb923c!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank:before{content:'♛'!important;position:absolute!important;top:-26px!important;font-size:25px!important;color:#facc15!important;text-shadow:0 0 9px #facc15!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.second .ar-leader-rank:before{color:#bfdbfe!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.third .ar-leader-rank:before{color:#fdba74!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-avatar{width:82px!important;height:82px!important;min-width:82px!important;border-radius:50%!important;border:3px solid #dbeafe!important;outline:0!important;box-shadow:0 0 16px #60a5fa88!important;padding:0!important;overflow:hidden!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.first .ar-avatar{border-color:#fde68a!important;box-shadow:0 0 18px #facc1588!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-avatar img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-name-line{display:flex!important;flex-direction:column!important;align-items:center!important;gap:7px!important;text-align:center!important;width:100%!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-name{font-size:clamp(15px,2vw,21px)!important;font-weight:900!important;color:#fff!important;text-align:center!important;overflow-wrap:anywhere!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-member-chip{display:inline-flex!important;align-items:center!important;justify-content:center!important;border-radius:999px!important;padding:5px 10px!important;background:linear-gradient(90deg,#6d28d9,#3b0764)!important;color:#fff!important;border:1px solid #c084fc!important;font-weight:800!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-points{display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;flex-wrap:wrap!important;width:100%!important;border:1px solid #facc15!important;border-radius:999px!important;padding:7px 9px!important;background:linear-gradient(100deg,#fff7cc,#fef3c7)!important;color:#17123e!important;font-size:clamp(15px,2vw,22px)!important;font-weight:1000!important;box-shadow:0 0 13px #facc1566!important}
+.ar-live-board #arLeaderboard .ar-points-star{color:#f5b900!important;font-size:1.35em!important;line-height:1!important;text-shadow:0 1px 0 #fff,0 0 8px #facc15!important}
+.ar-live-board #arLeaderboard .ar-points strong{font-size:1em!important;font-weight:1000!important}
+.ar-live-board #arLeaderboard .ar-points-label{font-size:.55em!important;font-weight:900!important;letter-spacing:.6px!important}
+.ar-live-board #arLeaderboard .ar-leader.normal{grid-column:1/-1!important;display:grid!important;grid-template-columns:42px 48px minmax(0,1fr) auto!important;align-items:center!important;gap:12px!important;min-width:0!important;padding:10px 14px!important;border:1px solid #4338ca!important;border-radius:12px!important;background:linear-gradient(100deg,#080d35,#111044 65%,#1b0b48)!important;color:#fff!important;box-shadow:inset 0 0 12px #4338ca33!important}
+.ar-live-board #arLeaderboard .ar-leader.normal .ar-leader-rank{color:#fff!important;font-size:22px!important;font-weight:900!important;text-align:center!important}
+.ar-live-board #arLeaderboard .ar-leader.normal .ar-avatar{width:42px!important;height:42px!important;border-radius:50%!important;overflow:hidden!important;border:2px solid #a78bfa!important}
+.ar-live-board #arLeaderboard .ar-leader.normal .ar-name-line{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:7px!important;min-width:0!important}
+.ar-live-board #arLeaderboard .ar-leader.normal .ar-leader-name{color:#fff!important;font-weight:850!important}
+.ar-live-board #arLeaderboard .ar-leader.normal .ar-points{display:flex!important;align-items:center!important;gap:5px!important;color:#fff!important;background:transparent!important;border:0!important;white-space:nowrap!important;font-size:17px!important}
+.ar-live-board #arLeaderboard .ar-leader.normal .ar-points-label{display:none!important}
+.ar-live-board #arLeaderboard .ar-show-more{grid-column:1/-1!important;justify-self:center!important;margin-top:8px!important;border:1px solid #c084fc!important;border-radius:999px!important;background:linear-gradient(100deg,#6d28d9,#3b0764)!important;color:#fff!important;box-shadow:0 0 18px #9333ea88!important;padding:12px 28px!important;font-weight:900!important}
+.ar-live-board #arLeaderboard .ar-leader.normal[hidden]{display:none!important}
+@media(max-width:560px){.ar-live-board #arLeaderboard.ar-leader-list{gap:7px!important;padding:14px 7px!important}.ar-live-board #arLeaderboard .ar-leader.podium{min-height:220px!important;padding:48px 5px 10px!important;gap:7px!important}.ar-live-board #arLeaderboard .ar-leader.podium.first{min-height:250px!important}.ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank{width:48px!important;height:48px!important;font-size:29px!important}.ar-live-board #arLeaderboard .ar-leader.podium .ar-avatar{width:58px!important;height:58px!important;min-width:58px!important}.ar-live-board #arLeaderboard .ar-leader.podium .ar-points{font-size:13px!important;padding:6px 3px!important;gap:3px!important}.ar-live-board #arLeaderboard .ar-leader.podium .ar-points-label{font-size:9px!important}.ar-live-board #arLeaderboard .ar-leader.normal{grid-template-columns:25px 38px minmax(0,1fr) auto!important;gap:7px!important;padding:8px!important}.ar-live-board #arLeaderboard .ar-leader.normal .ar-avatar{width:36px!important;height:36px!important}.ar-live-board #arLeaderboard .ar-leader.normal .ar-points{font-size:13px!important}}
+
 </style>
 
 </body>
