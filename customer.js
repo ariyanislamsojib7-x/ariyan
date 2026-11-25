@@ -157,8 +157,21 @@ fullCss.textContent+=`
 #ariyanModal.auth-full #amAuth:has(#amConfirm) .am-btn{grid-column:1/-1}
 @media(min-width:600px){#ariyanModal.auth-full #amBody{padding:26px 5vw}#ariyanModal.auth-full .am-auth-intro,#ariyanModal.auth-full #amAuth,#ariyanModal.auth-full .am-google-wrap,#ariyanModal.auth-full .am-forgot-link,#ariyanModal.auth-full .am-switch,#ariyanModal.auth-full .am-auth-trust,#ariyanModal.auth-full .am-safe{padding-left:32px;padding-right:32px}}
 `;
+
+/* Latest mobile reference: website logo bar stays visible above the auth card */
+fullCss.textContent+=`
+#ariyanModal.auth-full .am-card{display:flex;flex-direction:column}
+#ariyanModal.auth-full .am-auth-sitebar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto;background:#fff;padding:14px 16px;border-bottom:1px solid #dce5f2;min-height:72px;box-sizing:border-box}
+#ariyanModal.auth-full .am-site-logo{display:flex;align-items:center;max-width:72%;height:58px}
+#ariyanModal.auth-full .am-site-logo img{display:block;width:auto;max-width:100%;height:100%;object-fit:contain}
+#ariyanModal.auth-full .am-site-login{border:0;border-radius:9px;background:#2e63c6;color:#fff;padding:10px 18px;font:500 16px Arial,sans-serif;cursor:pointer}
+#ariyanModal.auth-full #amBody{flex:1;overflow:auto;padding:5.2vw 4.8vw 6vw}
+#ariyanModal.auth-full .am-auth-intro{border-radius:14px 14px 0 0}
+#ariyanModal.auth-full .am-switch{line-height:1.45}
+`;
+var siteLoginBtn=$('.am-site-login',modal);if(siteLoginBtn)siteLoginBtn.onclick=function(){authView('login')};
 document.head.appendChild(fullCss);
-var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='<div class="am-card" role="dialog" aria-modal="true"><div class="am-head"><h2 id="amTitle">ARiYAN</h2><button class="am-x" type="button" aria-label="Close">×</button></div><div id="amBody"></div></div>';document.body.appendChild(modal);
+var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='<div class="am-card" role="dialog" aria-modal="true"><div class="am-head"><h2 id="amTitle">ARiYAN</h2><button class="am-x" type="button" aria-label="Close">×</button></div><div class="am-auth-sitebar"><a href="/" class="am-site-logo"><img src="Main logo.jpg" alt="No 1 Topup Center"></a><button type="button" class="am-site-login">Login</button></div><div id="amBody"></div></div>';document.body.appendChild(modal);
 $('.am-x',modal).onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});
 // Payment-method buttons are bound directly by methodsPage() and orderMethodsPage().
 function open(title,html,opts){
