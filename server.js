@@ -982,8 +982,7 @@ async function handleApi(req, res, pathname) {
         return {
           name: String(u.name || 'Player').slice(0, 60),
           avatar: String(u.avatar || '').slice(0, 1000),
-          points: Math.round(total * 100) / 100,
-          specialTitle: String(u.specialTitle || u.gangRole || u.roleTitle || (u.gangMaster === true ? 'Gang Master' : '') || '').replace(/[<>]/g, '').trim().slice(0, 40)
+          points: Math.round(total * 100) / 100
         };
       }).sort((a,b) => b.points - a.points).slice(0, 10);
       return sendJson(res, 200, { recentOrders: latest, totalOrders: (customerDB.orders || []).length, leaderboard });
