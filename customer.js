@@ -286,7 +286,7 @@ async function setupGoogleButton(){
     if(!window.google||!window.google.accounts||!window.google.accounts.id)throw new Error('Google Login প্রস্তুত নয়');
     // Prevent automatic account-card / One Tap display. Only start the Google flow after the user taps our custom button.
     try{window.google.accounts.id.disableAutoSelect();}catch(e){}
-    window.google.accounts.id.initialize({client_id:cfg.googleClientId,auto_select:false,use_fedcm_for_prompt:false,callback:async function(response){
+    window.google.accounts.id.initialize({client_id:cfg.googleClientId,auto_select:false,ux_mode:'popup',use_fedcm_for_prompt:false,use_fedcm_for_button:false,callback:async function(response){
       if(!response||!response.credential){var er=$('#amErr');if(er)er.textContent='Google থেকে credential পাওয়া যায়নি। আবার চেষ্টা করুন।';return;}
       var hostNow=$('#amGoogleButton');if(hostNow)hostNow.style.opacity='.6';
       try{
@@ -296,8 +296,8 @@ async function setupGoogleButton(){
       finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
     }});
     host.innerHTML='';
-    // Use Google's official clickable Sign-In button (popup callback), not One Tap prompt().
-    // This avoids suppressed_by_user notifications and the auto account-card replacing our button.
+    // Render only Google's explicit Sign-In button. No prompt() call is made, so One Tap cannot auto-open.
+    // Popup mode keeps account selection behind the user's click instead of showing an automatic account card.
     host.style.width='min(74%,300px)';
     host.style.margin='0 auto';
     host.style.display='flex';
