@@ -4055,6 +4055,70 @@ setInterval(fetchFreshAccountConfig, 15000);
  .ar-live-board #arLeaderboard .ar-leader.podium .ar-points{font-size:10px!important;padding:4px 8px!important}
 }
 
+/* Reference finishing details: ornate rank medallions, crown ribbons and star score. */
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank{
+  position:relative!important;isolation:isolate!important;min-height:100px!important;
+  width:100%!important;max-width:118px!important;justify-self:center!important;
+  border:3px solid currentColor!important;border-radius:18px 18px 25px 25px!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.88),rgba(255,255,255,.18))!important;
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.58),0 5px 12px rgba(35,35,35,.12)!important;
+  font-size:clamp(44px,6vw,76px)!important;font-weight:1000!important;
+  text-shadow:0 2px 0 rgba(255,255,255,.85),0 4px 8px rgba(0,0,0,.16)!important;
+}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank:before{
+  content:'♛'!important;position:absolute!important;z-index:2!important;top:-30px!important;left:50%!important;
+  transform:translateX(-50%)!important;font-size:clamp(24px,3.2vw,38px)!important;
+  line-height:1!important;color:currentColor!important;text-shadow:0 2px 3px rgba(0,0,0,.2)!important;
+}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank:after{
+  content:'❧'!important;position:absolute!important;z-index:-1!important;left:50%!important;bottom:-16px!important;
+  transform:translateX(-50%)!important;font-size:clamp(42px,5vw,62px)!important;
+  color:currentColor!important;opacity:.75!important;white-space:nowrap!important;
+}
+.ar-live-board #arLeaderboard .ar-leader.podium.first .ar-leader-rank{color:#b97808!important;border-color:#d9a51c!important;background:linear-gradient(145deg,#fff7d8,#e9b83d)!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.second .ar-leader-rank{color:#416b9e!important;border-color:#8caedc!important;background:linear-gradient(145deg,#fff,#b9d2f4)!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.third .ar-leader-rank{color:#9a5427!important;border-color:#d99a5d!important;background:linear-gradient(145deg,#fff0df,#d98b4b)!important}
+.ar-live-board #arLeaderboard .ar-leader.podium:before{padding-left:48px!important}
+.ar-live-board #arLeaderboard .ar-leader.podium:after{
+  content:'♛'!important;position:absolute!important;right:clamp(76px,14vw,150px)!important;top:5px!important;
+  color:#fff2bd!important;font-size:clamp(22px,3vw,34px)!important;line-height:1!important;
+  text-shadow:0 2px 3px rgba(0,0,0,.28)!important;pointer-events:none!important;
+}
+.ar-live-board #arLeaderboard .ar-leader.podium.second:after{color:#eaf3ff!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.third:after{color:#ffe0bd!important}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-points{
+  position:relative!important;gap:9px!important;padding:13px 13px!important;
+  font-size:clamp(15px,1.8vw,24px)!important;letter-spacing:.1px!important;
+  border-radius:56px!important;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,248,224,.78))!important;
+}
+.ar-live-board #arLeaderboard .ar-leader.podium .ar-points:before{
+  content:'★'!important;display:inline-block!important;flex:none!important;
+  color:#ffb900!important;font-size:1.55em!important;line-height:1!important;
+  text-shadow:0 2px 2px rgba(160,100,0,.25)!important;
+}
+.ar-live-board #arLeaderboard .ar-leader.podium.second .ar-points{background:linear-gradient(180deg,#fff,#edf3ff)!important}
+.ar-live-board #arLeaderboard .ar-leader.podium.third .ar-points{background:linear-gradient(180deg,#fff,#fff0e2)!important}
+@media(max-width:650px){
+ .ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank{min-height:66px!important;font-size:36px!important;border-radius:12px 12px 17px 17px!important}
+ .ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank:before{top:-19px!important;font-size:22px!important}
+ .ar-live-board #arLeaderboard .ar-leader.podium .ar-leader-rank:after{font-size:34px!important;bottom:-12px!important}
+ .ar-live-board #arLeaderboard .ar-leader.podium:after{right:76px!important;top:3px!important;font-size:20px!important}
+ .ar-live-board #arLeaderboard .ar-leader.podium .ar-points{gap:5px!important;padding:5px 9px!important;font-size:12px!important}
+ .ar-live-board #arLeaderboard .ar-leader.podium .ar-points:before{font-size:1.35em!important}
+}
+
+</style>
+
+<style id="ar-recent-orders-heading-count-size">
+/* Slightly reduce only the Recent Orders title and total-count typography. */
+#arLiveBoard .ar-live-head h2{font-size:clamp(18px,3.2vw,30px)!important;letter-spacing:-.5px!important;}
+#arLiveBoard .ar-live-count-premium strong{font-size:clamp(15px,2vw,22px)!important;}
+#arLiveBoard .ar-live-count-premium small{font-size:clamp(10px,1.2vw,14px)!important;}
+@media(max-width:620px){
+  #arLiveBoard .ar-live-head h2{font-size:clamp(17px,4.3vw,21px)!important;letter-spacing:-.35px!important;}
+  #arLiveBoard .ar-live-count-premium strong{font-size:clamp(14px,3.6vw,18px)!important;}
+  #arLiveBoard .ar-live-count-premium small{font-size:clamp(9px,2.5vw,11px)!important;}
+}
 </style>
 
 </body>
