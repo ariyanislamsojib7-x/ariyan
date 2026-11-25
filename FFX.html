@@ -991,11 +991,11 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
       <div class="ar-loading">অর্ডারের তথ্য লোড হচ্ছে...</div>
     </div>
     <div class="ar-board-head">
-      <div><span class="ar-kicker">TOP SPENDERS</span><h2>Leaderboard</h2><p>সর্বোচ্চ অর্ডার খরচ অনুযায়ী র‍্যাংক</p></div>
-      <span class="ar-board-icon">♛</span>
+      <div><span class="ar-kicker">TOP SPENDERS</span><h2>Top Spend Leaderboard</h2><p>Top 10 players ranked by lifetime spend and profile rank.</p></div>
+      <span class="ar-board-icon" aria-hidden="true">🏆</span>
     </div>
-    <div id="arLeaderboard" class="ar-leader-list"><div class="ar-loading">লিডারবোর্ড লোড হচ্ছে...</div></div>
-    <div class="ar-board-foot">লাইভ ডেটা • প্রতি ১৫ সেকেন্ডে আপডেট</div>
+    <div id="arLeaderboard" class="ar-leader-list"><div class="ar-loading">Loading leaderboard...</div></div>
+    <div class="ar-board-foot">LIVE DATA • UPDATES EVERY 15 SECONDS</div>
   </section>
 
   <section class="ar-uid-mini" aria-label="UID Checker">
@@ -1093,6 +1093,44 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
     .ar-uid-mini-sub{font-size:11px;color:#718096}
     .ar-uid-mini-arrow{font-size:21px;line-height:1;color:#2563eb;margin-left:auto}
     @media(max-width:380px){.ar-order{padding:10px}.ar-order .ar-avatar{width:42px;height:42px}.ar-order-done{padding:7px 9px;font-size:11px}.ar-trust-strip{gap:8px;font-size:11px}}
+
+    /* Leaderboard: screenshot-matched English podium */
+    .ar-board-head{align-items:center;background:#fffdf5;border-top:1px solid #f1e5b2}
+    .ar-board-head h2{font-size:21px;color:#18233b}
+    .ar-board-head .ar-kicker{color:#d49a16}
+    .ar-board-head p{color:#697386;font-size:12px;margin-top:6px}
+    .ar-board-icon{width:48px;height:48px;border-radius:15px;background:#fff9df;border:1px solid #f5e7a4;color:#d69a12;font-size:25px}
+    .ar-leader-list{gap:10px;padding:13px}
+    .ar-leader.podium{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;min-height:0;padding:22px 14px 17px;border-radius:22px;overflow:hidden}
+    .ar-leader.podium .ar-leader-rank{position:absolute;top:15px;left:15px;width:48px;height:52px;border-radius:12px 12px 15px 15px;font-size:20px;font-weight:950;clip-path:polygon(0 0,100% 0,100% 76%,50% 100%,0 76%)}
+    .ar-leader.podium .ar-avatar{width:86px;height:86px;border-radius:50%;margin:5px auto 2px}
+    .ar-leader.podium .ar-leader-name{font-size:17px;max-width:90%;white-space:nowrap}
+    .ar-leader.podium .ar-points{font-size:14px;padding:8px 16px;border-radius:99px;background:#fff;white-space:nowrap}
+    .ar-leader.podium:before{position:absolute;top:15px;right:14px;padding:5px 11px;border-radius:99px;font-size:10px;font-weight:950;letter-spacing:.5px}
+    .ar-leader.podium.first{min-height:245px;border:2px solid #e9c83b;background:linear-gradient(145deg,#fffdf0,#fff3bd);box-shadow:0 10px 24px -16px rgba(194,145,10,.55)}
+    .ar-leader.podium.first:before{content:"TOP 1 • VIP";background:#fff0b7;color:#98640a;border:1px solid #f0d76d}
+    .ar-leader.podium.first .ar-leader-rank{background:linear-gradient(145deg,#f8d86b,#a66b0c);color:#fff;border:2px solid #f9e8a0;box-shadow:0 4px 10px #d6a52c66}
+    .ar-leader.podium.first .ar-avatar{width:112px;height:112px;border:5px solid #fff;outline:4px solid #e6bd31;box-shadow:0 0 0 7px #fff4c6,0 9px 20px #9a741c35;font-size:30px}
+    .ar-leader.podium.first .ar-leader-name{font-size:19px}
+    .ar-leader.podium.first .ar-points{border:1px solid #e7c34b;color:#172033;font-size:16px}
+    .ar-leader.podium.second{min-height:205px;border:2px solid #c7d7eb;background:linear-gradient(145deg,#fbfdff,#eaf2fc);box-shadow:0 7px 18px -15px #56759c}
+    .ar-leader.podium.second:before{content:"TOP 2";background:#e4edf9;color:#526b8c;border:1px solid #cbd9ea}
+    .ar-leader.podium.second .ar-leader-rank{background:linear-gradient(145deg,#dce7f5,#8196b2);color:#fff;border:2px solid #f5f8fc}
+    .ar-leader.podium.second .ar-avatar{width:91px;height:91px;border:4px solid #fff;outline:3px solid #b8cbe2}
+    .ar-leader.podium.second .ar-points{border:1px solid #d0deef;color:#263b58}
+    .ar-leader.podium.third{min-height:185px;border:2px solid #edcfad;background:linear-gradient(145deg,#fffaf4,#ffeedc);box-shadow:0 6px 16px -14px #b7834e}
+    .ar-leader.podium.third:before{content:"TOP 3";background:#ffead5;color:#9b6337;border:1px solid #f1d0ac}
+    .ar-leader.podium.third .ar-leader-rank{background:linear-gradient(145deg,#e7b58c,#9c6544);color:#fff;border:2px solid #fff0df}
+    .ar-leader.podium.third .ar-avatar{width:80px;height:80px;border:3px solid #fff;outline:2px solid #e6c4a4}
+    .ar-leader.podium.third .ar-points{border:1px solid #efd5b9;color:#5d412e}
+    .ar-leader.normal{background:#fff;border:1px solid #edf0d9;border-radius:15px;padding:10px 11px;min-height:62px}
+    .ar-leader.normal .ar-leader-rank{background:#17243a;color:#fff;border-radius:7px 7px 10px 10px;border-top:4px solid #e4a51a;width:31px;height:36px}
+    .ar-leader.normal .ar-avatar{width:43px;height:43px;border-radius:11px}
+    .ar-leader.normal .ar-leader-name{font-size:13px}
+    .ar-leader.normal .ar-points{padding:6px 9px;border:1px solid #f0e6b3;border-radius:99px;background:#fffdf3;color:#172033;font-size:11px}
+    .ar-show-more{display:flex;justify-content:center;margin:7px auto 2px;padding:12px 28px;border:0;border-radius:99px;background:linear-gradient(135deg,#f5a900,#e88900);color:#fff;font-size:13px;font-weight:900;box-shadow:0 7px 16px #e99b1735;cursor:pointer}
+    .ar-board-foot{color:#8791a1;font-size:10px;letter-spacing:.3px}
+    @media(max-width:380px){.ar-leader.podium.first .ar-avatar{width:98px;height:98px}.ar-leader.podium .ar-leader-rank{width:41px;height:46px}.ar-leader.normal{gap:7px;padding:9px}.ar-leader.normal .ar-points{font-size:10px;padding:5px 7px}}
   </style>
   <script>
   (function(){
@@ -1112,12 +1150,21 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
         return '<div class="ar-order">'+avatar(o.name,o.avatar)+'<div class="ar-order-info"><b>'+esc(o.name||'Player')+'</b><small>'+esc(o.packageName||'Top Up')+' <span class="ar-order-sep">—</span> ৳'+Number(o.price||0).toLocaleString('en-US')+'</small></div><div class="ar-order-meta"><span class="ar-order-done"><b>✓</b> '+(/complete/i.test(status(o.status))?'Done':esc(status(o.status)))+'</span></div></div>';
       }).join(''):'<div class="ar-empty">এখনো কোনো অর্ডার পাওয়া যায়নি</div>';
       var leaders=Array.isArray(data.leaderboard)?data.leaderboard.slice(0,10):[];
-      board.innerHTML=leaders.length?leaders.map(function(u,i){
-        var tier=i===0?' vip':(i===1?' second':(i===2?' third':''));
-        return '<div class="ar-leader'+tier+'"><span class="ar-leader-rank">'+(i+1)+'</span>'+avatar(u.name,u.avatar)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">৳'+Number(u.points||0).toLocaleString('en-US')+'</div></div>';
-      }).join(''):'<div class="ar-empty">এখনো লিডারবোর্ডের তথ্য নেই</div>';
+      if(!leaders.length){board.innerHTML='<div class="ar-empty">No leaderboard data available yet.</div>';return;}
+      var podium=leaders.slice(0,3).map(function(u,i){
+        var tier=i===0?'first':(i===1?'second':'third');
+        return '<div class="ar-leader podium '+tier+'"><span class="ar-leader-rank">'+(i+1)+'</span>'+avatar(u.name,u.avatar)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+      }).join('');
+      var rest=leaders.slice(3).map(function(u,i){
+        var rank=i+4;
+        return '<div class="ar-leader normal" data-leader-rank="'+rank+'"><span class="ar-leader-rank">'+rank+'</span>'+avatar(u.name,u.avatar)+'<div class="ar-leader-name">'+esc(u.name||'Player')+'</div><div class="ar-points">'+Number(u.points||0).toLocaleString('en-US')+' POINTS</div></div>';
+      }).join('');
+      board.innerHTML=podium+rest+(leaders.length>7?'<button type="button" class="ar-show-more" id="arShowMore">Show More</button>':'');
+      board.querySelectorAll('[data-leader-rank]').forEach(function(el){if(!showAll&&Number(el.getAttribute('data-leader-rank'))>7)el.hidden=true;});
+      var more=board.querySelector('#arShowMore');
+      if(more){more.textContent=showAll?'Show Less':'Show More';more.addEventListener('click',function(){showAll=!showAll;board.querySelectorAll('[data-leader-rank]').forEach(function(el){if(Number(el.getAttribute('data-leader-rank'))>7)el.hidden=!showAll;});more.textContent=showAll?'Show Less':'Show More';});}
     }
-    var busy=false;
+    var busy=false, showAll=false;
     function load(){
       if(busy||document.visibilityState==='hidden')return;
       busy=true;
