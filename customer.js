@@ -145,7 +145,7 @@ async function setupGoogleButton(){
     if(!cfg.googleClientId){host.innerHTML='<div class="am-muted">Google Login চালু করতে Render-এ GOOGLE_CLIENT_ID সেট করা বাকি।</div>';return}
     await loadGoogleScript();
     if(!window.google||!window.google.accounts||!window.google.accounts.id)throw new Error('Google Login প্রস্তুত নয়');
-    window.google.accounts.id.initialize({client_id:cfg.googleClientId,callback:async function(response){
+    window.google.accounts.id.initialize({client_id:cfg.googleClientId,use_fedcm_for_button:false,button_auto_select:false,callback:async function(response){
       var hostNow=$('#amGoogleButton');if(hostNow)hostNow.style.opacity='.6';
       try{
         var result=await api('/api/auth/google',{credential:response.credential});
@@ -153,12 +153,12 @@ async function setupGoogleButton(){
       }catch(err){var er=$('#amErr');if(er)er.textContent=err.message}
       finally{var h=$('#amGoogleButton');if(h)h.style.opacity='1'}
     }});
-    window.google.accounts.id.renderButton(host,{type:'standard',theme:'filled_black',size:'large',shape:'pill',text:'continue_with',width:Math.max(200,Math.min(390,host.parentElement.clientWidth||390)),logo_alignment:'left'});
+    window.google.accounts.id.renderButton(host,{type:'standard',theme:'filled_black',size:'large',shape:'pill',text:'continue_with',width:Math.max(200,Math.min(400,host.clientWidth||host.parentElement.clientWidth||390)),logo_alignment:'left'});
   }catch(e){host.innerHTML='<div class="am-muted">'+esc(e.message)+'</div>'}
 }
 function authView(mode){
   var reg=mode==='register';
-  var html=`<div class="am-auth-intro"><div class="am-auth-icon">${reg?'✚':'♙'}</div><div><h3>${esc(at(reg?'acctRegisterTitle':'acctLoginTitle',reg?'Create an account':'Sign in to continue'))}</h3><p>${esc(at(reg?'acctRegisterSub':'acctLoginSub',reg?'Enter your details to get started':'Access your account securely'))}</p></div></div>
+  var html=`<div class="am-auth-intro"><div class="am-auth-icon">${reg?'✚':'♙'}</div><div><h3>${reg?esc(at('acctRegisterTitle','Create an account')):'Login'}</h3><p>${esc(at(reg?'acctRegisterSub':'acctLoginSub',reg?'Enter your details to get started':'Access your account securely'))}</p></div></div>
   <div class="am-google-wrap"><div id="amGoogleButton"></div><div class="am-google-caption">${esc(at('acctGoogleText','Continue with Google'))} · ${esc(at('acctGoogleSub','Quick and secure sign in'))}</div></div>
   <div class="am-divider"><span>${esc(at(reg?'acctRegisterDivider':'acctEmailDivider',reg?'OR REGISTER WITH DETAILS':'OR CONTINUE WITH EMAIL'))}</span></div>
   <form id="amAuth">${reg?`<label>${esc(at('acctNameLabel','Full name'))}</label><input name="name" maxlength="70" required autocomplete="name" placeholder="${esc(at('acctNamePlaceholder','Enter your full name'))}"><label>${esc(at('acctPhoneLabel','Phone number'))}</label><input name="phone" maxlength="24" required autocomplete="tel" placeholder="${esc(at('acctPhonePlaceholder','Enter phone number'))}">`:''}
@@ -166,8 +166,8 @@ function authView(mode){
   <label>${esc(at('acctPasswordLabel','Password'))}</label><div class="am-password"><input id="amPassword" name="password" type="password" required minlength="8" maxlength="128" autocomplete="${reg?'new-password':'current-password'}" placeholder="${esc(at(reg?'acctPasswordPlaceholder':'acctLoginPasswordPlaceholder',reg?'Create password':'Enter your password'))}"><button type="button" id="amPwEye">Show</button></div>
   ${reg?`<label>${esc(at('acctConfirmLabel','Confirm password'))}</label><div class="am-password"><input id="amConfirm" name="confirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="${esc(at('acctConfirmPlaceholder','Repeat password'))}"><button type="button" id="amConfirmEye">Show</button></div>`:''}
   ${!reg?`<button type="button" class="am-link am-forgot-link" id="amForgot">${esc(at('acctForgotText','Forgot Password?'))}</button>`:''}
-  <button class="am-btn" type="submit">${esc(at(reg?'acctRegisterButton':'acctSignInText',reg?'Create Account':'Sign In'))}</button></form>
-  <button class="am-link am-switch" id="amSwitch">${reg?esc(at('acctAlreadyText','Already have an account? Sign in')):esc(at('acctNewUserText','New user?'))+' '+esc(at('acctCreateText','Create an account'))}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
+  <button class="am-btn" type="submit">${reg?esc(at('acctRegisterButton','Create Account')):'Login'}</button></form>
+  <button class="am-link am-switch" id="amSwitch">${reg?esc(at('acctAlreadyText','Already have an account? Sign in')):'Create New Account'}</button><div class="am-muted" id="amErr" role="status" style="margin-top:4px"></div>
   <div class="am-auth-trust"><div><b>⚡</b><strong>${esc(at('acctFastTitle','Fast'))}</strong><small>${esc(at('acctFastSub','Instant access'))}</small></div><div><b>✓</b><strong>${esc(at('acctSecureTitle','Secure'))}</strong><small>${esc(at('acctSecureSub','Safe login'))}</small></div><div><b>♥</b><strong>${esc(at('acctTrustedTitle','Trusted'))}</strong><small>${esc(at('acctTrustedSub','Easy & reliable'))}</small></div></div>
   <div class="am-safe"><b>✓</b><div><strong>${esc(at('acctSafeTitle','Your data is safe'))}</strong><small>${esc(at('acctSafeSub','Secure authentication protects your account.'))}</small></div></div>`;
   open(reg?'Create Account':'Sign In',html);setupGoogleButton();
