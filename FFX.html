@@ -4126,9 +4126,10 @@ setInterval(fetchFreshAccountConfig, 15000);
 
 <!-- AURA ARiYAN X TOPUP: English legal information pages -->
 <style id="ar-policy-modal-style">
-#arPolicyModal{position:fixed;inset:0;z-index:100500;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(8,15,32,.68);backdrop-filter:blur(5px)}
-#arPolicyModal.open{display:flex}#arPolicyModal .ar-policy-card{width:min(720px,100%);max-height:min(82vh,850px);overflow:auto;background:#fff;color:#172033;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.3);padding:22px}
-#arPolicyModal .ar-policy-head{position:sticky;top:-22px;display:flex;align-items:center;gap:12px;justify-content:space-between;background:#fff;padding:4px 0 14px;border-bottom:1px solid #e5eaf2;z-index:2}
+/* Legal pages open as a full-screen reading page on every device. */
+#arPolicyModal{position:fixed;inset:0;z-index:100500;display:none;align-items:stretch;justify-content:stretch;padding:0;background:#fff;backdrop-filter:none}
+#arPolicyModal.open{display:flex}#arPolicyModal .ar-policy-card{width:100%;height:100%;max-height:none;min-height:0;overflow:auto;background:#fff;color:#172033;border-radius:0;box-shadow:none;padding:calc(18px + env(safe-area-inset-top, 0px)) 20px calc(22px + env(safe-area-inset-bottom, 0px));}
+#arPolicyModal .ar-policy-head{position:sticky;top:calc(-18px - env(safe-area-inset-top, 0px));display:flex;align-items:center;gap:12px;justify-content:space-between;background:#fff;padding:10px 0 14px;border-bottom:1px solid #e5eaf2;z-index:2}
 #arPolicyModal h2{font-size:22px;font-weight:850;margin:0}#arPolicyModal .ar-policy-close{border:0;border-radius:50%;width:38px;height:38px;background:#edf2ff;color:#1d4ed8;font-size:24px;cursor:pointer}
 #arPolicyModal .ar-policy-body{font-size:14px;line-height:1.8;color:#344054;padding-top:14px}#arPolicyModal .ar-policy-body h3{font-size:16px;color:#172033;margin:18px 0 5px}#arPolicyModal .ar-policy-body p{margin:8px 0}#arPolicyModal .ar-policy-body ul{padding-left:21px;margin:8px 0}#arPolicyModal .ar-policy-note{padding:11px 13px;border-radius:12px;background:#eff6ff;color:#1e40af;margin-top:14px}
 </style>
