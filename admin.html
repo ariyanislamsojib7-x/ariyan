@@ -659,6 +659,8 @@ return fields.map(payField).join('')+
      '</div>'+
      '</div>';
   siteRoot.innerHTML=h;
+  // Render the login/register text editor inside the admin Site editor.
+  siteRoot.insertAdjacentHTML('beforeend', accountTextEditorHtml());
   var savePay=siteRoot.querySelector('#savePaymentSettings');if(savePay)savePay.onclick=async function(){var settings={};siteRoot.querySelectorAll('[data-payment-setting]').forEach(function(el){settings[el.dataset.paymentSetting]=el.value.trim()});savePay.disabled=true;var status=siteRoot.querySelector('#paymentSettingsStatus');try{await api('/api/admin/payment-settings',{settings:settings});if(status)status.textContent='Saved successfully';toast('Payment settings saved','ok');}catch(e){if(status)status.textContent=e.message;toast(e.message,'bad')}finally{savePay.disabled=false}};
 // Local file -> data URL into the matching payment setting input
 siteRoot.querySelectorAll('[data-pay-upload]').forEach(function(inp){
