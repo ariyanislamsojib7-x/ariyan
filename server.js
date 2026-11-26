@@ -133,7 +133,7 @@ const TEXTS = [
   { id: 'acctEmailDivider', label: 'Login divider text', def: 'OR CONTINUE WITH EMAIL', max: 100 },
   { id: 'acctRegisterButton', label: 'Registration button text', def: 'Create Account', max: 80 },
   { id: 'acctAlreadyText', label: 'Already account text', def: 'Already have an account? Sign in', max: 120 },
-  { id: 'acctNewUserText', label: 'New user prompt', def: 'New user?', max: 80 },
+  { id: 'acctNewUserText', label: 'New user prompt', def: 'New user AURA ARiYAN X Topup?', max: 80 },
   { id: 'acctFastTitle', label: 'Fast feature title', def: 'Fast', max: 60 },
   { id: 'acctFastSub', label: 'Fast feature subtitle', def: 'Instant access', max: 100 },
   { id: 'acctSecureTitle', label: 'Secure feature title', def: 'Secure', max: 60 },
@@ -1039,6 +1039,10 @@ async function handleApi(req, res, pathname) {
       return sendJson(res, 200, { recentOrders: latest, totalOrders: (customerDB.orders || []).length, leaderboard });
     }
 
+    if (req.method === 'GET' && pathname === '/api/site-branding') {
+      const logoFile = imgGet(config, 'logo');
+      return sendJson(res, 200, { logo: logoFile ? '/uploads/' + logoFile : '/Main%20logo.jpg' });
+    }
     if (req.method === 'GET' && pathname === '/api/account-ui-texts') {
       const T = config.texts || {}; const out = {};
       TEXTS.filter(function(x){ return x.id.indexOf('acct') === 0; }).forEach(function(x){ out[x.id] = T[x.id] || x.def; });
