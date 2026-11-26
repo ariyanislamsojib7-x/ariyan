@@ -900,7 +900,20 @@ function decodeJwtPayload(idToken) {
     return JSON.parse(json || '{}');
   } catch (e) { return {}; }
 }
-const googleOAuthStates = new Map();
+function makeGoogleOAuthState(){
+  const payload=Buffer.from(JSON.stringify({t:Date.now(),n:crypto.randomBytes(24).toString('hex')})).toString('base64url');
+  const sig=crypto.createHmac('sha256',CUSTOMER_SECRET).update('google-oauth:'+payload).digest('hex');
+  return payload+'.'+sig;
+}
+function verifyGoogleOAuthState(state){
+  try{
+    const parts=String(state||'').split('.');if(parts.length!==2)return false;
+    const expected=crypto.createHmac('sha256',CUSTOMER_SECRET).update('google-oauth:'+parts[0]).digest();
+    const actual=Buffer.from(parts[1],'hex');if(actual.length!==expected.length||!crypto.timingSafeEqual(actual,expected))return false;
+    const data=JSON.parse(Buffer.from(parts[0],'base64url').toString('utf8'));
+    return !!(data&&Number.isFinite(data.t)&&Date.now()-data.t>=0&&Date.now()-data.t<=10*60*1000&&typeof data.n==='string');
+  }catch(e){return false}
+}
 function googleOAuthRedirectUri(req) {
   const configured = String(process.env.GOOGLE_REDIRECT_URI || '').trim();
   if (configured) return configured;
@@ -928,15 +941,15 @@ async function handleGoogleOAuth(req,res,pathname){
   if(!clientId){res.writeHead(503,{'Content-Type':'text/plain; charset=utf-8'});return res.end('Google Login কনফিগার করা নেই।')}
   const redirectUri=googleOAuthRedirectUri(req);
   if(req.method==='GET'&&pathname==='/auth/google/start'){
-    const state=crypto.randomBytes(24).toString('hex');googleOAuthStates.set(state,Date.now()+10*60*1000);
+    const state=makeGoogleOAuthState();
     const url=new URL('https://accounts.google.com/o/oauth2/v2/auth');
     url.searchParams.set('client_id',clientId);url.searchParams.set('redirect_uri',redirectUri);url.searchParams.set('response_type','code');url.searchParams.set('scope','openid email profile');url.searchParams.set('state',state);url.searchParams.set('prompt','select_account');
     res.writeHead(302,{'Location':url.toString(),'Cache-Control':'no-store'});return res.end();
   }
   if(req.method==='GET'&&pathname==='/auth/google/callback'){
     const u=new URL(req.url,'https://local.invalid');const state=u.searchParams.get('state')||'',code=u.searchParams.get('code')||'',err=u.searchParams.get('error');
-    const exp=googleOAuthStates.get(state);googleOAuthStates.delete(state);
-    if(!state||!exp||exp<Date.now()||err||!code){res.writeHead(400,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end('<meta charset="utf-8"><p>Google Login বাতিল হয়েছে বা state যাচাই ব্যর্থ হয়েছে। আবার চেষ্টা করুন।</p><a href="/">ফিরে যান</a>')}
+    const stateOk=verifyGoogleOAuthState(state);
+    if(!stateOk||err||!code){res.writeHead(400,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end('<meta charset="utf-8"><p>Google Login বাতিল হয়েছে বা state যাচাই ব্যর্থ হয়েছে। আবার চেষ্টা করুন।</p><a href="/">ফিরে যান</a>')}
     try{
       const idToken=await googleExchangeCode(code,redirectUri);const claims=await googleTokenInfo(idToken);
       const email=cleanEmail(claims.email),verified=claims.email_verified===true||claims.email_verified==='true',issuerOk=claims.iss==='accounts.google.com'||claims.iss==='https://accounts.google.com';

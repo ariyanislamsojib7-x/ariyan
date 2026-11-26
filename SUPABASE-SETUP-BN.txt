@@ -44,3 +44,11 @@ Secret Key কাউকে দেবেন না, GitHub-এ রাখবেন
 - এই সংস্করণে customer data এক JSONB row-তে রাখা হয় এবং একই Node server process-এর write queue দিয়ে sequential save করা হয়। একাধিক Render instance চালাবেন না।
 - Website-এর config, ছবি ও অন্যান্য Site Editor ফাইলের আগের storage পদ্ধতি অপরিবর্তিত আছে। Supabase এখানে customer/account data সংরক্ষণ করে।
 - Render Environment Variables পরিবর্তনের পর নতুন deploy/restart প্রয়োজন।
+
+
+Google Login state যাচাই সংশোধন
+-------------------------------
+এই সংস্করণে OAuth state সার্ভারের RAM-এ না রেখে CUSTOMER_SECRET থেকে HMAC দিয়ে যাচাই করা হয়। তাই Google-এ যাওয়ার পর Render process restart হলেও state হারিয়ে যাওয়ার সমস্যা হবে না। Render-এ CUSTOMER_SECRET থাকলে সেটি স্থির রাখুন; Deploy-এর সময় পরিবর্তন করবেন না।
+Google Cloud Console → APIs & Services → Credentials → আপনার OAuth 2.0 Client → Authorized redirect URIs-এ হুবহু এই URI থাকতে হবে:
+https://ariyan-9.onrender.com/auth/google/callback
+Render Environment-এ GOOGLE_REDIRECT_URI থাকলে এর Value-ও একই URI হতে হবে।
