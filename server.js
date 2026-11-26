@@ -662,10 +662,11 @@ function applySiteConfig(html) {
     rows.forEach(function (item, i) {
       const re = new RegExp('(<a\\b[^>]*' + attr + '="' + i + '"[^>]*)(>)');
       html = html.replace(re, function (_m, before, close) {
-        const href = item.url || '#';
-        const disabled = item.url ? '' : ' aria-disabled="true" style="pointer-events:none;opacity:.65"';
+        const isLegal = attr === 'data-acct-legal';
+        const href = isLegal ? '#policy-' + ['about','terms','privacy','refund','help'][i] : (item.url || '#');
+        const disabled = !isLegal && !item.url ? ' aria-disabled="true" style="pointer-events:none;opacity:.65"' : '';
         return before.replace(/\s+href="[^"]*"/, '') + ' href="' + esc(href) + '"' +
-          (item.url && !/^tel:/i.test(item.url) ? ' target="_blank" rel="noopener noreferrer"' : '') + disabled + close;
+          (!isLegal && item.url && !/^tel:/i.test(item.url) ? ' target="_blank" rel="noopener noreferrer"' : '') + disabled + close;
       });
       const labelRe = new RegExp('(<a\\b[^>]*' + attr + '="' + i + '"[^>]*>)([\\s\\S]*?)(</a>)');
       html = html.replace(labelRe, function (_m, a, body, c) {
