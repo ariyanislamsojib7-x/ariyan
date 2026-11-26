@@ -56,7 +56,7 @@ function openMyAccountPage(){
   }, 100);
 }
 
-function money(n){return Number(n||0).toFixed(2)}
+function money(n){var v=Number(n);if(!Number.isFinite(v))v=0;return Number.isInteger(v)?String(v):String(Number(v.toFixed(2)))}
 function syncProfile(){syncBuyNowButtons();if(!user){if(window.setProfile)window.setProfile({});renderRank(0,0);return}if(window.setProfile)window.setProfile({loggedIn:true,id:user.userId||'',name:user.name,email:user.email||'',phone:user.phone||'',balance:user.balance,orders:window._ariyanOrderCount||0,codes:0,verified:true,avatar:user.avatar||''});var w=$('.wallet');if(w&&w.lastChild)w.lastChild.textContent=money(user.balance)+'৳';loadRankStats();}
 async function refreshMe(){if(!token)return;try{var opt={method:'GET',headers:{Authorization:'Bearer '+token}};var rr=await fetch('/api/customer/me',opt);var j={};try{j=await rr.json()}catch(_e){}if(rr.status===401){clearSession();return}if(!rr.ok)return;user=j.user;localStorage.setItem(USER_KEY,JSON.stringify(user));syncProfile()}catch(e){/* network error - keep session */}}
 var accountTexts=window.__ACCOUNT_TEXTS||{};function at(k,d){return accountTexts[k]||d;}

@@ -130,8 +130,8 @@ svg.f{width:1em;height:1em;fill:currentColor;stroke:none}
 /* header */
 header{position:sticky;top:0;z-index:40;background:#ffffff;border-bottom:1px solid var(--bd);padding-top:env(safe-area-inset-top)}
 .hd{display:flex;align-items:center;justify-content:space-between;height:68px}
-.logo{display:inline-flex;align-items:center;height:44px;max-width:145px}
-.logo img{height:100%;width:auto;max-width:100%;object-fit:contain;display:block}
+.logo{display:inline-flex;align-items:center;height:54px;max-width:178px}
+.logo img{height:100%;width:auto;max-width:100%;object-fit:contain;display:block;filter:drop-shadow(0 2px 4px rgba(37,99,235,.16))}
 .hr{display:flex;align-items:center;gap:12px}
 .wallet{display:flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 12px;border-radius:99px;background:var(--g);color:#fff;font-weight:700;font-size:15px;box-shadow:0 8px 18px -6px rgba(37,99,235,.6)}
 .wallet svg{font-size:19px}
@@ -3500,10 +3500,12 @@ setInterval(fetchFreshAccountConfig, 15000);
     $('acVf').style.display=p.verified?'inline-flex':'none';
     var sideAuth=$('accLo');if(sideAuth){var sideText=sideAuth.querySelector('span');if(sideText)sideText.textContent=p.loggedIn?'Logout':'Login';sideAuth.setAttribute('aria-label',p.loggedIn?'Logout':'Login');}
     var bal=(p.balance==null?0:p.balance);
-    $('acBal').textContent=bal;
+    var walletNumber=Number(bal);
+    var walletText=Number.isFinite(walletNumber)?(Number.isInteger(walletNumber)?String(walletNumber):String(Number(walletNumber.toFixed(2)))):'0';
+    $('acBal').textContent=walletText;
     $('acOrders').textContent=p.orders||0;
     var acCodesEl=$('acCodes'); if(acCodesEl) acCodesEl.textContent=p.codes||0; // optional: hidden/removed from the current account layout
-    var w=document.querySelector('.wallet'); if(w&&w.lastChild) w.lastChild.textContent=bal+'৳';
+    var w=document.querySelector('.wallet'); if(w&&w.lastChild) w.lastChild.textContent=walletText+'৳';
     $('acMemberName').textContent='Bronze Member'; $('acMemberLevel').textContent='Level 1 / Current Rank';
     // Google account picture (claims.picture) is used consistently in the page,
     // header avatar and sidebar; reset all three to the default icon on logout.
