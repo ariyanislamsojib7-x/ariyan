@@ -118,6 +118,7 @@
     "siteName": "AURA ARiYAN X TOPUP",
     "redeemCodeUrl": "https://shop.garena.my/?app=100067&channel=202953",
     "acctNewUserText": "New user AURA ARiYAN 𝗫 Topup?",
+    "acctVerifiedText": "Verified",
     "acctRankBronze": "𝐁𝐫𝐨𝐧𝐳𝐞",
     "acctRankSilver": "𝐒𝐢𝐥𝐯𝐞𝐫",
     "acctRankGold": "𝐆𝐨𝐥𝐝",
@@ -125,8 +126,7 @@
     "acctRankDiamond": "𝐃𝐢𝐚𝐦𝐨𝐧𝐝",
     "acctRankHeroic": "𝐇𝐞𝐫𝐨𝐢𝐜",
     "acctRankMaster": "𝐌𝐚𝐬𝐭𝐞𝐫",
-    "acctRankGrandMaster": "𝐆𝐫𝐚𝐧𝐝 𝐌𝐚𝐬𝐭𝐞𝐫",
-    "acctVerifiedText": "Verified"
+    "acctRankGrandMaster": "𝐆𝐫𝐚𝐧𝐝 𝐌𝐚𝐬𝐭𝐞𝐫"
   },
   "accountSupport": {
     "social": [
@@ -193,7 +193,7 @@
     "walletNagadNumber": "01327414272",
     "instantBkashNumber": "01327414272",
     "instantNagadNumber": "01327414272",
-    "bkashLogoUrl": "/uploads/payment-bkashLogo-1795627341073.webp",
+    "bkashLogoUrl": "/uploads/payment-bkashLogo-1795698646147.webp",
     "nagadLogoUrl": "/uploads/payment-nagadLogo-1795627323808.png",
     "bkashTilesBannerUrl": "/uploads/payment-bkashTilesBanner-1795627378311.jpg",
     "nagadTilesBannerUrl": "/uploads/payment-nagadTilesBanner-1795627468161.jpg",
