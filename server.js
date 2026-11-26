@@ -36,6 +36,8 @@ const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(ROOT_DIR, 'data'
 const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
 const SESSION_MS = 12 * 60 * 60 * 1000;
+// Customer login sessions use the same 12-hour lifetime as admin sessions.
+const CUSTOMER_SESSION_MS = SESSION_MS;
 const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
 
 const MIME_TYPES = {
