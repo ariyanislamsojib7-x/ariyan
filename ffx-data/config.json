@@ -116,7 +116,8 @@
   },
   "texts": {
     "siteName": "AURA ARiYAN X TOPUP",
-    "redeemCodeUrl": "https://shop.garena.my/?app=100067&channel=202953"
+    "redeemCodeUrl": "https://shop.garena.my/?app=100067&channel=202953",
+    "acctRankBronze": "𝐁𝐫𝐨𝐧𝐳𝐞"
   },
   "accountSupport": {
     "social": [
@@ -187,10 +188,10 @@
     "nagadLogoUrl": "/uploads/payment-nagadLogo-1795627323808.png",
     "bkashTilesBannerUrl": "/uploads/payment-bkashTilesBanner-1795627378311.jpg",
     "nagadTilesBannerUrl": "/uploads/payment-nagadTilesBanner-1795627468161.jpg",
+    "walletLogoFile": "payment-wallet-1795627393244.jpg",
     "bkashPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
     "nagadPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
     "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
-    "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।",
-    "walletLogoFile": "payment-wallet-1795627393244.jpg"
+    "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।"
   }
 }
