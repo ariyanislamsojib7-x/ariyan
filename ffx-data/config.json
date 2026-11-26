@@ -117,15 +117,16 @@
   "texts": {
     "siteName": "AURA ARiYAN X TOPUP",
     "redeemCodeUrl": "https://shop.garena.my/?app=100067&channel=202953",
+    "acctNewUserText": "New user AURA ARiYAN 𝗫 Topup?",
     "acctRankBronze": "𝐁𝐫𝐨𝐧𝐳𝐞",
-    "acctRankGold": "𝐆𝐨𝐥𝐝",
     "acctRankSilver": "𝐒𝐢𝐥𝐯𝐞𝐫",
+    "acctRankGold": "𝐆𝐨𝐥𝐝",
     "acctRankPlatinum": "𝐏𝐥𝐚𝐭𝐢𝐧𝐮𝐦",
     "acctRankDiamond": "𝐃𝐢𝐚𝐦𝐨𝐧𝐝",
     "acctRankHeroic": "𝐇𝐞𝐫𝐨𝐢𝐜",
     "acctRankMaster": "𝐌𝐚𝐬𝐭𝐞𝐫",
     "acctRankGrandMaster": "𝐆𝐫𝐚𝐧𝐝 𝐌𝐚𝐬𝐭𝐞𝐫",
-    "acctNewUserText": "New user AURA ARiYAN 𝗫 Topup?"
+    "acctVerifiedText": "Verified"
   },
   "accountSupport": {
     "social": [
