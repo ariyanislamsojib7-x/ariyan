@@ -643,17 +643,25 @@ function detailPage(method, amount, orderData){
 }
 
 window.showOrders=showOrders;
+var ordersRequestPromise=null;
 async function showOrders(){
+  if(ordersRequestPromise)return ordersRequestPromise;
   if(!await requireLogin())return;
   var panel=$('#accPanel');
   if(panel){panel.classList.remove('show');panel.setAttribute('aria-hidden','true');document.body.style.overflow=''}
-  location.hash='my-orders';
-  try{
-    var r=await api('/api/customer/orders');
-    window._ariyanOrderCount=r.orders.length;
-    syncProfile();
-    if(window.renderOrders)window.renderOrders(r.orders.map(function(o){return {id:o.id,status:o.status,date:new Date(o.createdAt).toLocaleString('en-GB'),updated:new Date(o.updatedAt||o.createdAt).toLocaleString('en-GB'),package:o.packageName,price:o.price,playerId:o.playerId}}));
-  }catch(e){var el=$('#orList');if(el)el.textContent=e.message}
+  if(location.hash!=='#my-orders')location.hash='my-orders';
+  // Keep the existing list visible while refreshing; replace it only after the server responds.
+  ordersRequestPromise=(async function(){
+    try{
+      var r=await api('/api/customer/orders');
+      var orders=Array.isArray(r.orders)?r.orders:[];
+      window._ariyanOrderCount=orders.length;
+      syncProfile();
+      if(window.renderOrders)window.renderOrders(orders.map(function(o){return {id:o.id,status:o.status,date:new Date(o.createdAt).toLocaleString('en-GB'),updated:new Date(o.updatedAt||o.createdAt).toLocaleString('en-GB'),package:o.packageName,price:o.price,playerId:o.playerId}}));
+    }catch(e){var el=$('#orList');if(el)el.textContent=e.message}
+    finally{ordersRequestPromise=null}
+  })();
+  return ordersRequestPromise;
 }
 
 async function showTransactions(){
@@ -766,8 +774,28 @@ document.addEventListener('click',function(e){
 (async function applyPaymentLogos(){try{var info=await api('/api/payment-info'),cfg=info.settings||{};document.querySelectorAll('.po[data-pay="Wallet Pay"] .pbx img').forEach(function(img){if(cfg.walletLogoUrl)img.src=cfg.walletLogoUrl});document.querySelectorAll('.po[data-pay="Instant Pay"] .pbx img').forEach(function(img){if(cfg.instantLogoUrl)img.src=cfg.instantLogoUrl});}catch(e){/* retain bundled artwork when settings are unavailable */}})();
 // Instant Pay is handled at Buy Now and submits a separate order-payment request; it never credits the wallet.
 // Make the account page show actual session details and load balance on startup.
-window.addEventListener('load',function(){syncBuyNowButtons();if(token){syncProfile();refreshMe()}else syncProfile()});
-window.addEventListener('storage',function(e){if(e.key===TOKEN_KEY){token=e.newValue||'';if(!token){user=null;syncProfile()}}});
+function protectPrivateRoute(){
+  var route=location.hash;
+  var privateRoutes=['#my-orders','#my-codes','#account','#my-transaction'];
+  if(privateRoutes.indexOf(route)!==-1 && !localStorage.getItem(TOKEN_KEY)){
+    location.hash='';
+    authView('login');
+    return;
+  }
+  // Re-fetch customer-specific data whenever My Orders / My Transaction is opened,
+  // including a direct page reload with that hash in the address bar.
+  if(route==='#my-orders')showOrders();
+  else if(route==='#my-transaction')showTransactions();
+}
+window.addEventListener('hashchange',protectPrivateRoute);
+window.addEventListener('load',function(){
+  syncBuyNowButtons();
+  if(token){syncProfile();refreshMe()}else syncProfile();
+  protectPrivateRoute();
+});
+// Also handle scripts initialized after the browser's load event.
+if(document.readyState==='complete')setTimeout(protectPrivateRoute,0);
+window.addEventListener('storage',function(e){if(e.key===TOKEN_KEY){token=e.newValue||'';if(!token){user=null;syncProfile();if(['#my-orders','#my-codes','#account','#my-transaction'].indexOf(location.hash)!==-1){location.hash='';authView('login')}}}});
 // Expose a simple API for other site components.
 renderRank(0,0);renderAccountWelcome();window.ARiYANCustomer={openLogin:function(){authView('login')},addMoney:addMoney,orders:showOrders,transactions:showTransactions,refresh:refreshMe};
 })();
