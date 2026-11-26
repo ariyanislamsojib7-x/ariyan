@@ -123,7 +123,8 @@
     "acctRankPlatinum": "𝐏𝐥𝐚𝐭𝐢𝐧𝐮𝐦",
     "acctRankDiamond": "𝐃𝐢𝐚𝐦𝐨𝐧𝐝",
     "acctRankHeroic": "𝐇𝐞𝐫𝐨𝐢𝐜",
-    "acctRankMaster": "𝐌𝐚𝐬𝐭𝐞𝐫"
+    "acctRankMaster": "𝐌𝐚𝐬𝐭𝐞𝐫",
+    "acctRankGrandMaster": "𝐆𝐫𝐚𝐧𝐝 𝐌𝐚𝐬𝐭𝐞𝐫"
   },
   "accountSupport": {
     "social": [
