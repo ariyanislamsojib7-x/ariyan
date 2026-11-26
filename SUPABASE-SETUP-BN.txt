@@ -1,0 +1,46 @@
+ARiYAN Website — Supabase Database Setup
+========================================
+
+এই ZIP-এ customer account, wallet balance, deposit, order, order payment এবং transaction-এর ডাটা Supabase PostgreSQL-এ সংরক্ষণের কোড যুক্ত করা হয়েছে। পুরোনো customers.json ডাটা ইমপোর্ট করা হবে না; প্রথমবার চালু হলে নতুন খালি ডাটাবেস তৈরি হবে।
+
+ধাপ ১ — Supabase টেবিল তৈরি
+---------------------------
+1. Supabase Dashboard খুলুন এবং আপনার Ariyan project নির্বাচন করুন।
+2. বাম পাশের SQL Editor খুলুন → New query চাপুন।
+3. নিচের SQL সম্পূর্ণ কপি করে Run করুন:
+
+CREATE TABLE IF NOT EXISTS public.ariyan_app_data (
+  id text PRIMARY KEY,
+  payload jsonb NOT NULL DEFAULT '{}'::jsonb,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.ariyan_app_data ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.ariyan_app_data FROM anon, authenticated;
+GRANT ALL ON TABLE public.ariyan_app_data TO service_role;
+
+4. Query সফল হলে টেবিল তৈরি হয়ে গেছে। এই টেবিলের জন্য কোনো public/anon policy তৈরি করবেন না।
+
+ধাপ ২ — Render Environment Variables
+------------------------------------
+Render Dashboard → আপনার ARiYAN Web Service → Environment → Add Environment Variable:
+
+SUPABASE_URL = https://tsepslkwisjifoecmxpl.supabase.co
+SUPABASE_SECRET_KEY = আপনার Supabase Secret Key (sb_secret_...)
+
+Secret Key কাউকে দেবেন না, GitHub-এ রাখবেন না, ওয়েবসাইটের HTML/JS-এ বসাবেন না। শুধু Render Environment-এ রাখবেন।
+
+ধাপ ৩ — Deploy
+--------------
+1. এই ZIP-এর ফাইলগুলো আপনার GitHub repository-তে আপডেট করুন।
+2. Render-এ Manual Deploy → Deploy latest commit দিন (অথবা Auto Deploy চালু থাকলে অপেক্ষা করুন)।
+3. Deploy log-এ “Customer accounts storage: Supabase connected” লেখা দেখুন।
+4. এরপর নতুন test account খুলে লগইন, Add Money request এবং Admin approval পরীক্ষা করুন।
+5. Supabase → Table Editor → ariyan_app_data-তে customers row তৈরি হয়েছে কি না দেখুন।
+
+গুরুত্বপূর্ণ
+-----------
+- SUPABASE_URL এবং SUPABASE_SECRET_KEY দুটোই না থাকলে সার্ভার customer database চালু করবে না; এটি ইচ্ছাকৃত fail-safe।
+- এই সংস্করণে customer data এক JSONB row-তে রাখা হয় এবং একই Node server process-এর write queue দিয়ে sequential save করা হয়। একাধিক Render instance চালাবেন না।
+- Website-এর config, ছবি ও অন্যান্য Site Editor ফাইলের আগের storage পদ্ধতি অপরিবর্তিত আছে। Supabase এখানে customer/account data সংরক্ষণ করে।
+- Render Environment Variables পরিবর্তনের পর নতুন deploy/restart প্রয়োজন।
