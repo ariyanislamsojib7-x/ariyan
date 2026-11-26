@@ -4140,7 +4140,7 @@ setInterval(fetchFreshAccountConfig, 15000);
 (function(){
  // Keep the last selected policy visibly highlighted after the policy page closes.
  const selectedPolicyStyle=document.createElement('style');
- selectedPolicyStyle.textContent=`.ac-legal a.policy-selected{color:#fff!important;background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:7px;padding:5px 9px;box-shadow:0 2px 10px rgba(37,99,235,.28);font-weight:800;text-decoration:none!important;}`;
+ selectedPolicyStyle.textContent=`.ac-legal a.policy-selected{color:#2563eb!important;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;padding:inherit!important;font-weight:850!important;text-decoration:none!important;}`;
  document.head.appendChild(selectedPolicyStyle);
  const pages={
   about:{title:'About Us',html:`<p><strong>AURA ARiYAN X TOPUP</strong> is an online game top-up service. Our goal is to make the top-up process simple and convenient for customers.</p><p>We provide game-related digital top-up services and display available products, prices, and order instructions on this website. Product availability and delivery time may vary depending on the game publisher, payment provider, and service conditions.</p><h3>Our Commitment</h3><ul><li>To show clear product and order information.</li><li>To process valid orders after payment verification.</li><li>To provide customer support for order and payment questions.</li><li>To handle customer information with reasonable care.</li></ul><p>Please check your Player ID, server, and selected product carefully before placing an order.</p>`},
