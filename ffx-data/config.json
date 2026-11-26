@@ -119,7 +119,8 @@
     "redeemCodeUrl": "https://shop.garena.my/?app=100067&channel=202953",
     "acctRankBronze": "𝐁𝐫𝐨𝐧𝐳𝐞",
     "acctRankGold": "𝐆𝐨𝐥𝐝",
-    "acctRankSilver": "𝐒𝐢𝐥𝐯𝐞𝐫"
+    "acctRankSilver": "𝐒𝐢𝐥𝐯𝐞𝐫",
+    "acctRankPlatinum": "𝐏𝐥𝐚𝐭𝐢𝐧𝐮𝐦"
   },
   "accountSupport": {
     "social": [
