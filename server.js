@@ -1042,7 +1042,7 @@ async function handleApi(req, res, pathname) {
 
     if (req.method === 'GET' && pathname === '/api/site-branding') {
       const logoFile = imgGet(config, 'logo');
-      return sendJson(res, 200, { logo: logoFile ? '/uploads/' + logoFile : '/Main%20logo.jpg' });
+      return sendJson(res, 200, { logo: logoFile ? '/uploads/' + logoFile : '/Main%20logo.jpg', policyBrandName: String(config.policyBrandName || 'AURA ARiYAN X TOPUP') });
     }
     if (req.method === 'GET' && pathname === '/api/account-ui-texts') {
       const T = config.texts || {}; const out = {};
@@ -1246,6 +1246,14 @@ async function handleApi(req, res, pathname) {
       else { ps[key]='/uploads/'+fname; }
       await commit(Object.assign({},config,{paymentSettings:ps}),'Update '+body.kind+' payment artwork',[{name:fname,buf:buf}], old?[old]:[]);
       return sendJson(res,200,currentView());
+    }
+
+    if (req.method === 'POST' && pathname === '/api/admin/policy-brand-name') {
+      const body = await readJson(req, 4096);
+      const name = String(body.name || '').trim().replace(/[<>]/g, '').slice(0, 80);
+      if (!name) return sendJson(res, 400, { error: 'Brand name cannot be empty' });
+      await commit(Object.assign({}, config, { policyBrandName: name }), 'Update shared policy brand name', [], []);
+      return sendJson(res, 200, { success: true, name: name });
     }
 
     if (req.method === 'POST' && pathname === '/api/admin/payment-settings') {
