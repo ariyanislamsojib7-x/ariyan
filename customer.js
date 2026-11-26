@@ -233,6 +233,12 @@ fullCss.textContent+=`
 #ariyanModal.auth-full .am-safe{padding:2.5vw 3.5vw!important}
 @media(min-width:600px){#ariyanModal.auth-full #amBody{padding-left:6vw!important;padding-right:6vw!important}}
 `;
+/* Keep the branding bar exclusive to the full-screen login/register view.
+   Without this, the unstyled logo image expands inside every other modal. */
+fullCss.textContent += `
+#ariyanModal .am-auth-sitebar{display:none!important}
+#ariyanModal.auth-full .am-auth-sitebar{display:flex!important}
+`;
 document.head.appendChild(fullCss);
 var modal=document.createElement('div');modal.id='ariyanModal';modal.innerHTML='<div class="am-card" role="dialog" aria-modal="true"><div class="am-head"><h2 id="amTitle">ARiYAN</h2><button class="am-x" type="button" aria-label="Close">×</button></div><div class="am-auth-sitebar"><a href="/" class="am-site-logo"><img src="Main logo.jpg" alt="No 1 Topup Center"></a><button type="button" class="am-site-login">Login</button></div><div id="amBody"></div></div>';document.body.appendChild(modal);
 var authHistoryPushed=false;
