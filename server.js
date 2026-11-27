@@ -898,6 +898,7 @@ function cleanDeviceInfo(v) {
   return {
     deviceName:String(d.deviceName || '').slice(0,100),
     model:String(d.model || '').slice(0,100),
+    brand:String(d.brand || '').slice(0,60),
     platform:String(d.platform || '').slice(0,80),
     userAgent:String(d.userAgent || '').slice(0,300)
   };

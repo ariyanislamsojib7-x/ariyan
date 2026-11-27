@@ -273,9 +273,11 @@ main.sm{max-width:520px;padding:0}
 /* AURA ARIYAN X — reference-matched navigation and responsive layout */
 .fab{display:none!important}
 .admin-sidebar{width:238px;flex-basis:238px;padding:18px 12px}
-.admin-brand{justify-content:flex-start;padding:0 4px 18px}
-.admin-brand img{width:100%;height:76px;max-width:205px;object-fit:contain}
-.admin-brand div{min-width:0}
+.admin-brand{justify-content:flex-start;flex-direction:column;gap:2px;padding:0 4px 18px;text-align:center}
+.admin-brand img{display:block;width:100%;height:76px;max-width:205px;object-fit:contain;margin-top:-7px}
+.admin-brand div{min-width:0;width:100%;text-align:center}
+.admin-brand b{display:block;white-space:nowrap!important;overflow-wrap:normal!important;font-size:11px;letter-spacing:.15px;line-height:1.25}
+.admin-brand small{font-size:10px;letter-spacing:1.7px;margin-top:3px}
 .admin-nav-item{height:46px;border-radius:11px;font-size:13px}
 .admin-nav-item svg{width:20px;height:20px}
 .admin-topbar{padding:0 24px}
@@ -320,6 +322,7 @@ main.sm{max-width:520px;padding:0}
 #adminProfileFile{display:none}.profile-edit-row{display:flex;align-items:center;gap:10px}.profile-edit-row img{width:46px;height:46px;object-fit:cover;border-radius:50%}
 #adminNoticePop.hidden,#adminAccountPop.hidden{display:none}
 .admin-dark{--bg:#0c1428;--card:#121e36;--bd:#263653;--tx:#edf3ff;--mu:#a5b4cf;background:#0c1428;color:#edf3ff}.admin-dark .admin-topbar,.admin-dark .dash-panel,.admin-dark .panel,.admin-dark .admin-account-pop,.admin-dark .top-pop{background:#121e36;color:#edf3ff;border-color:#263653}.admin-dark .top-icon-btn{background:#172744;color:#dceaff;border-color:#314564}.admin-dark .top-pop-item{background:#1a2b49;color:#edf3ff}.admin-dark .metric-card{color:#fff}.admin-dark .admin-page-heading h1{color:#edf3ff}
+.account-refresh-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:92px;height:38px;padding:0 12px;border:1px solid #dbe5f5;border-radius:11px;background:#fff;color:#1755c9;font-size:13px;font-weight:800;cursor:pointer}.account-refresh-btn:disabled{opacity:.7;cursor:wait}.account-refresh-btn .refresh-icon{display:inline-block;font-size:18px;line-height:1}.account-refresh-btn.is-refreshing .refresh-icon{animation:accountRefreshSpin .8s linear infinite}@keyframes accountRefreshSpin{to{transform:rotate(360deg)}}.admin-dark .account-refresh-btn{background:#172744;color:#a9d0ff;border-color:#3a4e70}
 .account-ban-modal{position:fixed;inset:0;z-index:300;background:rgba(4,14,38,.65);display:grid;place-items:center;padding:16px}.account-ban-box{width:min(430px,100%);background:#fff;color:#13264b;border-radius:18px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);display:grid;gap:12px}.account-ban-box label{font-size:12px;font-weight:800}.account-ban-box input,.account-ban-box select{width:100%;height:43px;border:1px solid #dbe4f2;border-radius:10px;padding:0 10px}.account-ban-actions{display:flex;gap:9px}.account-ban-actions button{flex:1;border:0;border-radius:10px;padding:11px;font-weight:800}.account-ban-actions .confirm{background:#dc3545;color:#fff}.account-ban-actions .cancel{background:#edf2fa;color:#20375e}
 @media(max-width:900px){.top-brand{flex:1;min-width:0}.top-brand b{font-size:clamp(12px,3.2vw,15px)}.top-actions{gap:6px}.top-icon-btn{width:36px;height:36px}.admin-topbar{gap:7px;padding:0 10px}}
 @media(max-width:390px){.top-brand b{font-size:11px;letter-spacing:-.5px}.top-brand small{font-size:9px}.top-icon-btn{width:32px;height:32px}.admin-account-trigger{width:36px}.admin-top-avatar{width:34px;height:34px}}
@@ -383,7 +386,7 @@ main.sm{max-width:520px;padding:0}
 
 <div id="app" class="hidden">
   <aside class="admin-sidebar" id="adminSidebar">
-    <div class="admin-brand"><img src="Main logo.jpg" alt="AURA ARIYAN X"><div><b>AURA ARIYAN <span>X</span></b><small>TOPUP ADMIN</small></div></div>
+    <div class="admin-brand"><img src="Main logo.jpg" alt="AURA ARIYAN X TOPUP"><div><b>AURA ARIYAN <span>X TOPUP ADMIN</span></b></div></div>
     <div class="admin-profile"><div class="admin-avatar" id="adminSideAvatar">A</div><div><b>Admin Panel</b><small><i></i> Online</small></div></div>
     <nav id="adminNav" aria-label="Admin navigation"></nav>
     <div class="sidebar-help"><b>Need Help?</b><small>Manage your topup store</small><a href="/" target="_blank" rel="noopener">View Website ↗</a></div>
@@ -467,6 +470,7 @@ async function enter(){
 
   $('#login').classList.add('hidden');$('#app').classList.remove('hidden');
   show(state.tab);
+  armAdminBackGuard();
   notifyGh();
   loadAdminNotifications();
 }
@@ -544,6 +548,10 @@ function show(id){
   s.render(main);
   window.scrollTo({top:0,behavior:'auto'});
 }
+
+// Keep Android/browser Back inside the admin panel: return to Dashboard, then stay there.
+function armAdminBackGuard(){try{history.pushState({ariyanAdminGuard:true},'',location.href)}catch(e){}}
+window.addEventListener('popstate',function(){if(!state.token||$('#app').classList.contains('hidden'))return;closeAdminDrawer();if(state.tab!=='dashboard')show('dashboard');armAdminBackGuard()});
 
 function hideGh(){clearTimeout(ghT);var g=$('#gh');if(g)g.classList.remove('show')}
 function notifyGh(){
@@ -727,7 +735,7 @@ function renderCommerce(root){
 }
 
 function renderAccounts(root){
-  root.innerHTML='<div class="panel" style="padding:16px;margin:14px 0"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h2>Account Management</h2><p class="muted">অ্যাকাউন্ট, ডিভাইস, নির্দিষ্ট সময়ের Ban / Auto Unban</p></div><button class="ib" id="accountsRefresh" type="button">↻ Refresh</button></div><div id="accountCount" style="font-size:14px;font-weight:900;color:#174fc2;margin:12px 0">Loading...</div><div id="accountsTable">Loading...</div></div>';
+  root.innerHTML='<div class="panel" style="padding:16px;margin:14px 0"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h2>Account Management</h2><p class="muted">অ্যাকাউন্ট, ডিভাইস, নির্দিষ্ট সময়ের Ban / Auto Unban</p></div><button class="account-refresh-btn" id="accountsRefresh" type="button"><span class="refresh-icon" aria-hidden="true">↻</span><span>Refresh</span></button></div><div id="accountCount" style="font-size:14px;font-weight:900;color:#174fc2;margin:12px 0">Loading...</div><div id="accountsTable">Loading...</div></div>';
   function escCell(v){return esc(v==null?'':v)}
   function dateText(v){return v?new Date(v).toLocaleString():'—'}
   function openBanDialog(u){
@@ -753,7 +761,7 @@ function renderAccounts(root){
       root.querySelectorAll('[data-user-action]').forEach(function(btn){btn.onclick=async function(){var u=users.find(function(x){return x.id===btn.dataset.userId});if(btn.dataset.userAction==='ban'){openBanDialog(u);return}if(!confirm('এই অ্যাকাউন্টটি এখনই Unban করবেন?'))return;btn.disabled=true;try{await api('/api/admin/user-status',{id:btn.dataset.userId,action:'unban'});toast('অ্যাকাউন্ট Unban হয়েছে','ok');await load()}catch(e){toast(e.message,'bad');btn.disabled=false}}});
     }catch(e){$('#accountCount').textContent='';$('#accountsTable').textContent=e.message}
   }
-  $('#accountsRefresh').onclick=load;load();
+  var refreshBtn=$('#accountsRefresh');refreshBtn.onclick=async function(){if(refreshBtn.disabled)return;refreshBtn.disabled=true;refreshBtn.classList.add('is-refreshing');try{await load()}finally{refreshBtn.disabled=false;refreshBtn.classList.remove('is-refreshing')}};load();
 }
 
 function renderSite(root){
