@@ -437,7 +437,6 @@ function amountPage(){
   var val=activePaymentAmount>0?String(activePaymentAmount):'';
   var html=
     '<div class="ariyan-add-hero"><div class="ariyan-add-copy"><span class="ariyan-add-kicker">✦ INSTANT &amp; SECURE</span><div class="ariyan-add-title">Add Money <em>ARIYANTOPUP</em></div><div class="ariyan-add-sub">Wallet-এ টাকা যোগ করুন। Admin যাচাইয়ের পর ব্যালেন্স আপডেট হবে।</div></div><div class="ariyan-add-symbol">৳</div></div>'+
-    (cfg.addMoneyBannerUrl?'<div class="ariyan-add-payment-banner" style="margin:12px 0 16px;border-radius:14px;overflow:hidden;background:#fff"><img src="'+esc(cfg.addMoneyBannerUrl)+'" alt="AURA ARIYAN Wallet" style="display:block;width:100%;height:auto;object-fit:contain"></div>':'')+
     '<form id="ariyanAddAmountForm"><div class="ariyan-add-input-wrap"><label for="ariyanAddAmount">AMOUNT</label><input id="ariyanAddAmount" name="amount" type="number" min="10" max="50000" step="1" required placeholder="৳  Enter amount" value="'+esc(val)+'"></div>'+
     '<div class="ariyan-add-safe"><b>●</b> Amount will be added to your ARIYANTOPUP wallet after verification.</div>'+
     '<button class="ariyan-add-secure" type="submit">▣ &nbsp; Add Money Securely &nbsp; →</button></form>'+
