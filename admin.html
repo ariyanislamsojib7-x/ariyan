@@ -223,6 +223,33 @@ main.sm{width:100%;max-width:none;padding:0}
 .sh-b .ta:focus{background:#fff}
 .sh-b .d{margin:0 0 12px;color:var(--mu);font-size:13px;line-height:1.6}
 
+/* ===== mobile viewport + image editor overflow fix ===== */
+@media (max-width:700px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  #app,#main,.site{width:100%;max-width:none;min-width:0;margin-left:0;margin-right:0}
+  main{width:100%;max-width:none;margin:0;padding-left:0;padding-right:0}
+  .s-wrap{width:100%;max-width:none;padding-left:12px;padding-right:12px}
+  .s-hd{width:100%}
+  .ov{left:0;right:0;width:100%;overflow-x:hidden}
+  .sheet{width:100%;max-width:none;min-width:0;max-height:92vh;max-height:92dvh;border-radius:22px 22px 0 0}
+  .sh-h,.sh-b{width:100%;min-width:0}
+  .sh-b{overflow-x:hidden;overscroll-behavior:contain;padding-left:12px;padding-right:12px}
+  .sh-b .card,.sc{width:100%;min-width:0;max-width:100%}
+  .imgrow{width:100%;min-width:0;flex-direction:column;align-items:stretch;gap:12px}
+  .prev{width:min(100%,220px);height:auto;aspect-ratio:1/1;align-self:center;flex:0 0 auto}
+  .imgctl{width:100%;min-width:0;max-width:100%;flex:0 0 auto}
+  .drop{width:100%;min-width:0;overflow-wrap:anywhere;word-break:break-word}
+  .imgctl .btns{width:100%;flex-wrap:wrap}
+  .imgctl .btns .btn{flex:1 1 120px;min-width:0}
+  .bn-row{min-width:0;max-width:100%;flex-wrap:wrap}
+  .bn-row .m{min-width:0;overflow-wrap:anywhere}
+}
+@media (max-width:380px){
+  .s-wrap{padding-left:10px;padding-right:10px}
+  .sh-b{padding-left:10px;padding-right:10px}
+  .prev{width:min(100%,190px)}
+}
+
 /* buttons inside the sheet */
 .sh-b .btns{margin-top:16px;gap:10px}
 .sh-b .btns .btn{flex:1;min-width:120px}
