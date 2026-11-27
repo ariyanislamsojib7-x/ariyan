@@ -874,7 +874,7 @@ function customerFromRequest(req) {
   if (user.banned && user.banUntil && new Date(user.banUntil).getTime() <= Date.now()) {
     user.banned=false; user.banUntil=null; user.banReason=''; user.statusUpdatedAt=new Date().toISOString(); saveCustomerDB();
   }
-  return !user.banned ? user : null;
+  return user;
 }
 function publicUser(u) {
   if (!/^\d{5}$/.test(String(u.publicId || ''))) {
@@ -978,6 +978,9 @@ async function handleGoogleOAuth(req,res,pathname){
       let user=customerDB.users.find(x=>x.email===email);
       if(!user){user={id:newId('usr'),email,name:String(claims.name||email.split('@')[0]).trim().slice(0,70),googleSub:String(claims.sub||''),avatar:String(claims.picture||'').slice(0,1000),salt:'',password:'',balance:0,createdAt:new Date().toISOString()};customerDB.users.push(user)}
       else{user.googleSub=String(claims.sub||user.googleSub||'');if(claims.picture)user.avatar=String(claims.picture).slice(0,1000);if(claims.name)user.name=String(claims.name).trim().slice(0,70)}
+      if(user.banned&&user.banUntil&&new Date(user.banUntil).getTime()<=Date.now()){user.banned=false;user.banUntil=null;user.banReason=''}
+      if(user.banned){const until=user.banUntil?new Date(user.banUntil).getTime():0,reason=String(user.banReason||'Your account has been suspended by the administrator.').replace(/[<>]/g,'');const html=`<!doctype html><html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Account Suspended</title><body style="margin:0;background:#081225;color:#172033;font-family:Arial;min-height:100vh;display:grid;place-items:center;padding:18px;box-sizing:border-box"><main style="background:white;border-radius:20px;padding:26px;max-width:420px;width:100%;text-align:center;box-sizing:border-box"><div style="font-size:48px">⛔</div><h2 style="color:#b42335">ACCOUNT SUSPENDED</h2><p>Your account has been suspended by the administrator.</p><p style="background:#fff1f2;padding:12px;border-radius:10px"><b>REASON</b><br>'+reason+'</p><h3 id="clock">'+(until?'Loading…':'PERMANENT SUSPENSION')+'</h3><button onclick="location.href='/'" style="background:#1d4ed8;color:white;border:0;padding:13px 25px;border-radius:10px;font-weight:bold">LOG OUT</button></main><script>var end='+until+';function tick(){if(!end)return;var x=Math.max(0,end-Date.now()),d=Math.floor(x/86400000),h=Math.floor(x%86400000/3600000),m=Math.floor(x%3600000/60000),s=Math.floor(x%60000/1000);document.getElementById('clock').textContent=d+'d '+h+'h '+m+'m '+s+'s remaining';if(x<=0)location.href='/'}tick();setInterval(tick,1000)</script></body></html>`;;res.writeHead(403,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end(html)}
+      user.lastDevice=cleanDeviceInfo({deviceName:req.headers['sec-ch-ua-model']||req.headers['sec-ch-ua-platform']||req.headers['user-agent']||'Unknown device',model:req.headers['sec-ch-ua-model']||'',platform:req.headers['sec-ch-ua-platform']||'',userAgent:req.headers['user-agent']||''});user.lastLoginAt=new Date().toISOString();
       await saveCustomerDB();const token=customerToken(user.id),pub=publicUser(user);res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'"});return res.end(googleLoginHtml(token,pub));
     }catch(e){res.writeHead(400,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end('<meta charset="utf-8"><p>Google Login ব্যর্থ হয়েছে: '+String(e.message||'').replace(/[<>]/g,'')+'</p><a href="/auth/google/start">আবার চেষ্টা করুন</a>')}
   }
@@ -1146,7 +1149,7 @@ async function handleApi(req, res, pathname) {
       let u = customerDB.users.find(function (x) { return x.email === email; });
       if (!u) {
         u = { id:newId('usr'), email:email, name:String(claims.name || email.split('@')[0]).trim().slice(0,70),
-          googleSub:String(claims.sub || ''), avatar:String(claims.picture || '').slice(0,1000), salt:'', password:'', balance:0, createdAt:new Date().toISOString() };
+          googleSub:String(claims.sub || ''), avatar:String(claims.picture || '').slice(0,1000), salt:'', password:'', balance:0, createdAt:new Date().toISOString(), lastDevice:cleanDeviceInfo({deviceName:req.headers['sec-ch-ua-platform']||req.headers['user-agent']||'Unknown device',model:req.headers['sec-ch-ua-model']||'',platform:req.headers['sec-ch-ua-platform']||'',userAgent:req.headers['user-agent']||''}), lastLoginAt:new Date().toISOString() };
         customerDB.users.push(u);
       } else {
         // Verified Google email links to the existing account; wallet and password stay unchanged.
@@ -1185,6 +1188,7 @@ async function handleApi(req, res, pathname) {
     if (pathname.startsWith('/api/customer/')) {
       const u = customerFromRequest(req);
       if (!u) return sendJson(res, 401, { error:'প্রথমে লগইন করুন' });
+      if (u.banned) return sendJson(res, 403, activeBanMessage(u));
       if (req.method === 'GET' && pathname === '/api/customer/me') return sendJson(res, 200, { user:publicUser(u) });
       if (req.method === 'GET' && pathname === '/api/customer/orders') return sendJson(res, 200, { orders:customerDB.orders.filter(x=>x.userId===u.id).slice(-100).reverse() });
       if (req.method === 'GET' && pathname === '/api/customer/transactions') return sendJson(res, 200, { transactions:userTransactions(u.id) });
