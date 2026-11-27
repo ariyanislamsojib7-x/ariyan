@@ -311,6 +311,19 @@ main.sm{max-width:520px;padding:0}
   .metric-card{min-height:100px}
 }
 
+
+/* Dashboard refinements */
+.top-brand{min-width:0;flex:0 1 auto}.top-brand b{display:block;white-space:nowrap;overflow:visible;font-size:clamp(13px,1.35vw,17px);letter-spacing:-.35px}
+.admin-topbar{gap:12px}.top-actions{display:flex;align-items:center;gap:9px}.top-icon-btn{position:relative;width:42px;height:42px;border:1px solid #dce6fb;border-radius:50%;background:#fff;color:#173b85;display:grid;place-items:center;cursor:pointer}.top-icon-btn svg{width:19px;height:19px}.top-badge{position:absolute;right:-3px;top:-4px;min-width:17px;height:17px;border-radius:99px;background:#ef233c;color:#fff;font-size:10px;font-weight:900;display:grid;place-items:center;padding:0 4px}.admin-top-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.top-pop{position:absolute;right:0;top:50px;z-index:90;width:min(330px,calc(100vw - 28px));padding:14px;background:#fff;border:1px solid #dce6fb;border-radius:16px;box-shadow:0 16px 40px rgba(10,30,75,.2);display:grid;gap:10px;color:#14264b}.top-pop h3{font-size:14px}.top-pop-list{max-height:330px;overflow:auto;display:grid;gap:8px}.top-pop-item{padding:10px;border-radius:11px;background:#f3f7ff;font-size:12px}.top-pop-item small{display:block;color:#71809b;margin-top:4px}.top-pop button{border:0;background:#eef4ff;color:#1755c9;padding:9px;border-radius:9px;font-weight:800}
+.admin-account-menu{display:flex;align-items:center}.metric-card{position:relative;padding-top:48px!important}.metric-card .metric-icon{position:absolute;top:15px;left:18px;width:25px;height:25px;display:grid;place-items:center;opacity:.98}.metric-card .metric-icon svg{width:24px;height:24px;stroke-width:2.4}.metric-card small{font-size:12px!important}.metric-card .metric-live{display:block;margin-top:8px;font-size:10px;font-weight:800;color:#d6ffe9;opacity:1}.metric-card .metric-live i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#35f39a;margin-right:5px;box-shadow:0 0 0 3px rgba(53,243,154,.18)}
+#adminProfileFile{display:none}.profile-edit-row{display:flex;align-items:center;gap:10px}.profile-edit-row img{width:46px;height:46px;object-fit:cover;border-radius:50%}
+#adminNoticePop.hidden,#adminAccountPop.hidden{display:none}
+.admin-dark{--bg:#0c1428;--card:#121e36;--bd:#263653;--tx:#edf3ff;--mu:#a5b4cf;background:#0c1428;color:#edf3ff}.admin-dark .admin-topbar,.admin-dark .dash-panel,.admin-dark .panel,.admin-dark .admin-account-pop,.admin-dark .top-pop{background:#121e36;color:#edf3ff;border-color:#263653}.admin-dark .top-icon-btn{background:#172744;color:#dceaff;border-color:#314564}.admin-dark .top-pop-item{background:#1a2b49;color:#edf3ff}.admin-dark .metric-card{color:#fff}.admin-dark .admin-page-heading h1{color:#edf3ff}
+.account-ban-modal{position:fixed;inset:0;z-index:300;background:rgba(4,14,38,.65);display:grid;place-items:center;padding:16px}.account-ban-box{width:min(430px,100%);background:#fff;color:#13264b;border-radius:18px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);display:grid;gap:12px}.account-ban-box label{font-size:12px;font-weight:800}.account-ban-box input,.account-ban-box select{width:100%;height:43px;border:1px solid #dbe4f2;border-radius:10px;padding:0 10px}.account-ban-actions{display:flex;gap:9px}.account-ban-actions button{flex:1;border:0;border-radius:10px;padding:11px;font-weight:800}.account-ban-actions .confirm{background:#dc3545;color:#fff}.account-ban-actions .cancel{background:#edf2fa;color:#20375e}
+@media(max-width:900px){.top-brand{flex:1;min-width:0}.top-brand b{font-size:clamp(12px,3.2vw,15px)}.top-actions{gap:6px}.top-icon-btn{width:36px;height:36px}.admin-topbar{gap:7px;padding:0 10px}}
+@media(max-width:390px){.top-brand b{font-size:11px;letter-spacing:-.5px}.top-brand small{font-size:9px}.top-icon-btn{width:32px;height:32px}.admin-account-trigger{width:36px}.admin-top-avatar{width:34px;height:34px}}
+
 </style>
 </head>
 <body>
@@ -368,7 +381,7 @@ main.sm{max-width:520px;padding:0}
     <div class="sidebar-help"><b>Need Help?</b><small>Manage your topup store</small><a href="/" target="_blank" rel="noopener">View Website ↗</a></div>
   </aside>
   <div class="admin-main">
-    <header class="admin-topbar"><button class="top-menu" id="topMenu" type="button" aria-label="Open menu">☰</button><div class="top-brand"><b>AURA ARIYAN <span>X TOPUP</span></b><small>Fast · Secure · Trusted</small></div><div class="top-spacer"></div><a class="top-site" href="/" target="_blank" rel="noopener">View Site ↗</a><div class="admin-account-menu"><button class="admin-account-trigger" id="adminAccountTrigger" type="button" aria-label="Admin profile"><span class="admin-top-avatar">A</span></button><div class="admin-account-pop hidden" id="adminAccountPop"><b>Admin Profile</b><small>Administrator</small><button type="button" id="profileLogout">Log out</button></div></div></header>
+    <header class="admin-topbar"><button class="top-menu" id="topMenu" type="button" aria-label="Open menu">☰</button><div class="top-brand"><b>AURA ARIYAN <span>X TOPUP</span></b><small>Fast · Secure · Trusted</small></div><div class="top-spacer"></div><a class="top-site" href="/" target="_blank" rel="noopener">View Site ↗</a><div class="top-actions"><div class="admin-account-menu"><button class="top-icon-btn" id="adminDarkToggle" type="button" aria-label="Toggle dark mode" title="Dark mode">☾</button></div><div class="admin-account-menu"><button class="top-icon-btn" id="adminNoticeTrigger" type="button" aria-label="Notifications" title="Notifications">🔔<span class="top-badge hidden" id="adminNoticeBadge">0</span></button><div class="top-pop hidden" id="adminNoticePop"><h3>Notifications</h3><div class="top-pop-list" id="adminNoticeList"><div class="top-pop-item">নতুন কোনো নোটিফিকেশন নেই।</div></div><button type="button" id="noticeRefresh">Refresh</button></div></div><div class="admin-account-menu"><button class="admin-account-trigger" id="adminAccountTrigger" type="button" aria-label="Admin profile"><span class="admin-top-avatar" id="adminTopAvatar">A</span></button><div class="admin-account-pop hidden" id="adminAccountPop"><b>Admin Profile</b><div class="profile-edit-row"><img id="adminProfilePreview" alt="Admin profile" src="" style="display:none"><small>Profile picture</small></div><button type="button" id="profileChoose">Choose from Gallery</button><input type="file" accept="image/*" id="adminProfileFile"><button type="button" id="profileLogout">Log out</button></div></div></div></header>
     <main id="main"></main>
   </div>
 
@@ -442,10 +455,12 @@ function logout(silent){
 
 async function enter(){
   state.cfg=await api('/api/admin/config');
+  applyAdminAvatar();
 
   $('#login').classList.add('hidden');$('#app').classList.remove('hidden');
   show(state.tab);
   notifyGh();
+  loadAdminNotifications();
 }
 
 var SECTIONS=[
@@ -462,10 +477,32 @@ function drawAdminNav(){
   var lo=nav.querySelector('[data-logout]');if(lo)lo.onclick=function(){logout()};
 }
 $('#topMenu').onclick=function(){if(window.matchMedia('(max-width: 900px)').matches)openMenu();else $('#adminSidebar').classList.toggle('collapsed')};
-$('#adminAccountTrigger').onclick=function(){ $('#adminAccountPop').classList.toggle('hidden') };
+$('#adminAccountTrigger').onclick=function(){ $('#adminAccountPop').classList.toggle('hidden');$('#adminNoticePop').classList.add('hidden') };
+$('#adminNoticeTrigger').onclick=function(){ $('#adminNoticePop').classList.toggle('hidden');$('#adminAccountPop').classList.add('hidden');loadAdminNotifications(!$('#adminNoticePop').classList.contains('hidden')) };
+$('#profileChoose').onclick=function(){$('#adminProfileFile').click()};
+$('#adminProfileFile').onchange=function(){var f=this.files&&this.files[0];if(!f)return;if(!/^image\//.test(f.type)||f.size>3*1024*1024){toast('৩ MB-এর মধ্যে একটি ছবি নির্বাচন করুন','bad');this.value='';return}var rd=new FileReader();rd.onload=async function(){try{var saved=await api('/api/admin/profile-picture',{dataUrl:rd.result});if(state.cfg)state.cfg.adminProfilePicture=saved.adminProfilePicture;applyAdminAvatar();toast('Admin profile picture updated','ok')}catch(e){toast(e.message||'ছবিটি সংরক্ষণ করা যায়নি','bad')}};rd.readAsDataURL(f)};
+function applyAdminAvatar(){var src=state.cfg&&state.cfg.adminProfilePicture||'';if(src)src+=(src.indexOf('?')>=0?'&':'?')+'v='+Date.now();var a=$('#adminTopAvatar'),p=$('#adminProfilePreview');if(src){a.innerHTML='<img src="'+esc(src)+'" alt="">';p.src=src;p.style.display='block'}else{a.textContent='A';p.style.display='none'}}
+applyAdminAvatar();
+$('#adminDarkToggle').onclick=function(){document.body.classList.toggle('admin-dark');try{localStorage.setItem('ariyan_admin_dark',document.body.classList.contains('admin-dark')?'1':'0')}catch(e){}this.textContent=document.body.classList.contains('admin-dark')?'☀':'☾'};
+try{if(localStorage.getItem('ariyan_admin_dark')==='1'){document.body.classList.add('admin-dark');$('#adminDarkToggle').textContent='☀'}}catch(e){}
 $('#profileLogout').onclick=function(){logout()};
-document.addEventListener('click',function(e){if(!e.target.closest('.admin-account-menu'))$('#adminAccountPop').classList.add('hidden')});
+$('#noticeRefresh').onclick=loadAdminNotifications;
+document.addEventListener('click',function(e){if(!e.target.closest('#adminAccountPop')&&!e.target.closest('#adminAccountTrigger'))$('#adminAccountPop').classList.add('hidden');if(!e.target.closest('#adminNoticePop')&&!e.target.closest('#adminNoticeTrigger'))$('#adminNoticePop').classList.add('hidden')});
 
+var noticeSeen={orders:[],deposits:[],payments:[]};
+function loadAdminNotifications(markSeen){
+  Promise.all([api('/api/admin/orders'),api('/api/admin/deposits'),api('/api/admin/order-payments')]).then(function(r){
+    var items=[];
+    (r[0].orders||[]).filter(function(x){return ['pending','processing'].includes(String(x.status||'').toLowerCase())}).slice(0,30).forEach(function(x){items.push({key:'o:'+x.id,title:'নতুন/চলমান Order',detail:(x.product||'Top-up')+' · '+(x.email||'')+' · '+(x.status||'pending'),time:x.createdAt,go:'commerce'})});
+    (r[1].deposits||[]).filter(function(x){return String(x.status||'').toLowerCase()==='pending'}).slice(0,30).forEach(function(x){items.push({key:'d:'+x.id,title:'Deposit Request',detail:(x.email||'')+' · ৳'+(x.amount||0),time:x.createdAt,go:'commerce'})});
+    (r[2].orderPayments||[]).filter(function(x){return String(x.status||'').toLowerCase()==='pending'}).slice(0,30).forEach(function(x){items.push({key:'p:'+x.id,title:'Payment Request',detail:(x.email||'')+' · ৳'+(x.amount||x.price||0),time:x.createdAt,go:'commerce'})});
+    var keys=items.map(function(x){return x.key}),unseen=0;try{var old=JSON.parse(localStorage.getItem('ariyan_notice_seen')||'[]');unseen=keys.filter(function(k){return !old.includes(k)}).length;if(markSeen){localStorage.setItem('ariyan_notice_seen',JSON.stringify(keys));unseen=0}}catch(e){}
+    var badge=$('#adminNoticeBadge');badge.textContent=String(unseen);badge.classList.toggle('hidden',!unseen);
+    $('#adminNoticeList').innerHTML=items.length?items.slice(0,20).map(function(x){return '<button class="top-pop-item" data-notice-go="'+x.go+'" style="text-align:left;width:100%"><b>'+esc(x.title)+'</b><span>'+esc(x.detail)+'</span><small>'+esc(x.time?new Date(x.time).toLocaleString():'')+'</small></button>'}).join(''):'<div class="top-pop-item">নতুন কোনো Pending Order বা Request নেই।</div>';
+    $('#adminNoticeList').querySelectorAll('[data-notice-go]').forEach(function(b){b.onclick=function(){try{localStorage.setItem('ariyan_notice_seen',JSON.stringify(keys))}catch(e){}$('#adminNoticeBadge').classList.add('hidden');$('#adminNoticePop').classList.add('hidden');show(b.dataset.noticeGo)}});
+  }).catch(function(){});
+}
+setInterval(function(){if(state.token)loadAdminNotifications()},20000);
 function closeAdminDrawer(){
   $('#adminSidebar').classList.remove('mobile-open');
   $('#app').classList.remove('mobile-nav-open');
@@ -612,7 +649,9 @@ function pen(label,id,inset){return '<button type="button" class="pen'+(inset?' 
 function tv(id){var t=state.cfg.texts.filter(function(x){return x.id===id})[0];return t?t.value:''}
 function prodOf(key){return state.cfg.products.filter(function(x){return x.key===key})[0]}
 
+var dashboardRefreshTimer=null;
 function renderDashboard(root){
+  if(dashboardRefreshTimer)clearInterval(dashboardRefreshTimer);
   root.innerHTML='<section class="dash-welcome"><div><small>ADMIN OVERVIEW</small><h1>Welcome back, Admin!</h1><p>আপনার AURA ARIYAN X TOPUP স্টোরের সার্বিক অবস্থা এক নজরে দেখুন।</p><span class="dash-date" id="dashDate"></span></div><div class="welcome-mark">AX</div></section>'+
   '<section class="metric-grid" id="dashMetrics"><div class="metric-card blue"><small>Total Users</small><strong>Loading…</strong><span>Registered customers</span></div><div class="metric-card green"><small>Total Orders</small><strong>Loading…</strong><span>All order records</span></div><div class="metric-card purple"><small>Completed Revenue</small><strong>Loading…</strong><span>Delivered orders only</span></div><div class="metric-card orange"><small>Pending Orders</small><strong>Loading…</strong><span>Awaiting action</span></div></section>'+
   '<section class="dash-grid"><div class="dash-panel sales-panel"><div class="panel-head"><div><small>PERFORMANCE</small><h2>Sales Overview</h2></div><span class="live-pill">● Live data</span></div><div id="dashChart" class="dash-chart"><div class="dash-loading">Loading sales data…</div></div></div><div class="dash-panel quick-panel"><div class="panel-head"><div><small>SHORTCUTS</small><h2>Quick Actions</h2></div></div><div class="quick-grid"><button data-go="commerce"><i>▤</i><b>Manage Orders</b></button><button data-go="commerce"><i>৳</i><b>Payments</b></button><button data-go="site"><i>✎</i><b>Edit Website</b></button><button data-go="commerce"><i>♙</i><b>Customers</b></button></div></div></section>'+
@@ -626,8 +665,20 @@ function renderDashboard(root){
     var revenue=delivered.reduce(function(a,o){return a+(Number(o.price)||0)},0);
     var pending=orders.filter(function(o){return ['pending','processing'].includes(String(o.status||'').toLowerCase())}).length;
     var balance=users.reduce(function(a,u){return a+(Number(u.balance)||0)},0);
-    var cards=[['Total Users',users.length.toLocaleString(),'Registered customers','blue'],['Total Orders',orders.length.toLocaleString(),'All order records','green'],['Completed Revenue','৳'+revenue.toLocaleString('en-BD'),'Delivered orders only','purple'],['Pending Orders',pending.toLocaleString(),'Awaiting action','orange']];
-    $('#dashMetrics').innerHTML=cards.map(function(c){return '<div class="metric-card '+c[3]+'"><small>'+c[0]+'</small><strong>'+c[1]+'</strong><span>'+c[2]+'</span></div>'}).join('');
+    var now=Date.now(),week=7*86400000,previousStart=now-2*week,previousEnd=now-week;
+    function inRange(x,start,end){var t=new Date(x||0).getTime();return t>=start&&t<end}
+    function pct(current,previous){return previous>0?Math.round((current-previous)/previous*100):(current>0?100:0)}
+    var currentUsers=users.filter(function(x){return inRange(x.createdAt,now-week,now)}).length,oldUsers=users.filter(function(x){return inRange(x.createdAt,previousStart,previousEnd)}).length;
+    var currentOrders=orders.filter(function(x){return inRange(x.createdAt,now-week,now)}).length,oldOrders=orders.filter(function(x){return inRange(x.createdAt,previousStart,previousEnd)}).length;
+    var currentRevenue=delivered.filter(function(x){return inRange(x.createdAt,now-week,now)}).reduce(function(a,x){return a+(Number(x.price)||0)},0),oldRevenue=delivered.filter(function(x){return inRange(x.createdAt,previousStart,previousEnd)}).reduce(function(a,x){return a+(Number(x.price)||0)},0);
+    var oldPending=orders.filter(function(x){return ['pending','processing'].includes(String(x.status||'').toLowerCase())&&inRange(x.createdAt,previousStart,previousEnd)}).length;
+    var cards=[
+      {name:'Total Users',value:users.length.toLocaleString(),sub:'Registered customers',color:'blue',pct:pct(currentUsers,oldUsers),ico:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>'},
+      {name:'Total Orders',value:orders.length.toLocaleString(),sub:'All order records',color:'green',pct:pct(currentOrders,oldOrders),ico:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>'},
+      {name:'Completed Revenue',value:'৳'+revenue.toLocaleString('en-BD'),sub:'Delivered orders only',color:'purple',pct:pct(currentRevenue,oldRevenue),ico:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M7 15h3"/></svg>'},
+      {name:'Pending Orders',value:pending.toLocaleString(),sub:'Awaiting action',color:'orange',pct:pct(pending,oldPending),ico:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'}
+    ];
+    $('#dashMetrics').innerHTML=cards.map(function(c){return '<div class="metric-card '+c.color+'"><div class="metric-icon">'+c.ico+'</div><small>'+c.name+'</small><strong>'+c.value+'</strong><span>'+c.sub+'</span><span class="metric-live"><i></i>Live count · '+(c.pct>=0?'+':'')+c.pct+'% vs previous 7 days</span></div>'}).join('');
     var days=[];for(var i=6;i>=0;i--){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);var key=d.toDateString();days.push({label:d.toLocaleDateString(undefined,{weekday:'short'}),count:orders.filter(function(o){return new Date(o.createdAt).toDateString()===key}).length})}
     var max=Math.max(1,...days.map(function(d){return d.count}));
     $('#dashChart').innerHTML='<div class="bar-chart">'+days.map(function(d){var h=Math.max(5,d.count/max*100);return '<div class="bar-col"><b>'+d.count+'</b><div class="bar-track"><i style="height:'+h+'%"></i></div><small>'+d.label+'</small></div>'}).join('')+'</div><div class="chart-caption">Orders created in the last 7 days</div>';
@@ -636,6 +687,7 @@ function renderDashboard(root){
     var pendingDep=deposits.filter(function(x){return x.status==='pending'}).length,pendingPay=orderPayments.filter(function(x){return x.status==='pending'}).length;
     $('#dashSnapshot').innerHTML='<div class="snapshot-row"><span>Total customer wallet balance</span><b>৳'+balance.toLocaleString('en-BD')+'</b></div><div class="snapshot-row"><span>Pending deposits</span><b>'+pendingDep+'</b></div><div class="snapshot-row"><span>Pending instant payments</span><b>'+pendingPay+'</b></div><div class="snapshot-row"><span>Completed orders</span><b>'+delivered.length+'</b></div>';
   }).catch(function(e){if(!document.body.contains(root))return;$('#dashMetrics').innerHTML='<div class="dash-error">Dashboard data load করা যায়নি: '+esc(e.message)+'</div>';$('#dashChart').innerHTML='';$('#dashRecent').innerHTML='';$('#dashSnapshot').innerHTML='<div class="empty-state">API সংযোগ পরীক্ষা করুন।</div>'});
+  dashboardRefreshTimer=setInterval(function(){if(state.tab==='dashboard'&&document.body.contains(root))renderDashboard(root)},30000);
 }
 
 function renderCommerce(root){
@@ -667,16 +719,30 @@ function renderCommerce(root){
 }
 
 function renderAccounts(root){
-  root.innerHTML='<div class="panel" style="padding:16px;margin:14px 0"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h2>Account Management</h2><p class="muted">মোট অ্যাকাউন্ট, সিরিয়াল নম্বর এবং Ban / Unban নিয়ন্ত্রণ</p></div><button class="ib" id="accountsRefresh" type="button">↻ Refresh</button></div><div id="accountCount" style="font-size:14px;font-weight:900;color:#174fc2;margin:12px 0">Loading...</div><div id="accountsTable">Loading...</div></div>';
+  root.innerHTML='<div class="panel" style="padding:16px;margin:14px 0"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h2>Account Management</h2><p class="muted">অ্যাকাউন্ট, ডিভাইস, নির্দিষ্ট সময়ের Ban / Auto Unban</p></div><button class="ib" id="accountsRefresh" type="button">↻ Refresh</button></div><div id="accountCount" style="font-size:14px;font-weight:900;color:#174fc2;margin:12px 0">Loading...</div><div id="accountsTable">Loading...</div></div>';
   function escCell(v){return esc(v==null?'':v)}
+  function dateText(v){return v?new Date(v).toLocaleString():'—'}
+  function openBanDialog(u){
+    var modal=document.createElement('div');modal.className='account-ban-modal';
+    var d=new Date(Date.now()+86400000);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+    modal.innerHTML='<div class="account-ban-box"><h3>Ban Account #'+escCell(u.accountNo)+'</h3><p style="font-size:12px;color:#66748d">'+escCell(u.name)+' · '+escCell(u.email)+'</p><label>Ban শেষ হওয়ার তারিখ ও সময়</label><input type="datetime-local" id="banUntilInput" value="'+d.toISOString().slice(0,16)+'"><label>অথবা দ্রুত সময় নির্বাচন</label><select id="banPreset"><option value="">Custom date/time</option><option value="60">১ ঘণ্টা</option><option value="1440">১ দিন</option><option value="10080">৭ দিন</option><option value="43200">৩০ দিন</option><option value="525600">১ বছর</option><option value="permanent">স্থায়ী Ban</option></select><label>Ban-এর কারণ (ইউজার দেখতে পাবে)</label><input id="banReasonInput" maxlength="240" placeholder="যেমন: নিয়ম ভঙ্গের কারণে"><div class="account-ban-actions"><button class="cancel" type="button" id="banCancel">Cancel</button><button class="confirm" type="button" id="banConfirm">Confirm Ban</button></div></div>';
+    document.body.appendChild(modal);
+    modal.querySelector('#banCancel').onclick=function(){modal.remove()};
+    modal.querySelector('#banPreset').onchange=function(){var v=this.value;if(v&&v!=='permanent'){var x=new Date(Date.now()+Number(v)*60000);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());modal.querySelector('#banUntilInput').value=x.toISOString().slice(0,16)}};
+    modal.querySelector('#banConfirm').onclick=async function(){
+      var preset=modal.querySelector('#banPreset').value,until=modal.querySelector('#banUntilInput').value,body={id:u.id,action:'ban',reason:modal.querySelector('#banReasonInput').value};
+      if(preset==='permanent')body.permanent=true;else{if(!until){toast('Ban শেষের সময় নির্বাচন করুন','bad');return}body.expiresAt=new Date(until).toISOString()}
+      this.disabled=true;try{await api('/api/admin/user-status',body);modal.remove();toast('অ্যাকাউন্ট নির্ধারিত সময়ের জন্য Ban হয়েছে','ok');load()}catch(e){toast(e.message,'bad');this.disabled=false}
+    };
+  }
   async function load(){
     $('#accountsTable').textContent='Loading...';
     try{
       var data=await api('/api/admin/users'),users=data.users||[];
       $('#accountCount').textContent='Total Accounts: '+Number(data.total||users.length).toLocaleString('en-US');
       if(!users.length){$('#accountsTable').innerHTML='<p class="muted">এখনো কোনো অ্যাকাউন্ট তৈরি হয়নি।</p>';return}
-      $('#accountsTable').innerHTML='<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:620px"><thead><tr>'+['Serial','User ID','Name','Email','Joined','Status','Action'].map(function(x){return '<th style="text-align:left;padding:10px;border-bottom:1px solid #ddd">'+x+'</th>'}).join('')+'</tr></thead><tbody>'+users.map(function(u){return '<tr><td style="padding:10px;border-bottom:1px solid #eee;font-weight:900">'+escCell(u.accountNo)+'</td><td>'+escCell(u.userId)+'</td><td>'+escCell(u.name)+'</td><td>'+escCell(u.email)+'</td><td>'+escCell(u.createdAt?new Date(u.createdAt).toLocaleDateString():'')+'</td><td><b style="color:'+(u.banned?'#c52e43':'#078452')+'">'+(u.banned?'Banned':'Active')+'</b></td><td><button type="button" data-user-id="'+escCell(u.id)+'" data-user-action="'+(u.banned?'unban':'ban')+'" style="border:0;border-radius:8px;padding:8px 11px;background:'+(u.banned?'#dcfce7':'#fee2e2')+';color:'+(u.banned?'#166534':'#991b1b')+';font-weight:800">'+(u.banned?'Unban':'Ban')+'</button></td></tr>'}).join('')+'</tbody></table></div>';
-      root.querySelectorAll('[data-user-action]').forEach(function(btn){btn.onclick=async function(){var action=btn.dataset.userAction;if(!confirm(action==='ban'?'এই অ্যাকাউন্টটি Ban করবেন?':'এই অ্যাকাউন্টটি Unban করবেন?'))return;btn.disabled=true;try{await api('/api/admin/user-status',{id:btn.dataset.userId,action:action});toast(action==='ban'?'অ্যাকাউন্ট Ban হয়েছে':'অ্যাকাউন্ট Unban হয়েছে','ok');await load()}catch(e){toast(e.message,'bad');btn.disabled=false}}});
+      $('#accountsTable').innerHTML='<div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:1020px"><thead><tr>'+['Serial','User ID','Name','Email','Phone','Last device / model','Last login','Ban status','Action'].map(function(x){return '<th style="text-align:left;padding:10px;border-bottom:1px solid #ddd">'+x+'</th>'}).join('')+'</tr></thead><tbody>'+users.map(function(u){var dev=u.lastDevice||{};var active=u.banned&&u.banUntil&&new Date(u.banUntil).getTime()<=Date.now()?false:!!u.banned;return '<tr><td style="padding:10px;border-bottom:1px solid #eee;font-weight:900">'+escCell(u.accountNo)+'</td><td>'+escCell(u.userId)+'</td><td>'+escCell(u.name)+'</td><td>'+escCell(u.email)+'</td><td>'+escCell(u.phone)+'</td><td>'+escCell(dev.deviceName||'Unknown')+'<br><small>'+escCell(dev.model||dev.platform||'Model unavailable')+'</small></td><td>'+escCell(dateText(u.lastLoginAt))+'</td><td><b style="color:'+(active?'#c52e43':'#078452')+'">'+(active?'Banned':'Active')+'</b>'+(active?'<br><small>Until: '+escCell(u.banUntil?dateText(u.banUntil):'Permanent')+'</small>':'')+'</td><td>'+(active?'<button type="button" data-user-id="'+escCell(u.id)+'" data-user-action="unban" style="border:0;border-radius:8px;padding:8px 11px;background:#dcfce7;color:#166534;font-weight:800">Unban</button>':'<button type="button" data-user-id="'+escCell(u.id)+'" data-user-action="ban" style="border:0;border-radius:8px;padding:8px 11px;background:#fee2e2;color:#991b1b;font-weight:800">Ban</button>')+'</td></tr>'}).join('')+'</tbody></table></div>';
+      root.querySelectorAll('[data-user-action]').forEach(function(btn){btn.onclick=async function(){var u=users.find(function(x){return x.id===btn.dataset.userId});if(btn.dataset.userAction==='ban'){openBanDialog(u);return}if(!confirm('এই অ্যাকাউন্টটি এখনই Unban করবেন?'))return;btn.disabled=true;try{await api('/api/admin/user-status',{id:btn.dataset.userId,action:'unban'});toast('অ্যাকাউন্ট Unban হয়েছে','ok');await load()}catch(e){toast(e.message,'bad');btn.disabled=false}}});
     }catch(e){$('#accountCount').textContent='';$('#accountsTable').textContent=e.message}
   }
   $('#accountsRefresh').onclick=load;load();

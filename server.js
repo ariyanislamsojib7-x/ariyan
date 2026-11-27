@@ -870,7 +870,11 @@ function customerFromRequest(req) {
   const expected = crypto.createHmac('sha256', CUSTOMER_SECRET).update('customer:' + a[0] + '.' + a[1]).digest('hex');
   if (!safeEq(a[2], expected)) return null;
   const user = customerDB.users.find(u => u.id === a[0]) || null;
-  return user && !user.banned ? user : null;
+  if (!user) return null;
+  if (user.banned && user.banUntil && new Date(user.banUntil).getTime() <= Date.now()) {
+    user.banned=false; user.banUntil=null; user.banReason=''; user.statusUpdatedAt=new Date().toISOString(); saveCustomerDB();
+  }
+  return !user.banned ? user : null;
 }
 function publicUser(u) {
   if (!/^\d{5}$/.test(String(u.publicId || ''))) {
@@ -878,7 +882,7 @@ function publicUser(u) {
     let id; do { id = String(10000 + crypto.randomInt(0, 90000)); } while (used.has(id));
     u.publicId = id; saveCustomerDB();
   }
-  return { id:u.id, userId:u.publicId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '', banned:!!u.banned };
+  return { id:u.id, userId:u.publicId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '', banned:!!u.banned, banUntil:u.banUntil || null, banReason:u.banReason || '', lastDevice:u.lastDevice || null, lastLoginAt:u.lastLoginAt || null };
 }
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function nextOrderId() {
@@ -888,6 +892,20 @@ function nextOrderId() {
     if (Number.isFinite(n) && n > max) max = n;
   }
   return String(max + 1);
+}
+function cleanDeviceInfo(v) {
+  const d = v && typeof v === 'object' ? v : {};
+  return {
+    deviceName:String(d.deviceName || '').slice(0,100),
+    model:String(d.model || '').slice(0,100),
+    platform:String(d.platform || '').slice(0,80),
+    userAgent:String(d.userAgent || '').slice(0,300)
+  };
+}
+function activeBanMessage(u) {
+  const until=u.banUntil ? new Date(u.banUntil) : null;
+  const remaining=until ? Math.max(0,until.getTime()-Date.now()) : null;
+  return {error:'এই অ্যাকাউন্টটি Admin দ্বারা সাময়িকভাবে বন্ধ করা হয়েছে।',banned:true,banReason:u.banReason||'',banUntil:u.banUntil||null,remainingMs:remaining};
 }
 function cleanEmail(v) { return String(v || '').trim().toLowerCase().slice(0, 190); }
 function passHash(pass, salt) { return crypto.scryptSync(String(pass), salt, 64).toString('hex'); }
@@ -1042,6 +1060,7 @@ function currentView() {
     quick: visibleQuick,
     quickCustom: !!config.quick,
     accountSupport: sanitizeAccountSupport(config.accountSupport || emptyAccountSupport()),
+    adminProfilePicture: config.adminProfilePicture ? '/uploads/' + config.adminProfilePicture : '',
     paymentSettings: (function(){ const ps=Object.assign({bkashNumber:'',nagadNumber:'',walletLogoUrl:'',instantLogoUrl:'',bkashLogoUrl:'',nagadLogoUrl:'',addMoneyBannerUrl:'',facebookUrl:'',youtubeUrl:'',howToVideoUrl:''}, config.paymentSettings || {}); if(ps.walletLogoFile) ps.walletLogoUrl='/uploads/'+ps.walletLogoFile; if(ps.instantLogoFile) ps.instantLogoUrl='/uploads/'+ps.instantLogoFile; return ps; })(),
     maxBanners: MAX_BANNERS,
     storage: { mode: storage.mode, ok: storage.ok, error: storage.error, repo: storage.repo, branch: storage.branch },
@@ -1135,7 +1154,8 @@ async function handleApi(req, res, pathname) {
         if (claims.picture) u.avatar = String(claims.picture).slice(0,1000);
         if (claims.name) u.name = String(claims.name).trim().slice(0,70);
       }
-      if (u.banned) return sendJson(res, 403, { error: 'এই অ্যাকাউন্টটি Admin দ্বারা সাময়িকভাবে বন্ধ করা হয়েছে।' });
+      if (u.banned && u.banUntil && new Date(u.banUntil).getTime() <= Date.now()) { u.banned=false; u.banUntil=null; u.banReason=''; }
+      if (u.banned) return sendJson(res, 403, activeBanMessage(u));
       await saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
@@ -1148,7 +1168,7 @@ async function handleApi(req, res, pathname) {
       if (!phone || !/^[+0-9() .-]{7,24}$/.test(phone)) return sendJson(res, 400, { error: 'Enter a valid phone number.' });
       if (customerDB.users.some(u => u.email === email)) return sendJson(res, 409, { error: 'An account with this email already exists.' });
       const salt = crypto.randomBytes(16).toString('hex');
-      const u = { id:newId('usr'), email, name:name || email.split('@')[0], phone, salt, password:passHash(b.password, salt), balance:0, createdAt:new Date().toISOString() };
+      const now=new Date().toISOString(); const u = { id:newId('usr'), email, name:name || email.split('@')[0], phone, salt, password:passHash(b.password, salt), balance:0, createdAt:now, lastDevice:cleanDeviceInfo(b.device), lastLoginAt:now };
       customerDB.users.push(u); await saveCustomerDB();
       return sendJson(res, 201, { token:customerToken(u.id), user:publicUser(u) });
     }
@@ -1156,7 +1176,10 @@ async function handleApi(req, res, pathname) {
       const b = await readJson(req, 8192), email = cleanEmail(b.email);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !validPass(b.password)) return sendJson(res, 401, { error:'Invalid email or password.' });
       const u = customerDB.users.find(x => x.email === email);
-      if (!u || u.banned || !u.salt || !u.password || !safeEq(passHash(b.password, u.salt), u.password)) return sendJson(res, 401, { error:'Invalid email or password.' });
+      if (!u || !u.salt || !u.password || !safeEq(passHash(b.password, u.salt), u.password)) return sendJson(res, 401, { error:'Invalid email or password.' });
+      if (u.banned && u.banUntil && new Date(u.banUntil).getTime() <= Date.now()) { u.banned=false; u.banUntil=null; u.banReason=''; }
+      if (u.banned) return sendJson(res,403,activeBanMessage(u));
+      u.lastDevice=cleanDeviceInfo(b.device); u.lastLoginAt=new Date().toISOString(); await saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
     if (pathname.startsWith('/api/customer/')) {
@@ -1230,6 +1253,8 @@ async function handleApi(req, res, pathname) {
         if (pathname.endsWith('/deposits')) return sendJson(res,200,{deposits:customerDB.deposits.slice(-300).reverse()});
         if (pathname.endsWith('/orders')) return sendJson(res,200,{orders:customerDB.orders.slice(-300).reverse()});
         if (pathname.endsWith('/order-payments')) return sendJson(res,200,{orderPayments:customerDB.orderPayments.slice(-300).reverse()});
+        let expired=false; customerDB.users.forEach(u=>{if(u.banned&&u.banUntil&&new Date(u.banUntil).getTime()<=Date.now()){u.banned=false;u.banUntil=null;u.banReason='';u.statusUpdatedAt=new Date().toISOString();expired=true;}});
+        if(expired) await saveCustomerDB();
         const orderedUsers = customerDB.users.slice().sort((a,b) => String(a.createdAt||'').localeCompare(String(b.createdAt||'')) || String(a.id).localeCompare(String(b.id)));
         return sendJson(res,200,{total:orderedUsers.length,users:orderedUsers.map((u,i) => Object.assign(publicUser(u), {accountNo:i+1}))});
       }
@@ -1238,8 +1263,17 @@ async function handleApi(req, res, pathname) {
         const b=await readJson(req,4096), u=customerDB.users.find(x=>x.id===String(b.id||''));
         if(!u) return sendJson(res,404,{error:'অ্যাকাউন্ট পাওয়া যায়নি'});
         if(!['ban','unban'].includes(String(b.action||''))) return sendJson(res,400,{error:'ভুল action'});
-        u.banned = b.action === 'ban';
-        u.statusUpdatedAt = new Date().toISOString();
+        const now=new Date();
+        if (b.action==='ban') {
+          const minutes=Number(b.durationMinutes||0);
+          let until=null;
+          if (b.permanent===true) until=null;
+          else if (b.expiresAt) { const t=new Date(b.expiresAt); if(!Number.isFinite(t.getTime()) || t.getTime()<=now.getTime()) return sendJson(res,400,{error:'ভবিষ্যতের সঠিক Ban শেষের সময় দিন'}); until=t.toISOString(); }
+          else if (Number.isFinite(minutes) && minutes>0 && minutes<=5256000) until=new Date(now.getTime()+minutes*60000).toISOString();
+          else return sendJson(res,400,{error:'Ban-এর মেয়াদ নির্বাচন করুন'});
+          u.banned=true; u.banUntil=until; u.banReason=String(b.reason||'Admin দ্বারা সাময়িকভাবে বন্ধ').trim().slice(0,240);
+        } else { u.banned=false; u.banUntil=null; u.banReason=''; }
+        u.statusUpdatedAt = now.toISOString();
         await saveCustomerDB();
         return sendJson(res,200,{success:true,user:publicUser(u),message:u.banned?'অ্যাকাউন্ট Ban করা হয়েছে':'অ্যাকাউন্ট Unban করা হয়েছে'});
       }
@@ -1386,6 +1420,20 @@ async function handleApi(req, res, pathname) {
       imgSet(next, body.kind, fname);
       await commit(next, 'Update ' + kind.prefix, [{ name: fname, buf: buf }], old ? [old] : []);
       return sendJson(res, 200, currentView());
+    }
+
+    if (req.method === 'POST' && pathname === '/api/admin/profile-picture') {
+      if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
+      const body=await readJson(req,Math.ceil(MAX_UPLOAD_BYTES*1.4)+1024);
+      const m=/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String(body.dataUrl||''));
+      if(!m) return sendJson(res,400,{error:'শুধু PNG, JPG বা WEBP ছবি দিন'});
+      const buf=Buffer.from(m[2],'base64');
+      if(buf.length>MAX_UPLOAD_BYTES) return sendJson(res,413,{error:'ছবি ৩MB-এর বেশি বড়'});
+      const ext=detectImage(buf); if(!ext) return sendJson(res,400,{error:'ছবিটি সঠিক নয়'});
+      const fname='admin-profile-'+Date.now()+'.'+ext, old=config.adminProfilePicture||'';
+      const next=Object.assign({},config,{adminProfilePicture:fname});
+      await commit(next,'Update admin profile picture',[{name:fname,buf:buf}],old?[old]:[]);
+      return sendJson(res,200,{success:true,adminProfilePicture:'/uploads/'+fname});
     }
 
     if (req.method === 'POST' && pathname === '/api/admin/account-support') {
