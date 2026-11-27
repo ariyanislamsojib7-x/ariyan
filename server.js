@@ -1191,6 +1191,7 @@ async function handleApi(req, res, pathname) {
       if (!u) return sendJson(res, 401, { error:'প্রথমে লগইন করুন' });
       if (u.banned) return sendJson(res, 403, activeBanMessage(u));
       if (req.method === 'GET' && pathname === '/api/customer/me') return sendJson(res, 200, { user:publicUser(u) });
+      if (req.method === 'POST' && pathname === '/api/customer/device-info') { const b=await readJson(req,8192); const d=cleanDeviceInfo(b.device); if(d.deviceName||d.model||d.brand||d.platform||d.userAgent){u.lastDevice=d;await saveCustomerDB()} return sendJson(res,200,{ok:true,lastDevice:u.lastDevice||null}); }
       if (req.method === 'GET' && pathname === '/api/customer/orders') return sendJson(res, 200, { orders:customerDB.orders.filter(x=>x.userId===u.id).slice(-100).reverse() });
       if (req.method === 'GET' && pathname === '/api/customer/transactions') return sendJson(res, 200, { transactions:userTransactions(u.id) });
       if (req.method === 'POST' && pathname === '/api/customer/deposits') {

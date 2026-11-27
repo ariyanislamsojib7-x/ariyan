@@ -8,7 +8,7 @@ var $=function(s,r){return (r||document).querySelector(s)};
 var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
 function toast(m){var t=$('#toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('show')},2800)}
 async function api(url,body){var opt={method:body===undefined?'GET':'POST',headers:{}};if(token)opt.headers.Authorization='Bearer '+token;if(body!==undefined){opt.headers['Content-Type']='application/json';opt.body=JSON.stringify(body)}var r=await fetch(url,opt),j={};try{j=await r.json()}catch(e){}if(!r.ok){var er=new Error(j.error||'অনুরোধ সম্পন্ন হয়নি');er.payload=j;throw er}return j}
-function saveSession(t,u){token=t;user=u;localStorage.setItem(TOKEN_KEY,t);localStorage.setItem(USER_KEY,JSON.stringify(u));syncProfile();watchBanStatus()}
+function saveSession(t,u){token=t;user=u;localStorage.setItem(TOKEN_KEY,t);localStorage.setItem(USER_KEY,JSON.stringify(u));syncProfile();watchBanStatus();reportDeviceInfo()}
 function clearSession(){token='';user=null;localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(USER_KEY);syncProfile();if(location.hash==='#account')location.hash=''}
 function logged(){return !!(token&&user)}
 function showBanScreen(info){
@@ -38,6 +38,9 @@ async function deviceDetails(){
   var name=model==='Model hidden by browser'?'Android phone':((brand&&model.toLowerCase().indexOf(brand.toLowerCase())===-1&&brand!=='Not reported by browser'&&brand!=='Android device')?brand+' ':'')+model;
   return {deviceName:name,brand:brand,model:model,platform:(platform|| (android?'Android':ios?'iOS':'Unknown'))+(platformVersion?' '+platformVersion:''),userAgent:ua.slice(0,300)}
 }
+// Google OAuth returns through a server callback that cannot read browser device hints.
+// Send browser-available details after the authenticated session is restored as well.
+async function reportDeviceInfo(){if(!token)return;try{var info=await deviceDetails();await fetch('/api/customer/device-info',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({device:info}),cache:'no-store'})}catch(_){}}
 function watchBanStatus(){if(!token||window.__ariyanBanWatch)return;window.__ariyanBanWatch=setInterval(async function(){if(!token)return;try{var r=await fetch('/api/customer/me',{headers:{Authorization:'Bearer '+token},cache:'no-store'}),j={};try{j=await r.json()}catch(_){}if(r.status===403&&j.banned)showBanScreen(j);else if(r.status===200&&document.getElementById('ariyanBanScreen')){document.getElementById('ariyanBanScreen').remove();document.body.style.overflow='';clearInterval(window.__ariyanBanTimer)}}catch(_){ }},5000)}
 
 // Keep every product checkout action in sync immediately after registration/login.
@@ -88,7 +91,7 @@ function openMyAccountPage(){
 function money(n){var v=Number(n);if(!Number.isFinite(v))v=0;return Number.isInteger(v)?String(v):String(Number(v.toFixed(2)))}
 function syncProfile(){syncBuyNowButtons();if(!user){if(window.setProfile)window.setProfile({});renderRank(0,0);return}if(window.setProfile)window.setProfile({loggedIn:true,id:user.userId||'',name:user.name,email:user.email||'',phone:user.phone||'',balance:user.balance,orders:window._ariyanOrderCount||0,codes:0,verified:true,avatar:user.avatar||''});var w=$('.wallet');if(w&&w.lastChild)w.lastChild.textContent=money(user.balance)+'৳';loadRankStats();}
 async function refreshMe(){if(!token)return;try{var opt={method:'GET',headers:{Authorization:'Bearer '+token}};var rr=await fetch('/api/customer/me',opt);var j={};try{j=await rr.json()}catch(_e){}if(rr.status===403&&j.banned){showBanScreen(j);return}if(rr.status===401){clearSession();return}if(!rr.ok)return;user=j.user;localStorage.setItem(USER_KEY,JSON.stringify(user));syncProfile()}catch(e){/* network error - keep session */}}
-if(token)watchBanStatus();
+if(token){watchBanStatus();reportDeviceInfo();}
 var accountTexts=window.__ACCOUNT_TEXTS||{};function at(k,d){return accountTexts[k]||d;}
 // Keep the public header/login branding in sync with the logo saved from Admin Panel.
 (function(){function applyBranding(){fetch('/api/site-branding',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(b){if(!b||!b.logo)return;document.querySelectorAll('[data-site-logo]').forEach(function(img){img.src=b.logo});document.querySelectorAll('link[rel=icon],link[rel=shortcut icon],link[rel=apple-touch-icon]').forEach(function(link){link.href=b.logo});var og=document.querySelector('meta[property="og:image"]');if(og)og.content=b.logo}).catch(function(){});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyBranding);else applyBranding();})();
