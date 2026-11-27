@@ -269,6 +269,48 @@ main.sm{max-width:520px;padding:0}
 @media(max-width:480px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric-card small{font-size:10px}.metric-card strong{font-size:19px}.dash-welcome p{max-width:255px;font-size:11px}.welcome-mark{font-size:42px}.recent-row{gap:7px}.order-status{font-size:8px;padding:4px 5px}.recent-row>strong{font-size:10px}.top-logout{padding:8px 9px;font-size:10px}.top-brand small{font-size:9px}}
 .admin-sidebar.collapsed{width:76px;flex-basis:76px;padding-left:10px;padding-right:10px}.admin-sidebar.collapsed .admin-brand div,.admin-sidebar.collapsed .admin-profile>div:last-child,.admin-sidebar.collapsed .admin-nav-item span,.admin-sidebar.collapsed .admin-nav-item b,.admin-sidebar.collapsed .sidebar-help{display:none}.admin-sidebar.collapsed .admin-brand img{width:48px;height:48px}.admin-sidebar.collapsed .admin-nav-item{justify-content:center;padding:0}
 
+
+/* AURA ARIYAN X — reference-matched navigation and responsive layout */
+.fab{display:none!important}
+.admin-sidebar{width:238px;flex-basis:238px;padding:18px 12px}
+.admin-brand{justify-content:flex-start;padding:0 4px 18px}
+.admin-brand img{width:100%;height:76px;max-width:205px;object-fit:contain}
+.admin-brand div{min-width:0}
+.admin-nav-item{height:46px;border-radius:11px;font-size:13px}
+.admin-nav-item svg{width:20px;height:20px}
+.admin-topbar{padding:0 24px}
+.top-menu{background:transparent;border:0;color:#10265d;font-size:25px;width:42px;height:42px}
+#adminNavOverlay{display:none}
+@media(max-width:900px){
+  #app{display:block}
+  .admin-sidebar{
+    display:flex!important;position:fixed;left:0;top:0;bottom:0;height:100dvh;
+    width:min(285px,84vw);flex:0 0 auto;min-height:0;overflow-y:auto;
+    z-index:121;padding:18px 13px;
+    transform:translateX(-105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);
+    box-shadow:18px 0 45px rgba(0,10,45,.3)
+  }
+  .admin-sidebar.mobile-open{transform:translateX(0)}
+  #adminNavOverlay{
+    display:block;position:fixed;inset:0;width:100%;height:100%;border:0;
+    background:rgba(2,10,35,.58);z-index:120;cursor:pointer
+  }
+  .admin-topbar{height:68px;padding:0 14px;gap:10px}
+  .top-menu{display:grid;place-items:center;flex:0 0 40px}
+  #main.admin-content{padding:16px 13px 40px}
+  .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dash-grid,.lower-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .admin-brand img{height:68px}
+  .admin-profile{padding:15px 4px}
+  .admin-nav-item{height:45px}
+  .top-brand b{font-size:13px}
+  .top-brand small{font-size:9px}
+  .top-logout{padding:8px 10px}
+  .metric-card{min-height:100px}
+}
+
 </style>
 </head>
 <body>
@@ -328,7 +370,7 @@ main.sm{max-width:520px;padding:0}
     <header class="admin-topbar"><button class="top-menu" id="topMenu" type="button" aria-label="Open menu">☰</button><div class="top-brand"><b>AURA ARIYAN <span>X TOPUP</span></b><small>Fast · Secure · Trusted</small></div><div class="top-spacer"></div><a class="top-site" href="/" target="_blank" rel="noopener">View Site ↗</a><button class="top-logout" id="topLogout" type="button">Log out</button></header>
     <main id="main"></main>
   </div>
-  <button class="fab" id="fab" type="button" aria-label="Menu"><svg class="i"><use href="#menu"/></svg></button>
+
 </div>
 
 <div id="gh" role="status"></div>
@@ -395,7 +437,7 @@ function logout(silent){
   hideGh();closeSheet();
   if(!silent)toast('Logged out');
 }
-$('#fab').onclick=openMenu;
+
 
 async function enter(){
   state.cfg=await api('/api/admin/config');
@@ -414,26 +456,28 @@ var SECTIONS=[
 function drawAdminNav(){
   var nav=$('#adminNav');if(!nav)return;
   nav.innerHTML=SECTIONS.map(function(x){return '<button type="button" class="admin-nav-item" data-section="'+x.id+'">'+icon(x.icon)+'<span>'+esc(x.title)+'</span><b>›</b></button>'}).join('')+'<button type="button" class="admin-nav-item nav-logout" data-logout="1">'+icon('out')+'<span>Logout</span></button>';
-  nav.querySelectorAll('[data-section]').forEach(function(b){b.onclick=function(){show(b.dataset.section);$('#adminSidebar').classList.remove('mobile-open')}});
+  nav.querySelectorAll('[data-section]').forEach(function(b){b.onclick=function(){show(b.dataset.section);closeAdminDrawer()}});
   var lo=nav.querySelector('[data-logout]');if(lo)lo.onclick=function(){logout()};
 }
 $('#topMenu').onclick=function(){if(window.matchMedia('(max-width: 900px)').matches)openMenu();else $('#adminSidebar').classList.toggle('collapsed')};
 $('#topLogout').onclick=function(){logout()};
 
+function closeAdminDrawer(){
+  $('#adminSidebar').classList.remove('mobile-open');
+  $('#app').classList.remove('mobile-nav-open');
+  var ov=$('#adminNavOverlay');if(ov)ov.remove();
+}
 function openMenu(){
-  openSheet('Menu',function(b){
-    SECTIONS.forEach(function(sc){
-      var x=document.createElement('button');x.type='button';x.className='mi'+(sc.id===state.tab?' on':'');
-      x.innerHTML=icon(sc.icon,'width:18px;height:18px')+esc(sc.title);
-      x.onclick=function(){closeSheet();show(sc.id)};
-      b.appendChild(x);
-    });
-    var l=document.createElement('a');l.className='mi';l.href='/';l.target='_blank';l.rel='noopener';
-    l.innerHTML=icon('ext','width:18px;height:18px')+'View main site';b.appendChild(l);
-    var o=document.createElement('button');o.type='button';o.className='mi out';
-    o.innerHTML=icon('out','width:18px;height:18px')+'Log out';
-    o.onclick=function(){closeSheet();logout()};b.appendChild(o);
-  });
+  if(window.matchMedia('(max-width: 900px)').matches){
+    var side=$('#adminSidebar');
+    if(side.classList.contains('mobile-open')){closeAdminDrawer();return}
+    side.classList.add('mobile-open');
+    $('#app').classList.add('mobile-nav-open');
+    var ov=document.createElement('button');ov.type='button';ov.id='adminNavOverlay';ov.setAttribute('aria-label','Close navigation');
+    ov.onclick=closeAdminDrawer;document.body.appendChild(ov);
+  }else{
+    $('#adminSidebar').classList.toggle('collapsed');
+  }
 }
 function show(id){
   state.tab=id;
