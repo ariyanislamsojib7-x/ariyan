@@ -115,7 +115,7 @@
     }
   },
   "texts": {
-    "siteName": "AURA ARiYAN X TOPUP",
+    "siteName": "Developed By ARiYAN.   X",
     "redeemCodeUrl": "https://shop.garena.my/?app=100067&channel=202953",
     "acctNewUserText": "New user AURA ARiYAN 𝗫 Topup?",
     "acctVerifiedText": "Verified",
@@ -202,6 +202,5 @@
     "nagadPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
     "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
     "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।"
-  },
-  "adminProfilePicture": "admin-profile-1795799027783.jpg"
+  }
 }
