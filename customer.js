@@ -22,7 +22,22 @@ function showBanScreen(info){
   paint();if(until)window.__ariyanBanTimer=setInterval(paint,1000);
   document.getElementById('ariyanBanLogout').onclick=function(){if(window.__ariyanBanTimer)clearInterval(window.__ariyanBanTimer);clearSession();layer.remove();document.body.style.overflow='';authView('login')};
 }
-async function deviceDetails(){var ua=navigator.userAgent||'',ud=navigator.userAgentData||null,platform=(ud&&ud.platform)||navigator.platform||'',model=(ud&&ud.model)||'',platformVersion='',brand='';if(ud&&ud.getHighEntropyValues){try{var hi=await ud.getHighEntropyValues(['model','platform','platformVersion','fullVersionList']);model=hi.model||model;platform=hi.platform||platform;platformVersion=hi.platformVersion||''}catch(_){}}var android=ua.match(/Android\s+[\d.]+;\s*([^;)]+)/i),ios=/iPhone|iPad|iPod/i.test(ua),uaModel=android&&android[1]?android[1].replace(/\s+Build\/.*/i,'').replace(/\s+wv$/i,'').trim():'';if(!model&&uaModel&&!/^(k|unknown|generic|linux)$/i.test(uaModel))model=uaModel;if(!model&&ios)model=/iPhone/i.test(ua)?'iPhone':/iPad/i.test(ua)?'iPad':'iPod';if(!model)model=/Windows/i.test(ua)?'Windows device':/Mac/i.test(ua)?'Mac device':/Linux/i.test(ua)?'Android device':'Unknown device';var m=model.toLowerCase();if(/samsung|^sm-|^sgh-|^gt-/.test(m))brand='Samsung';else if(/infinix/.test(m))brand='Infinix';else if(/tecno/.test(m))brand='TECNO';else if(/redmi|xiaomi|poco/.test(m))brand=/poco/.test(m)?'POCO':/redmi/.test(m)?'Redmi':'Xiaomi';else if(/oppo/.test(m))brand='OPPO';else if(/vivo/.test(m))brand='vivo';else if(/realme/.test(m))brand='realme';else if(/oneplus/.test(m))brand='OnePlus';else if(/pixel/.test(m))brand='Google';else if(ios)brand='Apple';var name=(brand&&model.toLowerCase().indexOf(brand.toLowerCase())===-1?brand+' ':'')+model;return {deviceName:name,brand:brand,model:model,platform:platform+(platformVersion?' '+platformVersion:''),userAgent:ua.slice(0,300)}}
+async function deviceDetails(){
+  var ua=navigator.userAgent||'',ud=navigator.userAgentData||null,platform=(ud&&ud.platform)||navigator.platform||'',model=(ud&&ud.model)||'',platformVersion='',brand='';
+  if(ud&&ud.getHighEntropyValues){try{var hi=await ud.getHighEntropyValues(['model','platform','platformVersion','fullVersionList']);model=hi.model||model;platform=hi.platform||platform;platformVersion=hi.platformVersion||''}catch(_){}}
+  var android=/Android/i.test(ua),ios=/iPhone|iPad|iPod/i.test(ua),androidMatch=ua.match(/Android\s+[\d.]+;\s*([^;)]+)/i),uaModel=androidMatch&&androidMatch[1]?androidMatch[1].replace(/\s+Build\/.*/i,'').replace(/\s+wv$/i,'').trim():'';
+  function generic(v){return !v||/^(android|linux|k|unknown|generic|mobile|phone|tablet|wv|arm|x86|x86_64)$/i.test(String(v).trim())}
+  if(generic(model)&&!generic(uaModel))model=uaModel;
+  if(ios&&!model)model=/iPhone/i.test(ua)?'iPhone':/iPad/i.test(ua)?'iPad':'iPod';
+  if(android&&generic(model))model='Model hidden by browser';
+  if(!android&&!ios&&!model)model=/Windows/i.test(ua)?'Windows device':/Mac/i.test(ua)?'Mac device':/Linux/i.test(ua)?'Linux device':'Unknown device';
+  var m=String(model).toLowerCase();
+  if(/samsung|^sm-|^sgh-|^gt-/.test(m))brand='Samsung';else if(/infinix/.test(m))brand='Infinix';else if(/tecno/.test(m))brand='TECNO';else if(/redmi|xiaomi|poco/.test(m))brand=/poco/.test(m)?'POCO':/redmi/.test(m)?'Redmi':'Xiaomi';else if(/oppo/.test(m))brand='OPPO';else if(/vivo/.test(m))brand='vivo';else if(/realme/.test(m))brand='realme';else if(/oneplus/.test(m))brand='OnePlus';else if(/pixel/.test(m))brand='Google';else if(ios)brand='Apple';
+  if(!brand&&android&&model!=='Model hidden by browser')brand='Android device';
+  if(!brand&&android)brand='Not reported by browser';
+  var name=model==='Model hidden by browser'?'Android phone':((brand&&model.toLowerCase().indexOf(brand.toLowerCase())===-1&&brand!=='Not reported by browser'&&brand!=='Android device')?brand+' ':'')+model;
+  return {deviceName:name,brand:brand,model:model,platform:(platform|| (android?'Android':ios?'iOS':'Unknown'))+(platformVersion?' '+platformVersion:''),userAgent:ua.slice(0,300)}
+}
 function watchBanStatus(){if(!token||window.__ariyanBanWatch)return;window.__ariyanBanWatch=setInterval(async function(){if(!token)return;try{var r=await fetch('/api/customer/me',{headers:{Authorization:'Bearer '+token},cache:'no-store'}),j={};try{j=await r.json()}catch(_){}if(r.status===403&&j.banned)showBanScreen(j);else if(r.status===200&&document.getElementById('ariyanBanScreen')){document.getElementById('ariyanBanScreen').remove();document.body.style.overflow='';clearInterval(window.__ariyanBanTimer)}}catch(_){ }},5000)}
 
 // Keep every product checkout action in sync immediately after registration/login.
