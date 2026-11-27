@@ -869,7 +869,8 @@ function customerFromRequest(req) {
   if (a.length !== 3 || !/^\d+$/.test(a[1]) || Number(a[1]) < Date.now()) return null;
   const expected = crypto.createHmac('sha256', CUSTOMER_SECRET).update('customer:' + a[0] + '.' + a[1]).digest('hex');
   if (!safeEq(a[2], expected)) return null;
-  return customerDB.users.find(u => u.id === a[0]) || null;
+  const user = customerDB.users.find(u => u.id === a[0]) || null;
+  return user && !user.banned ? user : null;
 }
 function publicUser(u) {
   if (!/^\d{5}$/.test(String(u.publicId || ''))) {
@@ -877,7 +878,7 @@ function publicUser(u) {
     let id; do { id = String(10000 + crypto.randomInt(0, 90000)); } while (used.has(id));
     u.publicId = id; saveCustomerDB();
   }
-  return { id:u.id, userId:u.publicId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '' };
+  return { id:u.id, userId:u.publicId, email:u.email, name:u.name, phone:u.phone || '', balance:u.balance, createdAt:u.createdAt, emailVerified:true, avatar:u.avatar || '', banned:!!u.banned };
 }
 function newId(prefix) { return prefix + '_' + crypto.randomBytes(9).toString('hex'); }
 function nextOrderId() {
@@ -1134,6 +1135,7 @@ async function handleApi(req, res, pathname) {
         if (claims.picture) u.avatar = String(claims.picture).slice(0,1000);
         if (claims.name) u.name = String(claims.name).trim().slice(0,70);
       }
+      if (u.banned) return sendJson(res, 403, { error: 'এই অ্যাকাউন্টটি Admin দ্বারা সাময়িকভাবে বন্ধ করা হয়েছে।' });
       await saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
@@ -1154,7 +1156,7 @@ async function handleApi(req, res, pathname) {
       const b = await readJson(req, 8192), email = cleanEmail(b.email);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !validPass(b.password)) return sendJson(res, 401, { error:'Invalid email or password.' });
       const u = customerDB.users.find(x => x.email === email);
-      if (!u || !u.salt || !u.password || !safeEq(passHash(b.password, u.salt), u.password)) return sendJson(res, 401, { error:'Invalid email or password.' });
+      if (!u || u.banned || !u.salt || !u.password || !safeEq(passHash(b.password, u.salt), u.password)) return sendJson(res, 401, { error:'Invalid email or password.' });
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
     if (pathname.startsWith('/api/customer/')) {
@@ -1228,7 +1230,18 @@ async function handleApi(req, res, pathname) {
         if (pathname.endsWith('/deposits')) return sendJson(res,200,{deposits:customerDB.deposits.slice(-300).reverse()});
         if (pathname.endsWith('/orders')) return sendJson(res,200,{orders:customerDB.orders.slice(-300).reverse()});
         if (pathname.endsWith('/order-payments')) return sendJson(res,200,{orderPayments:customerDB.orderPayments.slice(-300).reverse()});
-        return sendJson(res,200,{users:customerDB.users.map(publicUser)});
+        const orderedUsers = customerDB.users.slice().sort((a,b) => String(a.createdAt||'').localeCompare(String(b.createdAt||'')) || String(a.id).localeCompare(String(b.id)));
+        return sendJson(res,200,{total:orderedUsers.length,users:orderedUsers.map((u,i) => Object.assign(publicUser(u), {accountNo:i+1}))});
+      }
+      if (req.method==='POST' && pathname==='/api/admin/user-status') {
+        if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
+        const b=await readJson(req,4096), u=customerDB.users.find(x=>x.id===String(b.id||''));
+        if(!u) return sendJson(res,404,{error:'অ্যাকাউন্ট পাওয়া যায়নি'});
+        if(!['ban','unban'].includes(String(b.action||''))) return sendJson(res,400,{error:'ভুল action'});
+        u.banned = b.action === 'ban';
+        u.statusUpdatedAt = new Date().toISOString();
+        await saveCustomerDB();
+        return sendJson(res,200,{success:true,user:publicUser(u),message:u.banned?'অ্যাকাউন্ট Ban করা হয়েছে':'অ্যাকাউন্ট Unban করা হয়েছে'});
       }
       if (req.method==='POST' && (pathname==='/api/admin/deposit-action' || pathname==='/api/admin/order-action')) {
         if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
