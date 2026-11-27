@@ -1019,12 +1019,60 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
   #arLiveBoard .ar-leader.podium .ar-avatar.ar-frame-third{width:clamp(58px,16vw,82px)!important;height:clamp(58px,16vw,82px)!important;}
 }
 
+/* Gentle loading feedback: keep page content visible while assets arrive */
+#netLoadBar{position:fixed;top:0;left:0;width:0;height:3px;z-index:99999;opacity:0;background:linear-gradient(90deg,#2563eb,#38bdf8,#2563eb);box-shadow:0 0 9px rgba(37,99,235,.45);transition:width .35s ease,opacity .35s ease;pointer-events:none}
+#netLoadBar.is-loading{opacity:1}
+#netLoadBar.is-done{width:100%;opacity:0}
+#netStatus{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,12px);z-index:99998;padding:9px 14px;border-radius:999px;background:#10234b;color:#fff;font-size:12px;font-weight:700;box-shadow:0 8px 24px rgba(15,23,42,.2);opacity:0;visibility:hidden;transition:opacity .2s ease,transform .2s ease;pointer-events:none;white-space:nowrap}
+#netStatus.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+img{max-width:100%}
+.ph img{opacity:0;transition:opacity .25s ease}
+.ph img.img-ready{opacity:1}
+@media(prefers-reduced-motion:reduce){#netLoadBar,#netStatus,.ph img{transition:none!important}}
 </style>
 
 
 
 </head>
 <body>
+<div id="netLoadBar" aria-hidden="true"></div>
+<div id="netStatus" role="status" aria-live="polite"></div>
+<script>
+/* Lightweight network/loading helpers. The page remains usable during loading. */
+(function(){
+  var bar=document.getElementById('netLoadBar');
+  var note=document.getElementById('netStatus');
+  var finished=false;
+  if(bar){bar.classList.add('is-loading');bar.style.width='18%';}
+  function progress(value){if(!bar||finished)return;bar.style.width=value+'%';}
+  function done(){if(finished)return;finished=true;if(bar){bar.style.width='100%';bar.classList.remove('is-loading');bar.classList.add('is-done');setTimeout(function(){bar.style.display='none';},450);}}
+  function network(){
+    if(!note)return;
+    if(!navigator.onLine){note.textContent='ইন্টারনেট সংযোগ নেই — সংযোগ ফিরে এলে আবার চেষ্টা হবে';note.classList.add('show');}
+    else {note.textContent='ইন্টারনেট সংযোগ ফিরে এসেছে';note.classList.add('show');setTimeout(function(){note.classList.remove('show');},2200);}
+  }
+  window.addEventListener('offline',network);
+  window.addEventListener('online',network);
+  document.addEventListener('DOMContentLoaded',function(){
+    progress(55);
+    var imgs=Array.prototype.slice.call(document.images||[]);
+    imgs.forEach(function(img){
+      img.decoding='async';
+      var isPriority=!!img.closest('header,.hero') || img.hasAttribute('data-eager');
+      if(!isPriority && !img.src.startsWith('data:') && !img.hasAttribute('loading')) img.loading='lazy';
+      if(img.complete && img.naturalWidth>0){img.classList.add('img-ready');}
+      else {
+        img.addEventListener('load',function(){img.classList.add('img-ready');},{once:true});
+        img.addEventListener('error',function(){img.classList.add('img-ready');},{once:true});
+      }
+    });
+  });
+  window.addEventListener('load',function(){progress(100);done();});
+  /* Do not leave the progress line stuck if a slow third-party request never finishes. */
+  setTimeout(function(){if(!finished){progress(85);}},12000);
+  setTimeout(function(){if(!finished)done();},30000);
+})();
+</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-6h6v6"/></symbol>
@@ -1062,7 +1110,7 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 
 <header>
   <div class="wrap hd">
-    <a class="logo" href="/" aria-label="Home"><img src="Main logo.jpg" alt="Nickname" data-site-logo></a>
+    <a class="logo" href="/" aria-label="Home"><img src="Main logo.jpg" alt="Nickname" data-site-logo loading="eager" fetchpriority="high" decoding="async"></a>
     <div class="hr">
       <a class="wallet" href="#"><svg class="i"><use href="#wal"/></svg>0৳</a>
       <a class="avatar" href="#account" id="avBtn" aria-label="Profile"><div class="av-inner"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM1YjQ2M2MiLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjMwIiByPSIxNCIgZmlsbD0iI2Y1ZTZkMyIvPjxlbGxpcHNlIGN4PSI0MCIgY3k9IjYyIiByeD0iMjIiIHJ5PSIxNiIgZmlsbD0iI2Y1ZTZkMyIvPjwvc3ZnPg==" alt="Profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block"></div></a>
@@ -1073,9 +1121,9 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 <main class="wrap" id="homeView">
   <section class="hero" id="heroSlider">
     <div class="track" id="track">
-      <div class="slide"><img src="Banner 1.jpg" alt="Banner 1" draggable="false" decoding="async"></div>
-      <div class="slide"><img src="Banner 2.jpg" alt="Banner 2" draggable="false" decoding="async"></div>
-      <div class="slide"><img src="Banner 3.jpg" alt="Banner 3" draggable="false" decoding="async"></div>
+      <div class="slide"><img src="Banner 1.jpg" alt="Banner 1" draggable="false" decoding="async" loading="eager" fetchpriority="high"></div>
+      <div class="slide"><img src="Banner 2.jpg" alt="Banner 2" draggable="false" decoding="async" loading="lazy"></div>
+      <div class="slide"><img src="Banner 3.jpg" alt="Banner 3" draggable="false" decoding="async" loading="lazy"></div>
     </div>
     <div class="dots" id="dots"><i class="on"></i><i></i><i></i></div>
   </section>
