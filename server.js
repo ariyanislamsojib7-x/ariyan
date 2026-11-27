@@ -97,6 +97,7 @@ const IMG_KEYS = Object.keys(IMAGES);
 
 const TEXTS = [
   { id: 'siteName', label: 'Website name', def: 'Nickname', max: 40 },
+  { id: 'adminBrandName', label: 'Shared brand name (Admin header, sidebar and page title)', def: 'AURA ARIYAN X TOPUP', max: 80 },
   { id: 'sec1', label: 'Home section title (top)', def: 'FREE FIRE TOPUP', max: 60, wrap: ['<em>', '</em>'] },
   { id: 'sec2', label: 'Home section title (UID Checker)', def: 'UID CHECKER', max: 60, wrap: ['<em>', '</em>'] },
   { id: 'pop', label: 'Popup message', def: 'সবথেকে কম দামে টপ করার জন্য সেরা ওয়েবসাইট\n১০০% বিশ্বস্ত ও দ্রুত ডেলিভারিতে\nঅর্ডার করুন নিশ্চিন্তে 🥰', max: 400, multi: true },
