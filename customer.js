@@ -713,8 +713,8 @@ async function showTransactions(){
   }catch(e){var el=$('#trBody');if(el)el.textContent=e.message}
 }
 
-function startInstantOrderPayment(btn,p){
-  if(!requireLogin())return;
+async function startInstantOrderPayment(btn,p){
+  if(!await requireLogin())return;
   if(!p.packageName||!p.playerId||p.playerId.length<6){toast('প্যাকেজ নির্বাচন ও সঠিক Player UID দিন');return}
   (async function(){
     try{paymentInfo=await api('/api/payment-info')}catch(e){toast(e.message);return}
@@ -732,9 +732,10 @@ function currentProduct(btn){
 
 async function placeOrder(btn){
   var p=currentProduct(btn);if(!p)return;
-  var page=btn.closest('main'),selected=page&&$('.po.on',page),pay=selected&&selected.dataset.pay;
-  if(pay==='Instant Pay'){startInstantOrderPayment(btn,p);return}
+  // Require authentication before any payment method or payment modal can open.
   if(!await requireLogin())return;
+  var page=btn.closest('main'),selected=page&&$('.po.on',page),pay=selected&&selected.dataset.pay;
+  if(pay==='Instant Pay'){await startInstantOrderPayment(btn,p);return}
   if(!p.packageName){toast('আগে একটি প্যাকেজ নির্বাচন করুন');return}
   if(!p.playerId||p.playerId.length<6){toast('সঠিক Player UID দিন');var m=btn.closest('main');var inp=m&&$('input',m);if(inp)inp.focus();return}
   if(!confirm(p.packageName+' — ৳'+p.price+'\nআপনার Wallet থেকে টাকা কেটে অর্ডার করা হবে। নিশ্চিত?'))return;
