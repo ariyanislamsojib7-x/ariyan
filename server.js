@@ -817,7 +817,7 @@ const CUSTOMER_DB = path.join(DATA_DIR, 'customers.json');
 const SUPABASE_URL = String(process.env.SUPABASE_URL || '').replace(/\/$/, '');
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY || '';
 const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_SECRET_KEY);
-const CUSTOMER_DEFAULTS = { users: [], deposits: [], orders: [], transactions: [], orderPayments: [] };
+const CUSTOMER_DEFAULTS = { users: [], deposits: [], orders: [], transactions: [], orderPayments: [], smsEvents: [] };
 let customerDB = Object.assign({}, CUSTOMER_DEFAULTS);
 let customerSaveQueue = Promise.resolve();
 function supabaseRequest(method, query, body) {
@@ -1221,6 +1221,30 @@ async function handleApi(req, res, pathname) {
       u.lastDevice=cleanDeviceInfo(b.device); u.lastLoginAt=new Date().toISOString(); await saveCustomerDB();
       return sendJson(res, 200, { token:customerToken(u.id), user:publicUser(u) });
     }
+    // Merchant-side SMS Reader ingestion. This endpoint stores only parsed payment metadata,
+    // never the SMS body, OTPs, PINs, or unrelated message content.
+    if (req.method === 'POST' && pathname === '/api/device/payment-sms') {
+      const configured = String(process.env.SMS_READER_DEVICE_TOKEN || '');
+      const auth = String(req.headers.authorization || '');
+      const supplied = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+      if (!configured || !supplied || !safeEq(supplied, configured)) return sendJson(res, 401, { error: 'SMS Reader device not authorized' });
+      const b = await readJson(req, 4096);
+      const method = String(b.method || '');
+      const trxId = String(b.trxId || '').trim().toUpperCase();
+      const amount = Number(b.amount);
+      const timestamp = Number(b.timestamp);
+      if (!['bKash', 'Nagad'].includes(method) || !/^[A-Z0-9-]{6,30}$/.test(trxId) || !Number.isFinite(amount) || amount <= 0 || amount > 500000 || !Number.isFinite(timestamp) || timestamp < Date.now() - 90 * 86400000 || timestamp > Date.now() + 5 * 60000) {
+        return sendJson(res, 400, { error: 'Invalid payment SMS metadata' });
+      }
+      const duplicate = customerDB.smsEvents.some(x => x.method === method && x.trxId === trxId);
+      if (duplicate) return sendJson(res, 409, { duplicate: true, message: 'এই SMS Transaction ID আগে গ্রহণ করা হয়েছে' });
+      const event = { id: newId('sms'), method, trxId, amount: Math.round(amount * 100) / 100,
+        receivedAt: new Date(timestamp).toISOString(), receivedByServerAt: new Date().toISOString(), status: 'needs_manual_verification' };
+      customerDB.smsEvents.push(event);
+      if (customerDB.smsEvents.length > 500) customerDB.smsEvents.splice(0, customerDB.smsEvents.length - 500);
+      await saveCustomerDB();
+      return sendJson(res, 201, { success: true, event, message: 'SMS metadata received; payment is NOT verified.' });
+    }
     if (pathname.startsWith('/api/customer/')) {
       const u = customerFromRequest(req);
       if (!u) return sendJson(res, 401, { error:'প্রথমে লগইন করুন' });
@@ -1266,6 +1290,10 @@ async function handleApi(req, res, pathname) {
     }
     if (pathname.startsWith('/api/admin/')) {
       // Admin customer/payment/order endpoints are protected by the existing admin session.
+      if (req.method==='GET' && pathname==='/api/admin/sms-events') {
+        if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
+        return sendJson(res,200,{smsEvents:(customerDB.smsEvents||[]).slice(-500).reverse(),configured:!!process.env.SMS_READER_DEVICE_TOKEN});
+      }
       if (req.method==='GET' && pathname==='/api/admin/suppliers') {
         if (!adminRequired(req)) return sendJson(res,401,{error:'Admin লগইন করুন'});
         const suppliers = [];

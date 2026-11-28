@@ -123,3 +123,12 @@ Dynamic Category & Product System (added)
 Deploy reminder for Dynamic Category System
 -------------------------------------------
 এই ফিচারটি বর্তমান Site Editor config storage-এ categories/customProducts রাখে। GitHub config storage ব্যবহার করলে আগের FFX-G/FFX-REPO/FFX-BRANCH সেটিংস অপরিবর্তিত রাখুন। Local storage ব্যবহার করলে Render Persistent Disk-এর DATA_DIR আগের মতো সেট রাখুন। Customer account/order database-এর Supabase configuration এই category feature পরিবর্তন করে না।
+
+
+ARIYANTOPUP SMS Reader Integration (added)
+------------------------------------------
+- POST /api/device/payment-sms accepts only parsed bKash/Nagad method, amount, Transaction ID and SMS timestamp. It does NOT accept/store the full SMS body.
+- Device endpoint requires Authorization: Bearer <SMS_READER_DEVICE_TOKEN>. Set a long random token in Render Environment; do not put it in GitHub. Enter the same token manually in the private Android app Settings.
+- Admin Panel → Orders & Payments → SMS Reader shows detected metadata. It is NOT proof of payment and does not approve deposits or orders. Admin must check the actual bKash/Nagad account and match the correct pending customer request before approval.
+- Duplicate SMS TrxIDs are rejected. Events are limited to the latest 500.
+- Only install the app on a phone/account you own or are authorized to manage. SMS permission is sensitive; app transmits only parsed payment metadata when sync is enabled, never OTP/PIN or message body.
