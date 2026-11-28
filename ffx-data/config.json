@@ -202,5 +202,15 @@
     "nagadPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
     "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
     "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।"
-  }
+  },
+  "categories": [
+    {
+      "id": "cat_mx0bqzut",
+      "name": "Topup",
+      "icon": "",
+      "enabled": true,
+      "sortOrder": 0
+    }
+  ],
+  "customProducts": []
 }
