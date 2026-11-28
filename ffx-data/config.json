@@ -1,0 +1,209 @@
+{
+  "logo": "logo-1795861215192.png",
+  "ffBanner": null,
+  "banners": [
+    "banner-1794986568024-7436.jpg",
+    "banner-1794986797472-5078.jpg",
+    "banner-1794986385799-353.jpg"
+  ],
+  "quick": [
+    {
+      "label": "WhatsApp",
+      "url": "https://wa.me/8801327414272"
+    },
+    {
+      "label": "Telegram",
+      "url": "https://t.me/Ariyan_x12"
+    },
+    {
+      "label": "Join Group",
+      "url": ""
+    },
+    {
+      "label": "YouTube",
+      "url": ""
+    },
+    {
+      "label": "Email",
+      "url": ""
+    }
+  ],
+  "images": {
+    "pop": "img-pop-1794987854178.png"
+  },
+  "prod": {
+    "uid": {
+      "packages": [
+        {
+          "label": "WEEKLY",
+          "name": "Stock out",
+          "price": 158
+        },
+        {
+          "label": "MONTHLY",
+          "name": "MONTHLY",
+          "price": 790
+        },
+        {
+          "label": "25 Diamond",
+          "name": "25 Diamond",
+          "price": 22
+        },
+        {
+          "label": "50 Diamond",
+          "name": "50 Diamond",
+          "price": 36
+        },
+        {
+          "label": "115 Diamond",
+          "name": "115 Diamond",
+          "price": 79
+        },
+        {
+          "label": "240 Diamond",
+          "name": "240 Diamond",
+          "price": 158
+        },
+        {
+          "label": "355 Diamond",
+          "name": "355 Diamond",
+          "price": 237
+        },
+        {
+          "label": "480 Diamond",
+          "name": "480 Diamond",
+          "price": 316
+        },
+        {
+          "label": "610 Diamond",
+          "name": "610 Diamond",
+          "price": 400
+        },
+        {
+          "label": "850 Diamond",
+          "name": "850 Diamond",
+          "price": 558
+        },
+        {
+          "label": "1240 Diamond",
+          "name": "1240 Diamond",
+          "price": 800
+        },
+        {
+          "label": "2530 Diamond",
+          "name": "2530 Diamond",
+          "price": 1610
+        },
+        {
+          "label": "5060 Diamond",
+          "name": "5060 Diamond",
+          "price": 3220
+        },
+        {
+          "label": "10120 Diamond",
+          "name": "10120 Diamond",
+          "price": 6440
+        }
+      ],
+      "rules": [
+        "সঠিক প্লেয়ার আইডি দিয়ে অর্ডার করুন। ভুল আইডিতে টপআপ হয়ে গেলে কর্তৃপক্ষ দায়ী থাকবে না।",
+        "অর্ডার করার আগে আইডির নাম চেক করে নিন।",
+        "টপআপ সম্পন্ন হতে সাধারণত ২ সেকেন্ড থেকে কয়েক মিনিট সময় লাগতে পারে।",
+        "একবার অর্ডার সাবমিট করার পর বাতিল বা রিফান্ড করা হয় না।",
+        "যেকোনো সমস্যায় অর্ডারের স্ক্রিনশট সহ টেলিগ্রাম & হোয়াটসঅ্যাপে যোগাযোগ করুন।"
+      ]
+    }
+  },
+  "texts": {
+    "siteName": "Developed By ARiYAN.   X",
+    "redeemCodeUrl": "https://shop.garena.my/?app=100067&channel=202953",
+    "acctNewUserText": "New user AURA ARiYAN 𝗫 Topup?",
+    "acctVerifiedText": "Verified",
+    "acctRankBronze": "𝐁𝐫𝐨𝐧𝐳𝐞",
+    "acctRankSilver": "𝐒𝐢𝐥𝐯𝐞𝐫",
+    "acctRankGold": "𝐆𝐨𝐥𝐝",
+    "acctRankPlatinum": "𝐏𝐥𝐚𝐭𝐢𝐧𝐮𝐦",
+    "acctRankDiamond": "𝐃𝐢𝐚𝐦𝐨𝐧𝐝",
+    "acctRankHeroic": "𝐇𝐞𝐫𝐨𝐢𝐜",
+    "acctRankMaster": "𝐌𝐚𝐬𝐭𝐞𝐫",
+    "acctRankGrandMaster": "𝐆𝐫𝐚𝐧𝐝 𝐌𝐚𝐬𝐭𝐞𝐫"
+  },
+  "accountSupport": {
+    "social": [
+      {
+        "label": "WhatsApp",
+        "url": "https://wa.me/8801319456565"
+      },
+      {
+        "label": "Telegram",
+        "url": ""
+      },
+      {
+        "label": "YouTube",
+        "url": ""
+      },
+      {
+        "label": "Group",
+        "url": "https://whatsapp.com/channel/0029VbDtkoIK0IBeCLjsFE2F"
+      },
+      {
+        "label": "Email",
+        "url": "mailto:sksojibahmed29@gmail.com"
+      },
+      {
+        "label": "Phone",
+        "url": "tel:+8801327414272"
+      }
+    ],
+    "helplines": [
+      {
+        "label": "WhatsApp HelpLine",
+        "url": "https://wa.me/8801319456565"
+      },
+      {
+        "label": "Telegram HelpLine",
+        "url": "https://t.me/ariyan143x"
+      }
+    ],
+    "legal": [
+      {
+        "label": "About Us",
+        "url": ""
+      },
+      {
+        "label": "Terms & Conditions",
+        "url": ""
+      },
+      {
+        "label": "Privacy Policy",
+        "url": ""
+      },
+      {
+        "label": "Refund & Return Policy",
+        "url": ""
+      },
+      {
+        "label": "Help Center",
+        "url": ""
+      }
+    ]
+  },
+  "paymentSettings": {
+    "walletBkashNumber": "01327414272",
+    "walletNagadNumber": "01327414272",
+    "instantBkashNumber": "01327414272",
+    "instantNagadNumber": "01327414272",
+    "bkashLogoUrl": "/uploads/payment-bkashLogo-1795702249087.webp",
+    "nagadLogoUrl": "/uploads/payment-nagadLogo-1795702266760.png",
+    "bkashTilesBannerUrl": "/uploads/payment-bkashTilesBanner-1795702285280.jpg",
+    "nagadTilesBannerUrl": "/uploads/payment-nagadTilesBanner-1795702298273.jpg",
+    "walletLogoFile": "payment-wallet-1795698708573.jpg",
+    "bkashPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
+    "nagadPaymentSelectText": "সেন্ড মানি (Send Money) নির্বাচন করুন",
+    "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
+    "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।"
+  },
+  "categories": [],
+  "customProducts": [],
+  "adminProfilePicture": "admin-profile-1795867891233.jpg"
+}
