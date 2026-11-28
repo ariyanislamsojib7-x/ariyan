@@ -4290,6 +4290,56 @@ a.how:focus-visible{
 @media(prefers-reduced-motion:reduce){
   a.how,a.how span,a.how svg{animation:none!important;}
 }
+
+/* Requested adjustment: move the five-item bottom menu slightly lower. */
+nav.nav{
+  bottom:calc(4px + env(safe-area-inset-bottom,0px))!important;
+}
+/* Color-shifting premium animation for every package "How to order?" link. */
+a.how{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  padding:8px 12px;
+  border:1px solid transparent;
+  border-radius:12px;
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(110deg,#ff4d8d,#8b5cf6,#06b6d4,#22c55e,#ffb020,#ff4d8d) border-box;
+  background-size:100% 100%,300% 100%;
+  animation:howColorFlow 4s linear infinite,howColorGlow 2.4s ease-in-out infinite;
+  transition:transform .25s ease,filter .25s ease;
+}
+a.how span{
+  background:linear-gradient(100deg,#e11d48,#7c3aed,#0284c7,#059669,#d97706,#e11d48);
+  background-size:300% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:howColorFlow 4s linear infinite;
+  font-weight:800;
+}
+a.how svg{color:#8b5cf6;animation:howIconColor 3s ease-in-out infinite;}
+a.how .ar{color:#0891b2;}
+a.how:active{transform:scale(.97);}
+a.how:focus-visible{outline:2px solid #8b5cf6;outline-offset:4px;}
+@keyframes howColorFlow{
+  0%{background-position:0% 50%,0% 50%;}
+  100%{background-position:0% 50%,300% 50%;}
+}
+@keyframes howColorGlow{
+  0%,100%{box-shadow:0 2px 8px rgba(225,29,72,.12);}
+  50%{box-shadow:0 3px 16px rgba(139,92,246,.28),0 0 9px rgba(6,182,212,.18);}
+}
+@keyframes howIconColor{
+  0%,100%{color:#e11d48;}
+  33%{color:#7c3aed;}
+  66%{color:#0891b2;}
+}
+@media(prefers-reduced-motion:reduce){
+  a.how,a.how span,a.how svg{animation:none!important;}
+}
+
 </style>
 </body>
 </html>
