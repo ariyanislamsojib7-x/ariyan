@@ -293,12 +293,10 @@ function open(title,html,opts){
   if(opts.full){
     modal.classList.add('pay-full');
     if(opts.auth)modal.classList.add('auth-full');else modal.classList.remove('auth-full');
-    modal.classList.toggle('add-money-full',!!opts.addMoney);
     try{ document.body.style.overflow='hidden'; document.body.classList.add('modal-open'); }catch(e){}
   } else {
     modal.classList.remove('pay-full');
     modal.classList.remove('auth-full');
-    modal.classList.remove('add-money-full');
   }
 }
 function close(){
@@ -306,7 +304,6 @@ function close(){
   modal.classList.remove('show');
   modal.classList.remove('pay-full');
   modal.classList.remove('auth-full');
-  modal.classList.remove('add-money-full');
   modal.style.display='none';
   try{ document.body.style.overflow=''; document.body.classList.remove('modal-open'); }catch(e){}
   if(hadAuthHistory){try{history.back()}catch(e){}}
@@ -467,33 +464,6 @@ function ensurePaymentStyles(){
 .ariyan-add-social{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
 .ariyan-add-social a{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;color:#0f172a;text-decoration:none;font-weight:700;font-size:13px}
 .ariyan-add-footer{text-align:center;font-size:11px;color:#94a3b8;margin-top:16px;padding-top:12px}
-/* Premium, edge-to-edge Add Money screen */
-#ariyanModal.add-money-full{padding:0!important;inset:0!important;align-items:stretch!important;justify-content:stretch!important;background:#f7f9ff!important;}
-#ariyanModal.add-money-full .am-card{width:100%!important;max-width:none!important;height:100dvh!important;min-height:100vh!important;max-height:none!important;border-radius:0!important;padding:0!important;box-shadow:none!important;overflow-y:auto!important;overscroll-behavior:contain;background:linear-gradient(180deg,#f8faff 0%,#fff 38%,#f5f8ff 100%)!important;}
-#ariyanModal.add-money-full .am-head{position:sticky;top:0;z-index:5;display:flex!important;align-items:center;min-height:76px;margin:0;padding:calc(12px + env(safe-area-inset-top,0px)) 20px 12px;background:rgba(255,255,255,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid #e8eefb;}
-#ariyanModal.add-money-full .am-head h2{font-size:clamp(22px,5.8vw,28px);font-weight:850;letter-spacing:-.6px;color:#172554;}
-#ariyanModal.add-money-full .am-x{width:42px;height:42px;border:1px solid #dbe6ff;background:#f3f7ff;color:#2458cf;font-size:27px;box-shadow:0 4px 12px #1d4ed810;}
-#ariyanModal.add-money-full #amBody{padding:clamp(16px,4vw,26px) clamp(16px,4.5vw,28px) calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box;background:transparent;}
-#ariyanModal.add-money-full .ariyan-add-hero{min-height:clamp(170px,34vw,230px);padding:clamp(20px,5vw,30px);margin:0 0 26px;border-radius:24px;background:radial-gradient(circle at 88% 18%,#60a5fa66,transparent 28%),linear-gradient(125deg,#0754df 0%,#173eb5 52%,#2563eb 100%);box-shadow:0 18px 40px #1749b52b;}
-#ariyanModal.add-money-full .ariyan-add-hero:after{width:220px;height:220px;right:-65px;top:-54px;box-shadow:0 0 0 24px #ffffff0c,0 0 0 50px #ffffff08;}
-#ariyanModal.add-money-full .ariyan-add-kicker{font-size:11px;padding:7px 12px;background:#ffffff22;border:1px solid #ffffff28;letter-spacing:1px;}
-#ariyanModal.add-money-full .ariyan-add-title{font-size:clamp(25px,6.2vw,34px);font-weight:900;letter-spacing:-.6px;}
-#ariyanModal.add-money-full .ariyan-add-title em{color:#dbeafe;}
-#ariyanModal.add-money-full .ariyan-add-sub{font-size:clamp(13px,3.4vw,15px);line-height:1.7;color:#eff6ff;max-width:390px;}
-#ariyanModal.add-money-full .ariyan-add-symbol{flex-basis:clamp(62px,17vw,84px);height:clamp(62px,17vw,84px);border-radius:22px;border:1px solid #ffffff48;background:#ffffff20;box-shadow:inset 0 1px 0 #ffffff45,0 10px 26px #061e6940;font-size:clamp(30px,8vw,42px);}
-#ariyanModal.add-money-full .ariyan-add-input-wrap{margin:0 0 16px;}
-#ariyanModal.add-money-full .ariyan-add-input-wrap label{font-size:13px;color:#52627e;letter-spacing:.08em;margin:0 0 9px;font-weight:850;}
-#ariyanModal.add-money-full .ariyan-add-input-wrap input{height:68px;padding:0 18px;border:1.5px solid #cbd8ee;border-radius:17px;background:#fff;font-size:clamp(18px,4.8vw,22px);color:#172554;box-shadow:0 8px 22px #1e40af0b;outline:none;}
-#ariyanModal.add-money-full .ariyan-add-input-wrap input:focus{border-color:#3474ee;box-shadow:0 0 0 4px #3b82f61c,0 8px 22px #1e40af0b;}
-#ariyanModal.add-money-full .ariyan-add-safe{font-size:13px;line-height:1.65;color:#64748b;margin:14px 0 22px;}
-#ariyanModal.add-money-full .ariyan-add-safe b{color:#2563eb;font-size:16px;}
-#ariyanModal.add-money-full .ariyan-add-secure{min-height:64px;border-radius:17px;font-size:clamp(16px,4.2vw,19px);font-weight:850;background:linear-gradient(110deg,#1554d8,#2868ee 65%,#1d4ed8);box-shadow:0 13px 28px #1d4ed83b;letter-spacing:.1px;}
-#ariyanModal.add-money-full .ariyan-add-secure:active{transform:scale(.99);}
-#ariyanModal.add-money-full .ariyan-add-social{gap:12px;margin:22px 0 18px;}
-#ariyanModal.add-money-full .ariyan-add-social a{min-height:54px;border-radius:15px;background:#fff;border:1px solid #e1e8f4;box-shadow:0 5px 16px #102d6508;font-size:14px;}
-#ariyanModal.add-money-full .ariyan-add-footer{font-size:12px;color:#98a4b8;margin-top:22px;padding:14px 0 calc(8px + env(safe-area-inset-bottom,0px));}
-@media(min-width:700px){#ariyanModal.add-money-full #amBody{width:min(100%,760px);margin:0 auto;padding-top:30px;}#ariyanModal.add-money-full .ariyan-add-hero{min-height:220px;}}
-@media(max-height:700px){#ariyanModal.add-money-full .ariyan-add-hero{min-height:145px;margin-bottom:18px;}#ariyanModal.add-money-full #amBody{padding-top:14px;}}
 `;
   document.head.appendChild(st);
 }
@@ -510,7 +480,7 @@ function amountPage(){
     '<button class="ariyan-add-secure" type="submit">▣ &nbsp; Add Money Securely &nbsp; →</button></form>'+
     '<div class="ariyan-add-social"><a href="'+esc(cfg.facebookUrl||'#')+'" '+(cfg.facebookUrl?'target="_blank" rel="noopener"':'')+'><b>f</b> Facebook</a><a href="'+esc(cfg.youtubeUrl||'#')+'" '+(cfg.youtubeUrl?'target="_blank" rel="noopener"':'')+'><b>▶</b> YouTube</a></div>'+
     '<div class="ariyan-add-footer">© ARIYANTOPUP · All Rights Reserved</div>';
-  open('Add Money',html,{full:true,addMoney:true});
+  open('Add Money',html);
   var form=$('#ariyanAddAmountForm');
   if(form) form.onsubmit=function(e){
     e.preventDefault();

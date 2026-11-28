@@ -1033,26 +1033,6 @@ img{max-width:100%}
 
 
 
-<style id="ariyan-fixed-bottom-nav-stability">
-/* Keep the bottom menu fixed to the screen, independent of document scrolling. */
-html,body{transform:none!important;}
-body{min-height:100%;padding-bottom:100px!important;}
-body>nav.nav{
-  position:fixed!important;
-  top:auto!important;
-  right:10px!important;
-  bottom:calc(6px + env(safe-area-inset-bottom,0px))!important;
-  left:10px!important;
-  width:min(calc(100% - 20px),520px)!important;
-  margin:0 auto!important;
-  transform:none!important;
-  -webkit-transform:none!important;
-  translate:none!important;
-  z-index:2147483000!important;
-  will-change:auto!important;
-}
-@media(min-width:760px){body>nav.nav{display:none!important}}
-</style>
 </head>
 <body>
 <div id="netLoadBar" aria-hidden="true"></div>
