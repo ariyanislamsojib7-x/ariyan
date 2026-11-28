@@ -2965,7 +2965,7 @@ setInterval(fetchFreshAccountConfig, 15000);
   var isLoggedIn=!!(localStorage.getItem('ariyan_customer_token'));
   var LOGIN_URL='#';
 
-  var BALANCE=0;          // ইউজারের ওয়ালেট ব্যালেন্স (ব্যাকএন্ড থেকে বসান)
+  var BALANCE=0;          // customer session থেকে ব্যালেন্স আপডেট হবে
   var HOWTO_URL=(window.__HOW_ORDER_URL || '#'); // configured by admin panel
 
   var sel={name:'',price:0,pay:'Wallet Pay'};
@@ -2985,6 +2985,7 @@ setInterval(fetchFreshAccountConfig, 15000);
     if(isLoggedIn){warn.style.display='none';balRow.style.display='flex';buy.textContent='Buy Now';buy.href='#';}
     else{warn.style.display='flex';balRow.style.display='none';buy.textContent='Login';buy.href=LOGIN_URL;}
   }
+  window.setUIDTopupBalance=function(value){var n=Number(value);BALANCE=Number.isFinite(n)&&n>=0?n:0;upd();};
   var balRow=document.getElementById('uidBalRow'), rf=document.getElementById('uidRf');
   rf.onclick=function(){
     rf.classList.remove('spin'); void rf.offsetWidth; rf.classList.add('spin');
@@ -4206,5 +4207,25 @@ setInterval(fetchFreshAccountConfig, 15000);
 })();
 </script>
 
+<style id="nav-scroll-stability-fix">
+.nav{bottom:calc(12px + env(safe-area-inset-bottom,0px) + var(--nav-vh-adjust,0px))!important;top:auto!important;transform:none!important}
+</style>
+<script id="nav-scroll-stability-script">
+(function(){
+  var nav=document.querySelector('.nav'); if(!nav)return;
+  var baseline=(window.visualViewport&&window.visualViewport.height)||window.innerHeight||0;
+  function stabilize(){
+    var current=(window.visualViewport&&window.visualViewport.height)||window.innerHeight||baseline;
+    nav.style.setProperty('--nav-vh-adjust',(current-baseline)+'px');
+  }
+  stabilize();
+  window.addEventListener('resize',stabilize,{passive:true});
+  window.addEventListener('scroll',stabilize,{passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',stabilize,{passive:true});
+    window.visualViewport.addEventListener('scroll',stabilize,{passive:true});
+  }
+})();
+</script>
 </body>
 </html>
