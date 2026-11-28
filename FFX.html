@@ -4208,24 +4208,88 @@ setInterval(fetchFreshAccountConfig, 15000);
 </script>
 
 <style id="nav-scroll-stability-fix">
-.nav{bottom:calc(12px + env(safe-area-inset-bottom,0px) + var(--nav-vh-adjust,0px))!important;top:auto!important;transform:none!important}
+/* Keep the five-item navigation anchored to the screen, independent of page scroll. */
+nav.nav{
+  position:fixed!important;
+  left:10px!important;
+  right:10px!important;
+  top:auto!important;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  transform:translate3d(0,0,0)!important;
+  -webkit-transform:translate3d(0,0,0)!important;
+  will-change:auto!important;
+}
+/* Subtle blue neon pulse on every "How to order?" link across all package sections. */
+a.how{
+  position:relative;
+  isolation:isolate;
+  border-radius:10px;
+  animation:howNeonPulse 2.1s ease-in-out infinite;
+  transition:color .25s ease, text-shadow .25s ease, filter .25s ease;
+}
+a.how span,
+a.how svg{
+  animation:howNeonText 2.1s ease-in-out infinite;
+}
+a.how:focus-visible{
+  outline:2px solid #60a5fa;
+  outline-offset:4px;
+}
+@keyframes howNeonPulse{
+  0%,100%{filter:drop-shadow(0 0 0 rgba(37,99,235,0));}
+  50%{filter:drop-shadow(0 0 7px rgba(37,99,235,.58)) drop-shadow(0 0 14px rgba(56,189,248,.28));}
+}
+@keyframes howNeonText{
+  0%,100%{text-shadow:0 0 0 rgba(37,99,235,0);}
+  50%{text-shadow:0 0 5px rgba(37,99,235,.55),0 0 12px rgba(56,189,248,.38);}
+}
+@media(prefers-reduced-motion:reduce){
+  a.how,a.how span,a.how svg{animation:none!important;}
+}
 </style>
-<script id="nav-scroll-stability-script">
-(function(){
-  var nav=document.querySelector('.nav'); if(!nav)return;
-  var baseline=(window.visualViewport&&window.visualViewport.height)||window.innerHeight||0;
-  function stabilize(){
-    var current=(window.visualViewport&&window.visualViewport.height)||window.innerHeight||baseline;
-    nav.style.setProperty('--nav-vh-adjust',(current-baseline)+'px');
-  }
-  stabilize();
-  window.addEventListener('resize',stabilize,{passive:true});
-  window.addEventListener('scroll',stabilize,{passive:true});
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize',stabilize,{passive:true});
-    window.visualViewport.addEventListener('scroll',stabilize,{passive:true});
-  }
-})();
-</script>
+<style id="nav-scroll-stability-fix">
+/* Keep the five-item navigation anchored to the screen, independent of page scroll. */
+nav.nav{
+  position:fixed!important;
+  left:10px!important;
+  right:10px!important;
+  top:auto!important;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  transform:translate3d(0,0,0)!important;
+  -webkit-transform:translate3d(0,0,0)!important;
+  will-change:auto!important;
+}
+/* Subtle blue neon pulse on every "How to order?" link across all package sections. */
+a.how{
+  position:relative;
+  isolation:isolate;
+  border-radius:10px;
+  animation:howNeonPulse 2.1s ease-in-out infinite;
+  transition:color .25s ease, text-shadow .25s ease, filter .25s ease;
+}
+a.how span,
+a.how svg{
+  animation:howNeonText 2.1s ease-in-out infinite;
+}
+a.how:focus-visible{
+  outline:2px solid #60a5fa;
+  outline-offset:4px;
+}
+@keyframes howNeonPulse{
+  0%,100%{filter:drop-shadow(0 0 0 rgba(37,99,235,0));}
+  50%{filter:drop-shadow(0 0 7px rgba(37,99,235,.58)) drop-shadow(0 0 14px rgba(56,189,248,.28));}
+}
+@keyframes howNeonText{
+  0%,100%{text-shadow:0 0 0 rgba(37,99,235,0);}
+  50%{text-shadow:0 0 5px rgba(37,99,235,.55),0 0 12px rgba(56,189,248,.38);}
+}
+@media(prefers-reduced-motion:reduce){
+  a.how,a.how span,a.how svg{animation:none!important;}
+}
+</style>
 </body>
 </html>
