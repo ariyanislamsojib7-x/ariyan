@@ -203,15 +203,7 @@
     "bkashPaymentClickText": "Send Money-এ ক্লিক করুন।",
     "nagadPaymentClickText": "Send Money-এ ক্লিক করুন।"
   },
-  "categories": [
-    {
-      "id": "cat_mx0bqzut",
-      "name": "Topup",
-      "icon": "",
-      "enabled": true,
-      "sortOrder": 0
-    }
-  ],
+  "categories": [],
   "customProducts": [],
   "adminProfilePicture": "admin-profile-1795867891233.jpg"
 }
