@@ -182,7 +182,7 @@ function emptyAccountSupport() {
     ]
   };
 }
-function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null, accountSupport: null, paymentSettings: null }; }
+function emptyCfg() { return { logo: null, ffBanner: null, banners: null, quick: null, images: null, prod: null, texts: null, accountSupport: null, paymentSettings: null, categories: [], customProducts: [] }; }
 function sanitizePaymentSettings(input) {
   const x = input && typeof input === 'object' ? input : {};
   const out = {};
@@ -260,6 +260,31 @@ function sanitizePackages(list) {
     if (!Number.isFinite(price) || price < 0 || price > 10000000) throw new Error('প্যাকেজ ' + (i + 1) + ': প্রাইস ঠিক নেই');
     if (!name) name = label;
     return { label: label, name: name, price: Math.round(price * 100) / 100 };
+  });
+}
+
+function safeCatalogId(v) { return String(v || '').trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40); }
+function safeCatalogImage(v) { const x=String(v||'').trim().slice(0,500); return !x || /^(https?:\/\/|\/[^\/])/i.test(x) ? x : ''; }
+function sanitizeCategories(list) {
+  if (!Array.isArray(list) || list.length > 40) throw new Error('সর্বোচ্চ ৪০টি ক্যাটাগরি রাখা যাবে');
+  const seen = new Set();
+  return list.map(function (c, i) {
+    const id = safeCatalogId(c && c.id) || ('cat_' + (i + 1));
+    if (seen.has(id)) throw new Error('ক্যাটাগরি ID ডুপ্লিকেট'); seen.add(id);
+    const name = String(c && c.name || '').trim().slice(0, 60);
+    if (!name) throw new Error('ক্যাটাগরির নাম দিন');
+    return { id:id, name:name, icon:safeCatalogImage(c && c.icon), enabled:c.enabled !== false, sortOrder:i };
+  });
+}
+function sanitizeCustomProducts(list) {
+  if (!Array.isArray(list) || list.length > 300) throw new Error('সর্বোচ্চ ৩০০টি প্রোডাক্ট রাখা যাবে');
+  const seen = new Set();
+  return list.map(function (p, i) {
+    const key = safeCatalogId(p && p.key);
+    if (!/^cp_[a-zA-Z0-9_-]{4,36}$/.test(key) || seen.has(key)) throw new Error('প্রোডাক্ট ID ঠিক নেই'); seen.add(key);
+    const categoryId = safeCatalogId(p && p.categoryId), name = String(p && p.name || '').trim().slice(0,80);
+    if (!name || !categoryId) throw new Error('প্রোডাক্টের নাম ও ক্যাটাগরি আবশ্যক');
+    return { key:key, categoryId:categoryId, name:name, title:String(p.title || name).trim().slice(0,80), image:safeCatalogImage(p.image), pill:String(p.pill || '').trim().slice(0,60), server:String(p.server || 'BD').trim().slice(0,40), packages:(function(){const a=sanitizePackages(p.packages||[]);if(a.some(x=>x.price<=0))throw new Error('নতুন প্রোডাক্টের প্যাকেজের দাম ০-এর বেশি হতে হবে');return a})(), rules:Array.isArray(p.rules)?p.rules.map(x=>String(x||'').trim().slice(0,300)).filter(Boolean).slice(0,20):[], enabled:p.enabled !== false, sortOrder:i };
   });
 }
 
@@ -350,6 +375,8 @@ function loadLocal() {
     if (j.quick) config.quick = sanitizeQuick(j.quick);
     if (j.accountSupport) { try { config.accountSupport = sanitizeAccountSupport(j.accountSupport); } catch (e) {} }
     if (j.paymentSettings) { try { config.paymentSettings = sanitizePaymentSettings(j.paymentSettings); } catch (e) {} }
+    if (Array.isArray(j.categories)) { try { config.categories = sanitizeCategories(j.categories); } catch (e) {} }
+    if (Array.isArray(j.customProducts)) { try { config.customProducts = sanitizeCustomProducts(j.customProducts); } catch (e) {} }
   } catch (e) {}
   cfgVersion++;
   renderCache = null;
@@ -1052,6 +1079,8 @@ function currentView() {
   while (visibleQuick.length < 5) visibleQuick.push(DEFAULT_QUICK[visibleQuick.length]);
   return {
     images: images,
+    categories: (config.categories || []).map(function(c){return Object.assign({},c)}),
+    customProducts: (config.customProducts || []).map(function(p){return Object.assign({},p,{packages:p.packages.map(x=>Object.assign({},x))})}),
     products: PRODUCTS.map(function (p) {
       const c = P[p.key] || {}, d = defs[p.key] || { name: '', title: '', pill: '', packages: [], rules: [] };
       return {
@@ -1211,25 +1240,26 @@ async function handleApi(req, res, pathname) {
       }
       if (req.method === 'POST' && pathname === '/api/customer/order-payments') {
         const b=await readJson(req,8192), product=String(b.product||b.key||'').slice(0,20), packageName=String(b.packageName||'').slice(0,100), price=Number(b.price), playerId=String(b.playerId||'').trim().slice(0,40), server=String(b.server||'').slice(0,40), method=String(b.method||''), trx=String(b.trxId||'').trim().toUpperCase();
-        const productDef=PRODUCTS.find(x=>x.key===product), productCfg=(config.prod||{})[product]||{}, validPackages=productCfg.packages||(getDefaults()[product]||{}).packages||[], validPackage=validPackages.find(x=>x.name===packageName&&Math.abs(Number(x.price)-price)<0.001);
+        const customDef=(config.customProducts||[]).find(x=>x.key===product&&x.enabled!==false&&(config.categories||[]).some(c=>c.id===x.categoryId&&c.enabled!==false)), productDef=PRODUCTS.find(x=>x.key===product)||customDef, productCfg=(config.prod||{})[product]||{}, validPackages=customDef?customDef.packages:(productCfg.packages||(getDefaults()[product]||{}).packages||[]), validPackage=validPackages.find(x=>x.name===packageName&&Math.abs(Number(x.price)-price)<0.001);
         if(!productDef||!validPackage||!Number.isFinite(price)||price<=0||!playerId) return sendJson(res,400,{error:'প্যাকেজ, দাম বা Player UID সঠিক নয়'});
         if(!['bKash','Nagad'].includes(method)) return sendJson(res,400,{error:'শুধু bKash অথবা Nagad নির্বাচন করুন'});
         if(!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res,400,{error:'সঠিক Transaction ID দিন'});
         const used=customerDB.deposits.some(d=>d.trxId===trx&&d.method===method)||customerDB.orderPayments.some(d=>d.trxId===trx&&d.method===method);
         if(used) return sendJson(res,409,{error:'এই Transaction ID আগে জমা হয়েছে'});
-        const reqPay={id:newId('opay'),userId:u.id,email:u.email,product,packageName,price:Math.round(price*100)/100,playerId,server,method,trxId:trx,status:'pending',createdAt:new Date().toISOString()};
+        const reqPay={id:newId('opay'),userId:u.id,email:u.email,product,productName:productDef.name||product,packageName,price:Math.round(price*100)/100,playerId,server,method,trxId:trx,status:'pending',createdAt:new Date().toISOString()};
         customerDB.orderPayments.push(reqPay); await saveCustomerDB(); return sendJson(res,201,{payment:reqPay,message:'অর্ডারের পেমেন্ট যাচাইয়ের জন্য জমা হয়েছে। Admin অনুমোদন করলে অর্ডার তৈরি হবে।'});
       }
       if (req.method === 'POST' && pathname === '/api/customer/orders') {
         const b = await readJson(req, 8192), product = String(b.product||b.key||'').slice(0,20), packageName = String(b.packageName||'').slice(0,100), price = Number(b.price), playerId = String(b.playerId||'').trim().slice(0,40), server = String(b.server||'').slice(0,40);
-        const productDef = PRODUCTS.find(x=>x.key===product);
+        const customDef=(config.customProducts||[]).find(x=>x.key===product&&x.enabled!==false&&(config.categories||[]).some(c=>c.id===x.categoryId&&c.enabled!==false));
+        const productDef = PRODUCTS.find(x=>x.key===product) || customDef;
         const productCfg = (config.prod||{})[product] || {};
-        const validPackages = productCfg.packages || (getDefaults()[product]||{}).packages || [];
+        const validPackages = customDef ? customDef.packages : (productCfg.packages || (getDefaults()[product]||{}).packages || []);
         const validPackage = validPackages.find(x=>x.name===packageName && Math.abs(Number(x.price)-price)<0.001);
         if (!productDef || !validPackage || !Number.isFinite(price) || price <= 0 || !playerId) return sendJson(res,400,{error:'প্যাকেজ বা দাম সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন'});
         if (u.balance < price) return sendJson(res,400,{error:'ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই'});
         u.balance = Math.round((u.balance-price)*100)/100;
-        const o={id:nextOrderId(),userId:u.id,email:u.email,product,packageName,price,playerId,server,status:'pending',deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()};
+        const o={id:nextOrderId(),userId:u.id,email:u.email,product,productName:productDef.name||product,packageName,price,playerId,server,status:'pending',deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()};
         customerDB.orders.push(o); customerDB.transactions.push({id:newId('txn'),userId:u.id,type:'purchase',amount:-price,description:product+' - '+packageName,orderId:o.id,createdAt:new Date().toISOString()});
         await saveCustomerDB(); return sendJson(res,201,{order:o,user:publicUser(u)});
       }
@@ -1302,7 +1332,7 @@ async function handleApi(req, res, pathname) {
         if (pathname.endsWith('order-action') && String(b.id||'').startsWith('opay_')) {
           const op=customerDB.orderPayments.find(x=>x.id===b.id); if(!op) return sendJson(res,404,{error:'Order payment পাওয়া যায়নি'});
           if(op.status!=='pending') return sendJson(res,409,{error:'এই পেমেন্ট আগে প্রসেস করা হয়েছে'});
-          if(action==='approve') { const o={id:nextOrderId(),userId:op.userId,email:op.email,product:op.product,packageName:op.packageName,price:op.price,playerId:op.playerId,server:op.server,status:'pending',paymentStatus:'approved',paymentMethod:op.method,paymentTrxId:op.trxId,deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()}; customerDB.orders.push(o); customerDB.transactions.push({id:newId('txn'),userId:op.userId,type:'purchase',amount:-op.price,description:op.product+' - '+op.packageName+' (Instant Pay)',orderId:o.id,createdAt:new Date().toISOString()}); op.status='approved'; op.orderId=o.id; }
+          if(action==='approve') { const o={id:nextOrderId(),userId:op.userId,email:op.email,product:op.product,productName:op.productName||op.product,packageName:op.packageName,price:op.price,playerId:op.playerId,server:op.server,status:'pending',paymentStatus:'approved',paymentMethod:op.method,paymentTrxId:op.trxId,deliveryMethod:'unassigned',supplierId:'',supplierOrderId:'',deliveryNote:'',createdAt:new Date().toISOString()}; customerDB.orders.push(o); customerDB.transactions.push({id:newId('txn'),userId:op.userId,type:'purchase',amount:-op.price,description:op.product+' - '+op.packageName+' (Instant Pay)',orderId:o.id,createdAt:new Date().toISOString()}); op.status='approved'; op.orderId=o.id; }
           else if(action==='reject') op.status='rejected'; else return sendJson(res,400,{error:'ভুল action'});
           op.reviewedAt=new Date().toISOString(); await saveCustomerDB(); return sendJson(res,200,{success:true,orderPayment:op});
         }
@@ -1332,11 +1362,25 @@ async function handleApi(req, res, pathname) {
       return sendJson(res, 401, { error: 'পাসওয়ার্ড ঠিক নেই' });
     }
 
+    if (req.method === 'GET' && pathname === '/api/public-catalog') {
+      return sendJson(res, 200, { categories:(config.categories||[]).filter(c=>c.enabled!==false), products:(config.customProducts||[]).filter(p=>p.enabled!==false) });
+    }
+
     if (!pathname.startsWith('/api/admin/')) return sendJson(res, 404, { error: 'Not found' });
     if (!isAuthed(req)) return sendJson(res, 401, { error: 'লগইন করুন' });
 
     if (req.method === 'GET' && pathname === '/api/admin/config') {
       return sendJson(res, 200, currentView());
+    }
+
+    if (req.method === 'POST' && pathname === '/api/admin/catalog') {
+      const body=await readJson(req,256*1024);
+      const categories=sanitizeCategories(body.categories||[]);
+      const customProducts=sanitizeCustomProducts(body.products||[]);
+      const categoryIds=new Set(categories.map(c=>c.id));
+      if(customProducts.some(p=>!categoryIds.has(p.categoryId))) return sendJson(res,400,{error:'প্রতিটি প্রোডাক্টকে একটি বিদ্যমান ক্যাটাগরিতে রাখতে হবে'});
+      await commit(Object.assign({},config,{categories:categories,customProducts:customProducts}),'Update dynamic categories and products',[],[]);
+      return sendJson(res,200,currentView());
     }
 
     if (req.method === 'POST' && pathname === '/api/admin/payment-image') {

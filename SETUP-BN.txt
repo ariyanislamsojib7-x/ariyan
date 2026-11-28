@@ -106,3 +106,20 @@ ARIYANTOPUP payment screen update:
 - The visual method selector uses a check mark for the selected method; unsupported Recharge/Cash Out actions are shown as inactive.
 - Deposit remains manual: customer submits amount + Transaction ID; Admin must verify actual incoming payment before approval.
 - The generated banner asset is ariyantopup-banner.png. No Binance Pay or Rocket option is included.
+
+
+Dynamic Category & Product System (added)
+-----------------------------------------
+- Admin Panel → Site Editor-এর Dynamic Category Management অংশ থেকে আলাদা ক্যাটাগরি যোগ/সম্পাদনা/মুছতে পারবেন।
+- ক্যাটাগরির Up/Down দিয়ে হোমপেজে ক্রম পরিবর্তন হবে; ক্যাটাগরির প্রোডাক্ট একই ক্যাটাগরির সঙ্গেই থাকবে।
+- প্রতিটি ক্যাটাগরিতে নতুন custom product, image URL, Player ID server এবং ১-৪০টি package/price যোগ করা যাবে।
+- Save All Changes করলে config storage-এ categories ও customProducts সংরক্ষিত হবে।
+- হোমপেজে শুধু enabled ক্যাটাগরি/প্রোডাক্ট দেখাবে যেগুলোর ক্যাটাগরি আছে।
+- Custom product-এর Wallet Pay ও Instant Pay আগের customer order API এবং payment modal ব্যবহার করে; server-side package/price validation চালু।
+- Existing FREE FIRE TOPUP এবং পুরোনো product keys অপরিবর্তিত।
+- Product image/category icon URL ব্যবহার করলে পূর্ণ HTTPS URL বা সাইটে থাকা public image path দিন।
+
+
+Deploy reminder for Dynamic Category System
+-------------------------------------------
+এই ফিচারটি বর্তমান Site Editor config storage-এ categories/customProducts রাখে। GitHub config storage ব্যবহার করলে আগের FFX-G/FFX-REPO/FFX-BRANCH সেটিংস অপরিবর্তিত রাখুন। Local storage ব্যবহার করলে Render Persistent Disk-এর DATA_DIR আগের মতো সেট রাখুন। Customer account/order database-এর Supabase configuration এই category feature পরিবর্তন করে না।

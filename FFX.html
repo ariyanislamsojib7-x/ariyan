@@ -4394,5 +4394,47 @@ a.how:focus-visible{outline:2px solid #8b5cf6;outline-offset:4px;border-radius:4
 }
 
 </style>
+
+<script id="ariyan-dynamic-catalog">
+(function(){
+'use strict';
+var catalog=[], current=null, home=document.getElementById('homeView'), footer=document.getElementById('siteFooter');
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function getPage(){return document.getElementById('dynamicProductView')}
+function renderHome(){
+ var anchor=document.querySelector('#homeView .sec'); if(!anchor)return;
+ var old=document.getElementById('dynamicCategorySections'); if(old)old.remove();
+ var wrap=document.createElement('div');wrap.id='dynamicCategorySections';
+ var groups=catalog.categories||[];
+ groups.forEach(function(cat){var items=(catalog.products||[]).filter(function(p){return p.categoryId===cat.id&&p.enabled!==false}); if(!items.length)return;
+  var sec=document.createElement('section');sec.className='dynamic-category-block';var categoryMark=cat.icon?( /^https?:\/\//i.test(cat.icon)||cat.icon.charAt(0)==='/' ? '<img src="'+esc(cat.icon)+'" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;margin-right:7px">' : '<span style="margin-right:7px">'+esc(cat.icon)+'</span>' ) : '';sec.innerHTML='<div class="sec"><h2><em>'+categoryMark+esc(cat.name)+'</em></h2></div><div class="grid">'+items.map(function(p){return '<a class="card" href="#'+esc(p.key)+'" data-dynamic-open="'+esc(p.key)+'"><div class="thumb ph"><img src="'+esc(p.image||'Main logo.jpg')+'" alt="'+esc(p.name)+'" loading="lazy"></div><p>'+esc(p.name)+'</p></a>'}).join('')+'</div>';
+  wrap.appendChild(sec);
+ });
+ anchor.parentNode.insertBefore(wrap,anchor);
+}
+function showProduct(key){
+ var p=(catalog.products||[]).find(function(x){return x.key===key&&x.enabled!==false});if(!p)return;
+ current=p;var page=getPage();if(!page){page=document.createElement('main');page.id='dynamicProductView';page.className='wrap';document.body.insertBefore(page,footer||null)}
+ page.setAttribute('data-server',p.server||'BD');page.innerHTML='<button class="pv-back" type="button" id="dynamicBack">‹ Back</button>'+ 
+ '<section class="pv-hero"><div class="pv-img"><div class="thumb ph"><img src="'+esc(p.image||'Main logo.jpg')+'" alt="'+esc(p.name)+'"></div></div><div class="pv-info"><h1>'+esc(p.title||p.name)+'</h1><span class="pv-pill">'+esc(p.pill||'Available Now')+'</span></div></section>'+ 
+ '<section class="pv-box"><div class="pv-head"><span class="n">1</span><h2>Select Package</h2></div><div class="pv-body"><div class="pk-grid">'+(p.packages||[]).map(function(x){return '<button type="button" class="pk" data-name="'+esc(x.name)+'" data-price="'+Number(x.price)+'"><span>'+esc(x.label)+'</span><b>BDT '+Number(x.price)+'</b></button>'}).join('')+'</div></div></section>'+ 
+ '<section class="pv-box"><div class="pv-head"><span class="n">2</span><h2>Account Info</h2></div><div class="pv-body"><label class="lbl" for="dynamicPlayerId">Player UID / Account ID</label><input class="inp" id="dynamicPlayerId" type="text" maxlength="40" placeholder="আপনার Player ID দিন"></div></section>'+ 
+ '<section class="pv-box"><div class="pv-head"><span class="n">3</span><h2>Select one option</h2></div><div class="pv-body"><div class="po-grid"><div role="button" tabindex="0" class="po on" data-pay="Wallet Pay"><div class="pbx"><img src="/wallet.jpg" alt=""></div><div class="pft">Wallet Pay</div></div><div role="button" tabindex="0" class="po" data-pay="Instant Pay"><div class="pbx"><img src="andmoney.jpg" alt=""></div><div class="pft">Instant Pay</div></div></div><p class="hint"><span>প্রোডাক্ট কিনতে আপনার প্রয়োজন <b id="dynamicNeed">0</b> টাকা।</span></p><p class="hint warnx" id="dynamicLoginWarn">Please Login To Purchase</p><button class="btn login" type="button" id="dynamicBuy" data-custom-product="'+esc(p.key)+'">Login</button></div></section>'+ 
+ ((p.rules&&p.rules.length)?'<section class="pv-box rules"><div class="pv-head rh"><h2>Rules &amp; Conditions</h2></div><div class="pv-body"><ul class="rl">'+p.rules.map(function(r){return '<li>'+esc(r)+'</li>'}).join('')+'</ul></div></section>':'');
+ page.hidden=false; if(home)home.hidden=true;if(footer)footer.hidden=true;
+ document.querySelectorAll('main').forEach(function(m){if(m!==page)m.hidden=true});
+ page.querySelectorAll('.pk').forEach(function(b){b.onclick=function(){page.querySelectorAll('.pk').forEach(function(x){x.classList.remove('on')});b.classList.add('on');document.getElementById('dynamicNeed').textContent=b.dataset.price}});
+ var buy=document.getElementById('dynamicBuy');if(buy){var logged=!!localStorage.getItem('ariyan_customer_token');buy.textContent=logged?'Buy Now':'Login';document.getElementById('dynamicLoginWarn').style.display=logged?'none':'flex'}
+ document.getElementById('dynamicBack').onclick=function(){location.hash='';};
+ window.scrollTo(0,0);
+}
+function route(){var key=location.hash.slice(1),p=(catalog.products||[]).find(function(x){return x.key===key&&x.enabled!==false});if(p){showProduct(key);return}var page=getPage();if(page)page.hidden=true;}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-dynamic-open]');if(a){e.preventDefault();location.hash=a.getAttribute('data-dynamic-open')}});
+window.addEventListener('hashchange',route);
+fetch('/api/public-catalog',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){if(!d)return;catalog=d;renderHome();route()}).catch(function(e){console.warn('Dynamic catalog unavailable',e)});
+window.addEventListener('ariyan:customer-session',function(){var b=document.getElementById('dynamicBuy');if(b){var yes=!!localStorage.getItem('ariyan_customer_token');b.textContent=yes?'Buy Now':'Login';document.getElementById('dynamicLoginWarn').style.display=yes?'none':'flex'}});
+})();
+</script>
+
 </body>
 </html>
