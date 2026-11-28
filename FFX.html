@@ -1033,6 +1033,13 @@ img{max-width:100%}
 
 
 
+<style id="ariyan-fixed-bottom-nav-stability">
+/* Keep the five-item navigation anchored to the viewport while page content scrolls. */
+html{min-height:100%;-webkit-text-size-adjust:100%;}
+body{min-height:100%;}
+nav.nav{position:fixed!important;left:50%!important;bottom:calc(6px + env(safe-area-inset-bottom,0px))!important;transform:translate3d(-50%,0,0)!important;-webkit-transform:translate3d(-50%,0,0)!important;z-index:1000!important;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+@media(min-width:760px){nav.nav{display:none!important}}
+</style>
 </head>
 <body>
 <div id="netLoadBar" aria-hidden="true"></div>
